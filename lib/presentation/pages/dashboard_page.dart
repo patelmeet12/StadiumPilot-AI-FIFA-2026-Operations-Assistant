@@ -80,6 +80,7 @@ class DashboardPage extends ConsumerWidget {
                           ref.read(crowdStateProvider.notifier).fetchCrowdState();
                           ref.read(incidentListProvider.notifier).fetchIncidents();
                           ref.read(volunteerTasksProvider.notifier).fetchTasks();
+                          if (!context.mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('All data has been reset to defaults.')),
                           );
@@ -120,6 +121,10 @@ class DashboardPage extends ConsumerWidget {
                             children: [
                               _buildCrowdStatusPanel(context, crowdState, activeLanguage),
                               const SizedBox(height: 24),
+                              _buildTravelStatusPanel(context, activeLanguage),
+                              const SizedBox(height: 24),
+                              _buildAccessibilityPanel(context, activeLanguage),
+                              const SizedBox(height: 24),
                               _buildEcoScoreCard(context, activeLanguage),
                             ],
                           ),
@@ -134,6 +139,10 @@ class DashboardPage extends ConsumerWidget {
                         _buildDecisionEnginePanel(context, recommendationsAsync, activeLanguage),
                         const SizedBox(height: 24),
                         _buildCrowdStatusPanel(context, crowdState, activeLanguage),
+                        const SizedBox(height: 24),
+                        _buildTravelStatusPanel(context, activeLanguage),
+                        const SizedBox(height: 24),
+                        _buildAccessibilityPanel(context, activeLanguage),
                         const SizedBox(height: 24),
                         _buildEcoScoreCard(context, activeLanguage),
                         const SizedBox(height: 24),
@@ -157,15 +166,15 @@ class DashboardPage extends ConsumerWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: theme.colorScheme.primary.withOpacity(0.3), width: 1.5),
+        side: BorderSide(color: theme.colorScheme.primary.withValues(alpha: 0.3), width: 1.5),
       ),
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           gradient: LinearGradient(
             colors: [
-              theme.colorScheme.primary.withOpacity(0.12),
-              theme.colorScheme.primary.withOpacity(0.02),
+              theme.colorScheme.primary.withValues(alpha: 0.12),
+              theme.colorScheme.primary.withValues(alpha: 0.02),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -269,7 +278,7 @@ class DashboardPage extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Colors.green.withOpacity(0.1),
+                    color: Colors.green.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: const Row(
@@ -309,7 +318,7 @@ class DashboardPage extends ConsumerWidget {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                               decoration: BoxDecoration(
-                                color: priorityColor.withOpacity(0.15),
+                                color: priorityColor.withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
@@ -479,6 +488,268 @@ class DashboardPage extends ConsumerWidget {
     );
   }
 
+  // Card 3b: Travel Status Panel
+  Widget _buildTravelStatusPanel(BuildContext context, String lang) {
+    final theme = Theme.of(context);
+    final Map<String, Map<String, String>> localTravelDict = {
+      'en': {
+        'title': 'Local Travel Status',
+        'metro': 'FIFA Metro Line 1',
+        'shuttle': 'Express Shuttle Loop',
+        'traffic': 'Plaza Outer Traffic',
+        'taxi': 'Gate A Taxi Stand',
+        'normal': 'Normal Service (3m frequency)',
+        'active': 'Active loops (5m frequency)',
+        'moderate': 'Moderate Congestion',
+        'busy': 'High wait time (20m wait)',
+      },
+      'es': {
+        'title': 'Estado del Transporte Local',
+        'metro': 'Línea 1 del Metro FIFA',
+        'shuttle': 'Lanzadera Exprés',
+        'traffic': 'Tráfico Exterior de la Plaza',
+        'taxi': 'Parada de Taxis Puerta A',
+        'normal': 'Servicio normal (frecuencia de 3m)',
+        'active': 'Lanzaderas activas (frecuencia de 5m)',
+        'moderate': 'Congestión moderada',
+        'busy': 'Tiempo de espera alto (espera de 20m)',
+      },
+      'fr': {
+        'title': 'État du Transport Local',
+        'metro': 'Ligne 1 du Métro FIFA',
+        'shuttle': 'Navette Express',
+        'traffic': 'Trafic Extérieur de la Place',
+        'taxi': 'Station de Taxis Porte A',
+        'normal': 'Service normal (fréquence 3m)',
+        'active': 'Boucles actives (fréquence 5m)',
+        'moderate': 'Congestion modérée',
+        'busy': 'Attente élevée (20m d\'attente)',
+      },
+      'hi': {
+        'title': 'स्थानीय यात्रा स्थिति',
+        'metro': 'फीफा मेट्रो लाइन 1',
+        'shuttle': 'एक्सप्रेस शटल लूप',
+        'traffic': 'प्लाजा बाहरी यातायात',
+        'taxi': 'गेट A टैक्सी स्टैंड',
+        'normal': 'सामान्य सेवा (3 मिनट अंतराल)',
+        'active': 'सक्रिय शटल (5 मिनट अंतराल)',
+        'moderate': 'सामान्य भीड़',
+        'busy': 'अधिक प्रतीक्षा समय (20 मिनट प्रतीक्षा)',
+      },
+      'ar': {
+        'title': 'حالة النقل المحلي',
+        'metro': 'خط مترو فيفا 1',
+        'shuttle': 'حافلة التردد السريع',
+        'traffic': 'حركة المرور الخارجية للميدان',
+        'taxi': 'موقف سيارات أجرة البوابة A',
+        'normal': 'خدمة طبيعية (تردد كل 3 دقائق)',
+        'active': 'حافلات نشطة (تردد كل 5 دقائق)',
+        'moderate': 'ازدحام متوسط',
+        'busy': 'انتظار طويل (20 دقيقة انتظار)',
+      },
+      'pt': {
+        'title': 'Estado do Transporte Local',
+        'metro': 'Metrô FIFA Linha 1',
+        'shuttle': 'Translado Expresso',
+        'traffic': 'Trânsito no Entorno da Plaza',
+        'taxi': 'Ponto de Táxi do Portão A',
+        'normal': 'Serviço normal (frequência 3m)',
+        'active': 'Translados ativos (frequência 5m)',
+        'moderate': 'Congestionamento moderado',
+        'busy': 'Tempo de espera alto (20m de espera)',
+      }
+    };
+    final t = localTravelDict[lang] ?? localTravelDict['en']!;
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.directions_transit, color: Colors.teal, size: 26),
+                const SizedBox(width: 12),
+                Text(
+                  t['title']!,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ],
+            ),
+            const Divider(height: 24),
+            _buildTravelItem(Icons.subway, t['metro']!, t['normal']!, Colors.green),
+            const SizedBox(height: 12),
+            _buildTravelItem(Icons.airport_shuttle, t['shuttle']!, t['active']!, Colors.green),
+            const SizedBox(height: 12),
+            _buildTravelItem(Icons.traffic, t['traffic']!, t['moderate']!, Colors.amber),
+            const SizedBox(height: 12),
+            _buildTravelItem(Icons.local_taxi, t['taxi']!, t['busy']!, Colors.red),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTravelItem(IconData icon, String title, String status, Color indicatorColor) {
+    return Row(
+      children: [
+        Icon(icon, size: 20, color: Colors.grey),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+              Text(status, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+            ],
+          ),
+        ),
+        Container(
+          width: 10,
+          height: 10,
+          decoration: BoxDecoration(
+            color: indicatorColor,
+            shape: BoxShape.circle,
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Card 3c: Accessibility Status Panel
+  Widget _buildAccessibilityPanel(BuildContext context, String lang) {
+    final theme = Theme.of(context);
+    final Map<String, Map<String, String>> localAccessDict = {
+      'en': {
+        'title': 'Accessibility Operations',
+        'elevators': 'Elevator Utilities',
+        'sensory': 'Sensory Low-Noise Rooms',
+        'shuttles': 'Senior & Accessibility Golf Carts',
+        'paths': 'Step-Free Ramps & Pathways',
+        'operating': 'Operational (98% uptime)',
+        'available': 'Open (Zones C & G)',
+        'active': 'Active cart loops',
+        'verified': 'Verified clear of obstruction',
+      },
+      'es': {
+        'title': 'Operaciones de Accesibilidad',
+        'elevators': 'Ascensores Públicos',
+        'sensory': 'Salas Sensoriales Silenciosas',
+        'shuttles': 'Carritos para Personas Mayores',
+        'paths': 'Rampas y Senderos sin Escalones',
+        'operating': 'Operativo (98% de tiempo de actividad)',
+        'available': 'Abierto (Zonas C y G)',
+        'active': 'Lanzaderas de carritos activas',
+        'verified': 'Verificado libre de obstruções',
+      },
+      'fr': {
+        'title': 'Opérations d\'Accessibilité',
+        'elevators': 'Ascenseurs Publics',
+        'sensory': 'Salles Sensorielles Calmes',
+        'shuttles': 'Voitures de Golf PMR / Seniors',
+        'paths': 'Rampes et Voies sans Marches',
+        'operating': 'Opérationnel (98% de disponibilité)',
+        'available': 'Ouvert (Zones C et G)',
+        'active': 'Navettes de golf actives',
+        'verified': 'Vérifié libre d\'obstacles',
+      },
+      'hi': {
+        'title': 'सुगमता संचालन स्थिति',
+        'elevators': 'सार्वजनिक लिफ्ट सेवा',
+        'sensory': 'कम शोर वाले संवेदी कक्ष',
+        'shuttles': 'वरिष्ठ नागरिक और सुलभ गोल्फ कार्ट',
+        'paths': 'सीढ़ी-मुक्त रैंप और पथ',
+        'operating': 'सक्रिय (98% उपलब्धता)',
+        'available': 'खुला है (जोन C और G)',
+        'active': 'गोल्फ कार्ट सक्रिय हैं',
+        'verified': 'सत्यापित और बाधा मुक्त',
+      },
+      'ar': {
+        'title': 'عمليات سهولة الوصول',
+        'elevators': 'المصاعد العامة',
+        'sensory': 'الغرف الحسية منخفضة الضوضاء',
+        'shuttles': 'عربات غولف للمسنين وذوي الإعاقة',
+        'paths': 'ممرات ومنحدرات خالية من السلالم',
+        'operating': 'تعمل (98% نسبة التشغيل)',
+        'available': 'مفتوحة (المناطق C و G)',
+        'active': 'عربات الغولف نشطة',
+        'verified': 'تم التحقق من خلوها من العوائق',
+      },
+      'pt': {
+        'title': 'Operações de Acessibilidade',
+        'elevators': 'Elevadores Públicos',
+        'sensory': 'Salas Sensoriais de Baixo Ruído',
+        'shuttles': 'Carrinhos de Golfe de Acessibilidade',
+        'paths': 'Rampas e Caminhos sem Degraus',
+        'operating': 'Operacional (98% de disponibilidade)',
+        'available': 'Aberto (Zonas C e G)',
+        'active': 'Carrinhos de golfe ativos',
+        'verified': 'Verificado livre de obstruções',
+      }
+    };
+    final t = localAccessDict[lang] ?? localAccessDict['en']!;
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.accessible_forward, color: Colors.indigo, size: 26),
+                const SizedBox(width: 12),
+                Text(
+                  t['title']!,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ],
+            ),
+            const Divider(height: 24),
+            _buildAccessItem(Icons.elevator, t['elevators']!, t['operating']!, Colors.green),
+            const SizedBox(height: 12),
+            _buildAccessItem(Icons.volume_mute, t['sensory']!, t['available']!, Colors.green),
+            const SizedBox(height: 12),
+            _buildAccessItem(Icons.golf_course, t['shuttles']!, t['active']!, Colors.green),
+            const SizedBox(height: 12),
+            _buildAccessItem(Icons.explore, t['paths']!, t['verified']!, Colors.green),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAccessItem(IconData icon, String title, String status, Color indicatorColor) {
+    return Row(
+      children: [
+        Icon(icon, size: 20, color: Colors.grey),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+              Text(status, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+            ],
+          ),
+        ),
+        Container(
+          width: 10,
+          height: 10,
+          decoration: BoxDecoration(
+            color: indicatorColor,
+            shape: BoxShape.circle,
+          ),
+        ),
+      ],
+    );
+  }
+
   // Card 4: Eco Score & Carbon Savings (Sustainability)
   Widget _buildEcoScoreCard(BuildContext context, String lang) {
     final theme = Theme.of(context);
@@ -491,7 +762,7 @@ class DashboardPage extends ConsumerWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          color: Colors.green.withOpacity(0.04),
+          color: Colors.green.withValues(alpha: 0.04),
         ),
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -629,7 +900,7 @@ class DashboardPage extends ConsumerWidget {
                       ),
                       const SizedBox(height: 8),
                       DropdownButtonFormField<String>(
-                        value: category,
+                        initialValue: category,
                         decoration: const InputDecoration(labelText: 'Category'),
                         items: ['Medical', 'Crowd', 'Spill', 'Facility', 'Security']
                             .map((cat) => DropdownMenuItem(value: cat, child: Text(cat)))
@@ -638,7 +909,7 @@ class DashboardPage extends ConsumerWidget {
                       ),
                       const SizedBox(height: 8),
                       DropdownButtonFormField<String>(
-                        value: priority,
+                        initialValue: priority,
                         decoration: const InputDecoration(labelText: 'Priority Level'),
                         items: ['Low', 'Medium', 'High', 'Critical']
                             .map((p) => DropdownMenuItem(value: p, child: Text(p)))
@@ -678,6 +949,7 @@ class DashboardPage extends ConsumerWidget {
                       
                       // Report incident and close
                       await ref.read(incidentListProvider.notifier).reportIncident(newIncident);
+                      if (!context.mounted) return;
                       Navigator.pop(context);
                       
                       ScaffoldMessenger.of(context).showSnackBar(

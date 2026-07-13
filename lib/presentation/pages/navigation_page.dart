@@ -98,7 +98,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
                                 
                                 // Start location
                                 DropdownButtonFormField<String>(
-                                  value: _startLocation,
+                                  initialValue: _startLocation,
                                   decoration: const InputDecoration(
                                     labelText: 'Start Location',
                                     border: OutlineInputBorder(),
@@ -115,7 +115,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
 
                                 // Destination location
                                 DropdownButtonFormField<String>(
-                                  value: _destination,
+                                  initialValue: _destination,
                                   decoration: const InputDecoration(
                                     labelText: 'Destination Venue Zone',
                                     border: OutlineInputBorder(),
@@ -135,7 +135,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
                                   title: const Text('Wheelchair Accessible Only', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
                                   subtitle: const Text('Bypass stairs, use ramped gates, and prioritize elevators.', style: TextStyle(fontSize: 11)),
                                   value: _wheelchairFriendly,
-                                  activeColor: const Color(0xFF6366F1),
+                                  activeThumbColor: const Color(0xFF6366F1),
                                   contentPadding: EdgeInsets.zero,
                                   onChanged: (val) {
                                     setState(() => _wheelchairFriendly = val);
@@ -148,7 +148,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
                                   title: const Text('Bypass High Crowd Bottlenecks', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
                                   subtitle: const Text('Redirect route to lesser congested entryways.', style: TextStyle(fontSize: 11)),
                                   value: _avoidCrowds,
-                                  activeColor: Colors.green,
+                                  activeThumbColor: Colors.green,
                                   contentPadding: EdgeInsets.zero,
                                   onChanged: (val) {
                                     setState(() => _avoidCrowds = val);
@@ -263,7 +263,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
         // Accessible markers
         if (route.accessibilityFeatures.isNotEmpty) ...[
           Card(
-            color: const Color(0xFF6366F1).withOpacity(0.06),
+            color: const Color(0xFF6366F1).withValues(alpha: 0.06),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
               side: const BorderSide(color: Color(0xFF6366F1), width: 1),
@@ -355,7 +355,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
                         children: [
                           CircleAvatar(
                             radius: 12,
-                            backgroundColor: isReroute ? Colors.amber.shade900 : theme.colorScheme.primary.withOpacity(0.2),
+                            backgroundColor: isReroute ? Colors.amber.shade900 : theme.colorScheme.primary.withValues(alpha: 0.2),
                             child: Text(
                               '${index + 1}',
                               style: TextStyle(
@@ -414,7 +414,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
           width: 48,
           height: 48,
           decoration: BoxDecoration(
-            color: color.withOpacity(0.15),
+            color: color.withValues(alpha: 0.15),
             shape: BoxShape.circle,
             border: Border.all(color: color, width: 2),
           ),
@@ -430,7 +430,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
     return Container(
       width: 50,
       height: 2,
-      color: color.withOpacity(0.5),
+      color: color.withValues(alpha: 0.5),
       margin: const EdgeInsets.only(bottom: 16),
     );
   }

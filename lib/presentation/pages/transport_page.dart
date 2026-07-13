@@ -14,7 +14,7 @@ class TransportPage extends ConsumerStatefulWidget {
 
 class _TransportPageState extends ConsumerState<TransportPage> {
   String _origin = 'Downtown Manhattan Hub (Penn Station)';
-  String _destination = 'MetLife Stadium Plaza';
+  final String _destination = 'MetLife Stadium Plaza';
   String _preferredMode = 'metro';
   List<TransportPlan> _options = [];
   bool _loading = false;
@@ -95,7 +95,7 @@ class _TransportPageState extends ConsumerState<TransportPage> {
                                 ),
                                 const SizedBox(height: 20),
                                 DropdownButtonFormField<String>(
-                                  value: _origin,
+                                  initialValue: _origin,
                                   decoration: const InputDecoration(
                                     labelText: 'Origin Point',
                                     border: OutlineInputBorder(),
@@ -119,7 +119,7 @@ class _TransportPageState extends ConsumerState<TransportPage> {
                                 ),
                                 const SizedBox(height: 16),
                                 DropdownButtonFormField<String>(
-                                  value: _preferredMode,
+                                  initialValue: _preferredMode,
                                   decoration: const InputDecoration(
                                     labelText: 'Preferred Transport Mode',
                                     border: OutlineInputBorder(),
@@ -141,8 +141,8 @@ class _TransportPageState extends ConsumerState<TransportPage> {
                                 SizedBox(
                                   width: double.infinity,
                                   child: ElevatedButton(
-                                    child: const Text('Update Travel Desk'),
                                     onPressed: _fetchTransitOptions,
+                                    child: const Text('Update Travel Desk'),
                                   ),
                                 ),
                               ],
@@ -183,7 +183,7 @@ class _TransportPageState extends ConsumerState<TransportPage> {
   Widget _buildGreenCommuterBadge(ThemeData theme) {
     return Card(
       elevation: 0,
-      color: Colors.green.withOpacity(0.08),
+      color: Colors.green.withValues(alpha: 0.08),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: const BorderSide(color: Colors.green, width: 1.5),
@@ -292,7 +292,7 @@ class _TransportPageState extends ConsumerState<TransportPage> {
                     Row(
                       children: [
                         CircleAvatar(
-                          backgroundColor: plan.ecoScore >= 80 ? Colors.green.withOpacity(0.1) : Colors.amber.withOpacity(0.1),
+                          backgroundColor: plan.ecoScore >= 80 ? Colors.green.withValues(alpha: 0.1) : Colors.amber.withValues(alpha: 0.1),
                           child: Icon(icon, color: plan.ecoScore >= 80 ? Colors.green : Colors.amber),
                         ),
                         const SizedBox(width: 16),
@@ -347,9 +347,9 @@ class _TransportPageState extends ConsumerState<TransportPage> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.green.withOpacity(0.04),
+                        color: Colors.green.withValues(alpha: 0.04),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.green.withOpacity(0.2)),
+                        border: Border.all(color: Colors.green.withValues(alpha: 0.2)),
                       ),
                       child: Row(
                         children: [

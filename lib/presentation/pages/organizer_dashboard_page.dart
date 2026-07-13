@@ -40,7 +40,7 @@ class OrganizerDashboardPage extends ConsumerWidget {
 
               // Emergency trigger banner controls
               Card(
-                color: isEmergency ? Colors.red.withOpacity(0.12) : theme.cardTheme.color,
+                color: isEmergency ? Colors.red.withValues(alpha: 0.12) : theme.cardTheme.color,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                   side: BorderSide(color: isEmergency ? Colors.red : Colors.grey.shade700, width: 1.5),
@@ -70,7 +70,7 @@ class OrganizerDashboardPage extends ConsumerWidget {
                       ),
                       Switch(
                         value: isEmergency,
-                        activeColor: Colors.red,
+                        activeThumbColor: Colors.red,
                         onChanged: (val) {
                           ref.read(emergencyAlertProvider.notifier).toggle(val);
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -173,7 +173,7 @@ class OrganizerDashboardPage extends ConsumerWidget {
         
         return Container(
           decoration: BoxDecoration(
-            color: gridColor.withOpacity(0.12),
+            color: gridColor.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: gridColor, width: 2),
           ),
@@ -323,7 +323,7 @@ class OrganizerDashboardPage extends ConsumerWidget {
                   DataCell(
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(color: priorityColor.withOpacity(0.15), borderRadius: BorderRadius.circular(4)),
+                      decoration: BoxDecoration(color: priorityColor.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(4)),
                       child: Text(inc.priority, style: TextStyle(color: priorityColor, fontWeight: FontWeight.bold, fontSize: 11)),
                     ),
                   ),
@@ -350,11 +350,11 @@ class OrganizerDashboardPage extends ConsumerWidget {
                           )
                         else if (inc.status == 'Assigned')
                           ElevatedButton(
-                            child: const Text('Mark Resolved', style: TextStyle(fontSize: 11)),
                             style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
                             onPressed: () {
                               ref.read(incidentListProvider.notifier).updateIncidentStatus(inc.id, 'Resolved');
                             },
+                            child: const Text('Mark Resolved', style: TextStyle(fontSize: 11)),
                           )
                         else
                           const Icon(Icons.check_circle, color: Colors.green),

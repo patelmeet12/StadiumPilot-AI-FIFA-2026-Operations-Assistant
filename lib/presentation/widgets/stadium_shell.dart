@@ -285,10 +285,10 @@ class StadiumShell extends ConsumerWidget {
                           padding: const EdgeInsets.all(16),
                           margin: const EdgeInsets.symmetric(horizontal: 12),
                           decoration: BoxDecoration(
-                            color: theme.colorScheme.primary.withOpacity(0.08),
+                            color: theme.colorScheme.primary.withValues(alpha: 0.08),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: theme.colorScheme.primary.withOpacity(0.3),
+                              color: theme.colorScheme.primary.withValues(alpha: 0.3),
                               width: 1,
                             ),
                           ),
@@ -333,7 +333,7 @@ class StadiumShell extends ConsumerWidget {
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(8),
                                   color: isSelected 
-                                      ? theme.colorScheme.primary.withOpacity(0.15) 
+                                      ? theme.colorScheme.primary.withValues(alpha: 0.15) 
                                       : Colors.transparent,
                                 ),
                                 child: ListTile(

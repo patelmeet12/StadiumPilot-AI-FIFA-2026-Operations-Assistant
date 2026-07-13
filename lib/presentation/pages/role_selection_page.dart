@@ -134,6 +134,7 @@ class RoleSelectionPage extends ConsumerWidget {
                             child: InkWell(
                               onTap: () async {
                                 await ref.read(userRoleProvider.notifier).setRole(data.role);
+                                if (!context.mounted) return;
                                 context.go('/dashboard');
                               },
                               child: Padding(
@@ -144,7 +145,7 @@ class RoleSelectionPage extends ConsumerWidget {
                                     Row(
                                       children: [
                                         CircleAvatar(
-                                          backgroundColor: data.color.withOpacity(0.15),
+                                          backgroundColor: data.color.withValues(alpha: 0.15),
                                           radius: 28,
                                           child: Icon(data.icon, size: 28, color: data.color),
                                         ),
