@@ -401,13 +401,336 @@ class StadiumShell extends ConsumerWidget {
                   label: LocalDictionary.translate(item.labelKey, activeLanguage),
                 );
               }).toList(),
-              onTap: (index) {
-                if (index >= 0 && index < filteredItems.length) {
-                  context.go(filteredItems[index].path);
-                }
-              },
             )
           : null,
+      floatingActionButton: FloatingActionButton.extended(
+        icon: const Icon(Icons.psychology),
+        label: const Text('AI Pilot', style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 0.5)),
+        backgroundColor: theme.colorScheme.primary,
+        foregroundColor: Colors.white,
+        onPressed: () => _showAIChatbot(context, activeLanguage, activeRole),
+      ),
+    );
+  }
+
+  void _showAIChatbot(BuildContext context, String lang, UserRole role) {
+    final theme = Theme.of(context);
+    final Map<String, Map<String, String>> localChatDict = {
+      'en': {
+        'title': 'AI Operational Assistant',
+        'placeholder': 'Ask StadiumPilot AI...',
+        'welcome_fan': 'Welcome to StadiumPilot AI. Ask me about your match ticket, recommended arrival times, queue bypasses, navigation routes, or transportation!',
+        'welcome_volunteer': 'Volunteer AI Assist ready. Ask me about your tasks, how to report incidents, check facility operations, or evacuation instructions.',
+        'welcome_organizer': 'Operations Desk Console AI active. Ask me about gate density limits, dispatching volunteers, or emergency protocols.',
+        'send': 'Send',
+      },
+      'es': {
+        'title': 'Asistente Operativo de IA',
+        'placeholder': 'Pregunta a StadiumPilot AI...',
+        'welcome_fan': 'Bienvenido a StadiumPilot AI. ¡Pregúntame sobre tu boleto, tiempos de llegada recomendados, desvíos de colas, rutas de navegación o transporte!',
+        'welcome_volunteer': 'Asistencia de IA de voluntariado lista. Pregúntame sobre tus tareas, cómo informar incidentes o instrucciones de evacuación.',
+        'welcome_organizer': 'IA de Consola activa. Pregúntame sobre límites de densidad de puertas, despacho de voluntarios o protocolos de emergencia.',
+        'send': 'Enviar',
+      },
+      'fr': {
+        'title': 'Assistant Opérationnel IA',
+        'placeholder': 'Demandez à StadiumPilot IA...',
+        'welcome_fan': 'Bienvenue sur StadiumPilot IA. Posez-moi des questions sur vos billets, heures d\'arrivée, contournement de files, itinéraires ou transports !',
+        'welcome_volunteer': 'IA d\'aide aux bénévoles prête. Interrogez-moi sur vos tâches, signalements d\'incidents ou consignes d\'évacuation.',
+        'welcome_organizer': 'IA de la console des opérations active. Posez des questions sur le flux des portes, affectation des bénévoles ou protocoles d\'urgence.',
+        'send': 'Envoyer',
+      },
+      'hi': {
+        'title': 'एआई संचालन सहायक',
+        'placeholder': 'StadiumPilot AI से पूछें...',
+        'welcome_fan': 'StadiumPilot AI में आपका स्वागत है। मुझसे अपने टिकट, अनुशंसित आगमन समय, कतार बाईपास, मार्ग या परिवहन के बारे में पूछें!',
+        'welcome_volunteer': 'स्वयंसेवक एआई सहायता तैयार है। अपने कार्यों, घटनाओं की रिपोर्ट करने या निकासी निर्देशों के बारे में पूछें।',
+        'welcome_organizer': 'ऑपरेशन्स डेस्क कंसोल एआई सक्रिय है। गेट घनत्व सीमा, स्वयंसेवकों को भेजने, या आपातकालीन प्रोटोकॉल के बारे में पूछें।',
+        'send': 'भेजें',
+      },
+      'ar': {
+        'title': 'مساعد العمليات الذكي',
+        'placeholder': 'اسأل مساعد الذكاء الاصطناعي...',
+        'welcome_fan': 'مرحباً بك في StadiumPilot AI. اسألني عن تذكرتك، أو أوقات الوصول الموصى بها، أو تجاوز الطوابير، أو مسارات التنقل، أو وسائل النقل!',
+        'welcome_volunteer': 'مساعد المتطوعين الذكي جاهز. اسألني عن مهامك، أو كيفية الإبلاغ عن الحوادث، أو تعليمات الإخلاء.',
+        'welcome_organizer': 'مساعد لوحة التحكم التشغيلية نشط. اسألني عن حدود كثافة البوابات، أو إرسال المتطوعين، أو بروتوكولات الطوارئ.',
+        'send': 'إرسال',
+      },
+      'pt': {
+        'title': 'Assistente Operacional IA',
+        'placeholder': 'Pergunte ao StadiumPilot IA...',
+        'welcome_fan': 'Bem-vindo ao StadiumPilot IA. Pergunte-me sobre seu ingresso, horários de chegada recomendados, desvios de filas, rotas ou transporte!',
+        'welcome_volunteer': 'Assistência de IA de voluntários pronta. Pergunte-me sobre suas tarefas, como relatar incidentes ou instruções de evacuação.',
+        'welcome_organizer': 'IA do console de operações ativa. Pergunte sobre densidade de portões, despacho de voluntários ou protocolos de emergência.',
+        'send': 'Enviar',
+      }
+    };
+    final t = localChatDict[lang] ?? localChatDict['en']!;
+    final welcome = role == UserRole.organizer 
+        ? t['welcome_organizer']! 
+        : role == UserRole.volunteer 
+            ? t['welcome_volunteer']! 
+            : t['welcome_fan']!;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: theme.scaffoldBackgroundColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return _AIChatWidget(
+          lang: lang,
+          welcomeMessage: welcome,
+          title: t['title']!,
+          placeholder: t['placeholder']!,
+          sendLabel: t['send']!,
+          theme: theme,
+        );
+      },
+    );
+  }
+}
+
+class _AIChatWidget extends StatefulWidget {
+  final String lang;
+  final String welcomeMessage;
+  final String title;
+  final String placeholder;
+  final String sendLabel;
+  final ThemeData theme;
+
+  const _AIChatWidget({
+    required this.lang,
+    required this.welcomeMessage,
+    required this.title,
+    required this.placeholder,
+    required this.sendLabel,
+    required this.theme,
+  });
+
+  @override
+  State<_AIChatWidget> createState() => _AIChatWidgetState();
+}
+
+class _AIChatWidgetState extends State<_AIChatWidget> {
+  final TextEditingController _controller = TextEditingController();
+  final List<Map<String, String>> _messages = [];
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _messages.add({'sender': 'ai', 'text': widget.welcomeMessage});
+  }
+
+  void _sendMessage() {
+    final text = _controller.text.trim();
+    if (text.isEmpty) return;
+
+    setState(() {
+      _messages.add({'sender': 'user', 'text': text});
+      _controller.clear();
+    });
+
+    Future.delayed(const Duration(milliseconds: 600), () {
+      if (!mounted) return;
+      final reply = _generateAIReply(text, widget.lang);
+      setState(() {
+        _messages.add({'sender': 'ai', 'text': reply});
+      });
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if (_scrollController.hasClients) {
+          _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeOut,
+          );
+        }
+      });
+    });
+  }
+
+  String _generateAIReply(String query, String lang) {
+    final q = query.toLowerCase();
+
+    if (q.contains('ticket') || q.contains('boleto') || q.contains('billet') || q.contains('टिकट') || q.contains('تذكر') || q.contains('ingresso')) {
+      if (lang == 'es') {
+        return 'StadiumPilot AI (95% de confianza): Su boleto para Argentina vs Francia está confirmado en la Sección 128, Fila N, Asiento 12. Se recomienda ingresar por la Puerta C a las 18:30 para evitar controles.';
+      } else if (lang == 'fr') {
+        return 'StadiumPilot IA (Confiance 95%) : Votre billet pour Argentine vs France est validé dans la Section 128, Rangée N, Siège 12. L\'entrée recommandée est la Porte C à 18h30.';
+      } else if (lang == 'hi') {
+        return 'StadiumPilot AI (95% विश्वास स्तर): अर्जेंटीना बनाम फ्रांस के लिए आपका टिकट सेक्शन 128, पंक्ति N, सीट 12 पर पुष्ट है। भीड़ से बचने के लिए शाम 18:30 बजे गेट C से प्रवेश करें।';
+      } else if (lang == 'ar') {
+        return 'StadiumPilot AI (ثقة 95٪): تم تأكيد تذكرتك لمباراة الأرجنتين ضد فرنسا في القسم 128، الصف N، المقعد 12. يوصى بالدخول عبر البوابة C الساعة 18:30.';
+      } else if (lang == 'pt') {
+        return 'StadiumPilot IA (95% de confiança): Seu ingresso para Argentina vs França está confirmado na Seção 128, Fileira N, Assento 12. Recomenda-se a entrada pelo Portão C às 18h30.';
+      }
+      return 'StadiumPilot AI (95% confidence): Your ticket for Argentina vs France is confirmed in Section 128, Row N, Seat 12. Recommended entry is via Gate C at 18:30 to bypass congested checkpoints.';
+    }
+
+    if (q.contains('route') || q.contains('navigate') || q.contains('ruta') || q.contains('ir a') || q.contains('मार्ग') || q.contains('مسار') || q.contains('caminho')) {
+      if (lang == 'es') {
+        return 'StadiumPilot AI (98% de confianza): La ruta más rápida es a través de la explanada norte. Si necesita una ruta sin escalones, active el modo Silla de ruedas para usar los ascensores del sector oeste.';
+      } else if (lang == 'fr') {
+        return 'StadiumPilot IA (Confiance 98%) : L\'itinéraire le plus rapide passe par l\'esplanade Nord. Si vous avez besoin d\'un accès PMR, activez le mode Fauteuil Roulant.';
+      } else if (lang == 'hi') {
+        return 'StadiumPilot AI (98% विश्वास स्तर): सबसे तेज़ मार्ग उत्तरी एस्प्लेनेड के माध्यम से है। यदि आपको सीढ़ी-मुक्त मार्ग की आवश्यकता है, तो पश्चिमी लिफ्ट का उपयोग करने के लिए व्हीलचेयर अनुकूल मोड सक्रिय करें।';
+      } else if (lang == 'ar') {
+        return 'StadiumPilot AI (ثقة 98٪): المسار الأسرع هو عبر الساحة الشمالية. إذا كنت بحاجة إلى مسار خالٍ من السلالم، يرجى تفعيل وضع الكراسي المتحركة لاستخدام المصاعد الغربية.';
+      } else if (lang == 'pt') {
+        return 'StadiumPilot IA (98% de confiança): A rota mais rápida é pela esplanada norte. Se precisar de acessibilidade sem degraus, ative o modo Cadeira de Rodas.';
+      }
+      return 'StadiumPilot AI (98% confidence): The fastest route is via the North Esplanade. If you need step-free access, enable Wheelchair-friendly mode to prioritize elevator shafts in the West corridor.';
+    }
+
+    if (q.contains('food') || q.contains('eat') || q.contains('comida') || q.contains('concession') || q.contains('खा') || q.contains('طعام') || q.contains('restaurante')) {
+      return 'StadiumPilot AI (94% confidence): Food Court A has a 20-minute wait. AI suggests ordering from Concession C (Zone G) where wait time is currently under 4 minutes. You will save approximately 16 minutes.';
+    }
+
+    if (q.contains('metro') || q.contains('bus') || q.contains('transit') || q.contains('transport') || q.contains('परिवहन') || q.contains('حافلة') || q.contains('مترو') || q.contains('trânsito')) {
+      return 'StadiumPilot AI (97% confidence): Express Metro Line 1 is operating with 3m frequencies. Parking Lots are at 92% capacity. Taking the Metro reduces carbon footprint by 84% compared to ride-sharing.';
+    }
+
+    if (q.contains('incident') || q.contains('spill') || q.contains('medical') || q.contains('घटना') || q.contains('حادث') || q.contains('spills')) {
+      return 'StadiumPilot AI Dispatch: Active incident (Spill in Sec 104 Corridor) has been assigned to Volunteer Zone B. Staff is en-route. Use the Organizer console to dispatch additional personnel.';
+    }
+
+    if (q.contains('emergency') || q.contains('evacuate') || q.contains('safety') || q.contains('आपात') || q.contains('طوارئ') || q.contains('segurança')) {
+      return 'StadiumPilot AI Emergency Protocol: Evacuate calmly. Proceed to nearest illuminated green exit signage. Avoid lift shafts. Follow instructions from Zone A/B Volunteer leaders.';
+    }
+
+    if (q.contains('accessibility') || q.contains('elevator') || q.contains('wheelchair') || q.contains('सुगमता') || q.contains('سهولة') || q.contains('acessib')) {
+      return 'StadiumPilot AI (99% confidence): Elevator shafts East & West are fully operational. Accessibility golf cart loops are running. Low-noise sensory rooms are available in Zones C and G.';
+    }
+
+    if (lang == 'es') {
+      return 'StadiumPilot AI (91% de confianza): Registrando métricas en tiempo real. Intente preguntar acerca de "boleto", "rutas rápidas", "tiempo de cola de comida" o "líneas de metro".';
+    } else if (lang == 'fr') {
+      return 'StadiumPilot IA (Confiance 91%) : Télémétrie en cours. Posez des questions sur "billet", "itinéraires d\'accès", "attente nourriture" ou "lignes de métro".';
+    } else if (lang == 'hi') {
+      return 'StadiumPilot AI (91% विश्वास स्तर): मैं लाइव टेलीमेट्री ट्रैक कर रहा हूँ। कृपया "टिकट", "नेविगेशन मार्ग", "भोजन कतार समय" या "मेट्रो कनेक्शन" के बारे में पूछें।';
+    } else if (lang == 'ar') {
+      return 'StadiumPilot AI (ثقة 91٪): تتبع القياسات المباشرة. حاول السؤال عن "التذاكر"، أو "مسارات الملاحة السريعة"، أو "طوابير الطعام"، أو "خطوط المترو".';
+    } else if (lang == 'pt') {
+      return 'StadiumPilot IA (91% de confiança): Rastreando dados da arena. Tente perguntar sobre "ingresso", "melhores rotas", "filas de alimentação" ou "linhas de metrô".';
+    }
+    return 'StadiumPilot AI (91% confidence): Currently tracking live tournament telemetry. Try asking me about "ticket info", "navigation routes", "concessions queue", or "metro connections".';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      height: MediaQuery.of(context).size.height * 0.75,
+      child: Column(
+        children: [
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 10),
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade600,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            child: Row(
+              children: [
+                Icon(Icons.psychology, color: widget.theme.colorScheme.primary),
+                const SizedBox(width: 12),
+                Text(
+                  widget.title,
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+                const Spacer(),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            ),
+          ),
+          const Divider(height: 1),
+          Expanded(
+            child: ListView.builder(
+              controller: _scrollController,
+              padding: const EdgeInsets.all(16),
+              itemCount: _messages.length,
+              itemBuilder: (context, index) {
+                final msg = _messages[index];
+                final isAI = msg['sender'] == 'ai';
+                return Align(
+                  alignment: isAI ? Alignment.centerLeft : Alignment.centerRight,
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(vertical: 6),
+                    padding: const EdgeInsets.all(12),
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width * 0.75,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isAI 
+                          ? (widget.theme.brightness == Brightness.dark 
+                              ? Colors.grey.shade900 
+                              : Colors.grey.shade200)
+                          : widget.theme.colorScheme.primary,
+                      borderRadius: BorderRadius.circular(12).copyWith(
+                        topLeft: isAI ? const Radius.circular(0) : const Radius.circular(12),
+                        topRight: isAI ? const Radius.circular(12) : const Radius.circular(0),
+                      ),
+                    ),
+                    child: Text(
+                      msg['text']!,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: isAI 
+                            ? (widget.theme.brightness == Brightness.dark ? Colors.white : Colors.black87)
+                            : Colors.white,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          const Divider(height: 1),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _controller,
+                    style: const TextStyle(fontSize: 13),
+                    decoration: InputDecoration(
+                      hintText: widget.placeholder,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                    ),
+                    onSubmitted: (_) => _sendMessage(),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                ElevatedButton(
+                  onPressed: _sendMessage,
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                  ),
+                  child: Text(widget.sendLabel, style: const TextStyle(fontSize: 12)),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

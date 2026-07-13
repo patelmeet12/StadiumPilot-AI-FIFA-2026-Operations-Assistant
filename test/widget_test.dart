@@ -10,6 +10,8 @@ import 'package:stadium_pilot_ai/domain/usecases/get_transport_options.dart';
 import 'package:stadium_pilot_ai/domain/usecases/get_ai_recommendations.dart';
 import 'package:stadium_pilot_ai/presentation/pages/role_selection_page.dart';
 import 'package:stadium_pilot_ai/presentation/providers/app_state_providers.dart';
+import 'package:stadium_pilot_ai/core/services/secure_storage_service.dart';
+import 'package:stadium_pilot_ai/data/repositories/stadium_repository_impl.dart';
 
 void main() {
   group('StadiumPilot AI - Navigation Engine Tests', () {
@@ -194,6 +196,76 @@ void main() {
       expect(find.text('Select Your Role'), findsOneWidget);
       expect(find.text('Fan / Ticket Holder'), findsOneWidget);
       expect(find.text('Volunteer Staff'), findsOneWidget);
+    });
+  });
+
+  group('StadiumPilot AI - Secure Storage & Repository Tests', () {
+    test('SecureStorageService should encrypt, decrypt, and delete values', () async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final secureStorage = SecureStorageService(prefs);
+
+      // Write value
+      await secureStorage.write('test_key', 'my_secret_data');
+
+      // Verify it is encrypted in raw prefs
+      final rawVal = prefs.getString('sec_test_key');
+      expect(rawVal, isNotNull);
+      expect(rawVal, isNot(equals('my_secret_data')));
+
+      // Read value and verify decryption
+      final readVal = secureStorage.read('test_key');
+      expect(readVal, equals('my_secret_data'));
+
+      // Delete value
+      await secureStorage.delete('test_key');
+      expect(secureStorage.read('test_key'), isNull);
+    });
+
+    test('StadiumRepositoryImpl should fetch, update, and reset telemetry simulation', () async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final repository = StadiumRepositoryImpl(prefs);
+
+      // Verify initial loading of static stadium match details
+      final match = await repository.getMatchDetails();
+      expect(match.stadiumName, contains('MetLife'));
+      expect(match.homeTeam, equals('Argentina'));
+
+      // Verify custom incidents operations
+      final incidents = await repository.getIncidents();
+      expect(incidents, isNotEmpty);
+      final initialLength = incidents.length;
+
+      // Add a reported incident
+      final testIncident = Incident(
+        id: 'test_inc_123',
+        title: 'Water leak',
+        category: 'Facility',
+        location: 'Section 102 Lobby',
+        priority: 'Medium',
+        status: 'Open',
+        description: 'Water leak near restroom entrance',
+        reportedTime: DateTime.now(),
+      );
+      await repository.reportIncident(testIncident);
+
+      final updatedIncidents = await repository.getIncidents();
+      expect(updatedIncidents.length, equals(initialLength + 1));
+      expect(updatedIncidents.any((i) => i.id == 'test_inc_123'), isTrue);
+
+      // Update incident status
+      final updatedInc = testIncident.copyWith(status: 'Resolved');
+      await repository.updateIncident(updatedInc);
+      final resolvedIncidents = await repository.getIncidents();
+      final matchingInc = resolvedIncidents.firstWhere((i) => i.id == 'test_inc_123');
+      expect(matchingInc.status, equals('Resolved'));
+
+      // Reset simulator and verify it reverts to default
+      await repository.resetSimulator();
+      final resetIncidents = await repository.getIncidents();
+      expect(resetIncidents.length, equals(initialLength));
+      expect(resetIncidents.any((i) => i.id == 'test_inc_123'), isFalse);
     });
   });
 }
