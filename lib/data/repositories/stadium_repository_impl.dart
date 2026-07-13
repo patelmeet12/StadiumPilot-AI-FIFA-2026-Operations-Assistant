@@ -23,15 +23,19 @@ class StadiumRepositoryImpl implements StadiumRepository {
   Future<CrowdState> getLiveCrowdState() async {
     // Check if crowd state exists in SharedPreferences
     final dataString = _prefs.getString('sp_crowd_state');
-    
+
     CrowdState baseState;
     if (dataString != null) {
       try {
         final decoded = jsonDecode(dataString) as Map<String, dynamic>;
         baseState = CrowdState(
           gateWaitTimes: Map<String, int>.from(decoded['gateWaitTimes']),
-          foodCourtWaitTimes: Map<String, int>.from(decoded['foodCourtWaitTimes']),
-          restroomWaitTimes: Map<String, int>.from(decoded['restroomWaitTimes']),
+          foodCourtWaitTimes: Map<String, int>.from(
+            decoded['foodCourtWaitTimes'],
+          ),
+          restroomWaitTimes: Map<String, int>.from(
+            decoded['restroomWaitTimes'],
+          ),
           zoneDensities: Map<String, double>.from(decoded['zoneDensities']),
         );
       } catch (_) {
@@ -64,7 +68,9 @@ class StadiumRepositoryImpl implements StadiumRepository {
 
     final fluctuatedZones = baseState.zoneDensities.map((zone, val) {
       double drift = (_random.nextDouble() * 0.06) - 0.03; // -3% to +3%
-      double newVal = double.parse(max(0.1, min(0.99, val + drift)).toStringAsFixed(2));
+      double newVal = double.parse(
+        max(0.1, min(0.99, val + drift)).toStringAsFixed(2),
+      );
       return MapEntry(zone, newVal);
     });
 
@@ -111,16 +117,22 @@ class StadiumRepositoryImpl implements StadiumRepository {
   }
 
   Future<void> _saveIncidents(List<Incident> list) async {
-    final encoded = jsonEncode(list.map((i) => {
-      'id': i.id,
-      'title': i.title,
-      'category': i.category,
-      'location': i.location,
-      'priority': i.priority,
-      'status': i.status,
-      'description': i.description,
-      'reportedTime': i.reportedTime.toIso8601String(),
-    }).toList());
+    final encoded = jsonEncode(
+      list
+          .map(
+            (i) => {
+              'id': i.id,
+              'title': i.title,
+              'category': i.category,
+              'location': i.location,
+              'priority': i.priority,
+              'status': i.status,
+              'description': i.description,
+              'reportedTime': i.reportedTime.toIso8601String(),
+            },
+          )
+          .toList(),
+    );
     await _prefs.setString('sp_incidents', encoded);
   }
 
@@ -175,15 +187,21 @@ class StadiumRepositoryImpl implements StadiumRepository {
   }
 
   Future<void> _saveTasks(List<VolunteerTask> list) async {
-    final encoded = jsonEncode(list.map((t) => {
-      'id': t.id,
-      'title': t.title,
-      'description': t.description,
-      'location': t.location,
-      'priority': t.priority,
-      'isCompleted': t.isCompleted,
-      'assignedTime': t.assignedTime.toIso8601String(),
-    }).toList());
+    final encoded = jsonEncode(
+      list
+          .map(
+            (t) => {
+              'id': t.id,
+              'title': t.title,
+              'description': t.description,
+              'location': t.location,
+              'priority': t.priority,
+              'isCompleted': t.isCompleted,
+              'assignedTime': t.assignedTime.toIso8601String(),
+            },
+          )
+          .toList(),
+    );
     await _prefs.setString('sp_volunteer_tasks', encoded);
   }
 

@@ -20,8 +20,22 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
   RoutePlan? _calculatedRoute;
   bool _calculating = false;
 
-  final List<String> _startLocations = ['Gate A', 'Gate B', 'Gate C', 'Gate D', 'Bus Dropoff Zone', 'Metro Plaza'];
-  final List<String> _destinations = ['Section 128', 'Section 104', 'Food Court 1 (North)', 'Food Court 2 (South)', 'Restrooms Level 1 East', 'Sensory Room West'];
+  final List<String> _startLocations = [
+    'Gate A',
+    'Gate B',
+    'Gate C',
+    'Gate D',
+    'Bus Dropoff Zone',
+    'Metro Plaza',
+  ];
+  final List<String> _destinations = [
+    'Section 128',
+    'Section 104',
+    'Food Court 1 (North)',
+    'Food Court 2 (South)',
+    'Restrooms Level 1 East',
+    'Sensory Room West',
+  ];
 
   @override
   void initState() {
@@ -36,7 +50,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
     setState(() => _calculating = true);
     final crowd = ref.read(crowdStateProvider);
     final routeFinder = CalculateRoute();
-    
+
     final plan = await routeFinder.call(
       start: _startLocation,
       destination: _destination,
@@ -65,7 +79,9 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
             children: [
               Text(
                 'AI Navigation Assistant',
-                style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+                style: theme.textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 4),
               const Text(
@@ -92,10 +108,13 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
                               children: [
                                 const Text(
                                   'Route Planner Parameters',
-                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
                                 ),
                                 const SizedBox(height: 20),
-                                
+
                                 // Start location
                                 DropdownButtonFormField<String>(
                                   initialValue: _startLocation,
@@ -103,7 +122,14 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
                                     labelText: 'Start Location',
                                     border: OutlineInputBorder(),
                                   ),
-                                  items: _startLocations.map((loc) => DropdownMenuItem(value: loc, child: Text(loc))).toList(),
+                                  items: _startLocations
+                                      .map(
+                                        (loc) => DropdownMenuItem(
+                                          value: loc,
+                                          child: Text(loc),
+                                        ),
+                                      )
+                                      .toList(),
                                   onChanged: (val) {
                                     if (val != null) {
                                       setState(() => _startLocation = val);
@@ -120,7 +146,14 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
                                     labelText: 'Destination Venue Zone',
                                     border: OutlineInputBorder(),
                                   ),
-                                  items: _destinations.map((loc) => DropdownMenuItem(value: loc, child: Text(loc))).toList(),
+                                  items: _destinations
+                                      .map(
+                                        (loc) => DropdownMenuItem(
+                                          value: loc,
+                                          child: Text(loc),
+                                        ),
+                                      )
+                                      .toList(),
                                   onChanged: (val) {
                                     if (val != null) {
                                       setState(() => _destination = val);
@@ -132,8 +165,17 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
 
                                 // Wheelchair toggle
                                 SwitchListTile(
-                                  title: const Text('Wheelchair Accessible Only', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-                                  subtitle: const Text('Bypass stairs, use ramped gates, and prioritize elevators.', style: TextStyle(fontSize: 11)),
+                                  title: const Text(
+                                    'Wheelchair Accessible Only',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  subtitle: const Text(
+                                    'Bypass stairs, use ramped gates, and prioritize elevators.',
+                                    style: TextStyle(fontSize: 11),
+                                  ),
                                   value: _wheelchairFriendly,
                                   activeThumbColor: const Color(0xFF6366F1),
                                   contentPadding: EdgeInsets.zero,
@@ -142,11 +184,20 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
                                     _runCalculation();
                                   },
                                 ),
-                                
+
                                 // Crowd bypass toggle
                                 SwitchListTile(
-                                  title: const Text('Bypass High Crowd Bottlenecks', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-                                  subtitle: const Text('Redirect route to lesser congested entryways.', style: TextStyle(fontSize: 11)),
+                                  title: const Text(
+                                    'Bypass High Crowd Bottlenecks',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  subtitle: const Text(
+                                    'Redirect route to lesser congested entryways.',
+                                    style: TextStyle(fontSize: 11),
+                                  ),
                                   value: _avoidCrowds,
                                   activeThumbColor: Colors.green,
                                   contentPadding: EdgeInsets.zero,
@@ -155,7 +206,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
                                     _runCalculation();
                                   },
                                 ),
-                                
+
                                 const SizedBox(height: 20),
                                 SizedBox(
                                   width: double.infinity,
@@ -170,21 +221,28 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
                           ),
                         ),
                       ),
-                      
+
                       // Route outputs
                       if (isWide) const SizedBox(width: 24),
                       if (isWide)
                         Expanded(
                           flex: 3,
-                          child: _calculating 
-                              ? const Card(child: Center(child: Padding(padding: EdgeInsets.all(40.0), child: CircularProgressIndicator())))
+                          child: _calculating
+                              ? const Card(
+                                  child: Center(
+                                    child: Padding(
+                                      padding: EdgeInsets.all(40.0),
+                                      child: CircularProgressIndicator(),
+                                    ),
+                                  ),
+                                )
                               : _buildRouteResultsCard(theme),
                         ),
                     ],
                   );
                 },
               ),
-              
+
               // Mobile view route outputs below controls
               if (MediaQuery.of(context).size.width <= 900)
                 Padding(
@@ -202,7 +260,12 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
 
   Widget _buildRouteResultsCard(ThemeData theme) {
     if (_calculatedRoute == null) {
-      return const Card(child: Padding(padding: EdgeInsets.all(20.0), child: Text('Calculate a route to display navigation results.')));
+      return const Card(
+        child: Padding(
+          padding: EdgeInsets.all(20.0),
+          child: Text('Calculate a route to display navigation results.'),
+        ),
+      );
     }
 
     final route = _calculatedRoute!;
@@ -218,14 +281,23 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
                 Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
-                        color: route.isWheelchairFriendly ? const Color(0xFF6366F1) : theme.colorScheme.primary,
+                        color: route.isWheelchairFriendly
+                            ? const Color(0xFF6366F1)
+                            : theme.colorScheme.primary,
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
                         route.title.toUpperCase(),
-                        style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 11),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          fontSize: 11,
+                        ),
                       ),
                     ),
                     const Spacer(),
@@ -235,23 +307,45 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
                 const SizedBox(height: 16),
                 Row(
                   children: [
-                    _metricCol('ESTIMATED TIME', '${route.totalDurationMins} minutes', Colors.green),
+                    _metricCol(
+                      'ESTIMATED TIME',
+                      '${route.totalDurationMins} minutes',
+                      Colors.green,
+                    ),
                     const SizedBox(width: 40),
-                    _metricCol('WALKING DISTANCE', '${route.totalDistanceMeters} meters', null),
+                    _metricCol(
+                      'WALKING DISTANCE',
+                      '${route.totalDistanceMeters} meters',
+                      null,
+                    ),
                     const SizedBox(width: 40),
-                    _metricCol('CROWD CONGESTION', route.crowdCongestionLevel, route.crowdCongestionLevel == 'High' ? Colors.red : Colors.green),
+                    _metricCol(
+                      'CROWD CONGESTION',
+                      route.crowdCongestionLevel,
+                      route.crowdCongestionLevel == 'High'
+                          ? Colors.red
+                          : Colors.green,
+                    ),
                   ],
                 ),
                 if (route.reasoning.isNotEmpty) ...[
                   const Divider(height: 30),
                   const Text(
                     'AI ROUTE REASONING',
-                    style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.amber),
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.amber,
+                    ),
                   ),
                   const SizedBox(height: 6),
                   Text(
                     route.reasoning,
-                    style: const TextStyle(fontSize: 13, height: 1.4, fontStyle: FontStyle.italic),
+                    style: const TextStyle(
+                      fontSize: 13,
+                      height: 1.4,
+                      fontStyle: FontStyle.italic,
+                    ),
                   ),
                 ],
               ],
@@ -272,7 +366,10 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
-                  const Icon(Icons.accessible_forward, color: Color(0xFF6366F1)),
+                  const Icon(
+                    Icons.accessible_forward,
+                    color: Color(0xFF6366F1),
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
@@ -280,12 +377,19 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
                       children: [
                         const Text(
                           'Accessible Path Features Used:',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Color(0xFF6366F1)),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: Color(0xFF6366F1),
+                          ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           route.accessibilityFeatures.join(' • '),
-                          style: const TextStyle(fontSize: 12, color: Colors.white70),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.white70,
+                          ),
                         ),
                       ],
                     ),
@@ -299,27 +403,46 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
 
         // Visual Node Layout Chart
         Semantics(
-          label: 'Visual map of route nodes: starting at $_startLocation, routing through Gate entrypoints, utilizing level transition features, and arriving at $_destination.',
+          label:
+              'Visual map of route nodes: starting at $_startLocation, routing through Gate entrypoints, utilizing level transition features, and arriving at $_destination.',
           child: Card(
             child: Padding(
               padding: const EdgeInsets.all(20.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Tactical Route Node Map', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                  const Text(
+                    'Tactical Route Node Map',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  ),
                   const SizedBox(height: 24),
-                  
+
                   // Horizontal path representation
                   ExcludeSemantics(
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         children: [
-                          _buildNodeCircle(route.steps[0].contains('Start') ? _startLocation : 'Origin', Colors.blue),
+                          _buildNodeCircle(
+                            route.steps[0].contains('Start')
+                                ? _startLocation
+                                : 'Origin',
+                            Colors.blue,
+                          ),
                           _buildNodeLine(Colors.blue),
-                          _buildNodeCircle(route.steps.any((s) => s.contains('Gate D')) ? 'Gate D (Bypass)' : 'Gate C', Colors.amber),
+                          _buildNodeCircle(
+                            route.steps.any((s) => s.contains('Gate D'))
+                                ? 'Gate D (Bypass)'
+                                : 'Gate C',
+                            Colors.amber,
+                          ),
                           _buildNodeLine(Colors.amber),
-                          _buildNodeCircle(route.isWheelchairFriendly ? 'Elevator West' : 'Escalator Level 2', Colors.purple),
+                          _buildNodeCircle(
+                            route.isWheelchairFriendly
+                                ? 'Elevator West'
+                                : 'Escalator Level 2',
+                            Colors.purple,
+                          ),
                           _buildNodeLine(Colors.purple),
                           _buildNodeCircle(_destination, Colors.green),
                         ],
@@ -340,14 +463,19 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Detailed Navigation Itinerary', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                const Text(
+                  'Detailed Navigation Itinerary',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                ),
                 const SizedBox(height: 16),
                 ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: route.steps.length,
                   itemBuilder: (context, index) {
-                    final isReroute = route.steps[index].contains('REROUTE') || route.steps[index].contains('CROWD REDIRECT');
+                    final isReroute =
+                        route.steps[index].contains('REROUTE') ||
+                        route.steps[index].contains('CROWD REDIRECT');
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: Row(
@@ -355,13 +483,19 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
                         children: [
                           CircleAvatar(
                             radius: 12,
-                            backgroundColor: isReroute ? Colors.amber.shade900 : theme.colorScheme.primary.withValues(alpha: 0.2),
+                            backgroundColor: isReroute
+                                ? Colors.amber.shade900
+                                : theme.colorScheme.primary.withValues(
+                                    alpha: 0.2,
+                                  ),
                             child: Text(
                               '${index + 1}',
                               style: TextStyle(
-                                fontSize: 11, 
+                                fontSize: 11,
                                 fontWeight: FontWeight.bold,
-                                color: isReroute ? Colors.white : theme.colorScheme.primary,
+                                color: isReroute
+                                    ? Colors.white
+                                    : theme.colorScheme.primary,
                               ),
                             ),
                           ),
@@ -371,8 +505,12 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
                               route.steps[index],
                               style: TextStyle(
                                 fontSize: 13,
-                                fontWeight: isReroute ? FontWeight.bold : FontWeight.normal,
-                                color: isReroute ? Colors.orange.shade300 : null,
+                                fontWeight: isReroute
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                                color: isReroute
+                                    ? Colors.orange.shade300
+                                    : null,
                               ),
                             ),
                           ),
@@ -393,12 +531,19 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.w600)),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 10,
+            color: Colors.grey,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         const SizedBox(height: 4),
         Text(
           val,
           style: TextStyle(
-            fontSize: 16, 
+            fontSize: 16,
             fontWeight: FontWeight.bold,
             color: textColour,
           ),
@@ -421,7 +566,10 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
           child: Icon(Icons.circle, color: color, size: 14),
         ),
         const SizedBox(height: 6),
-        Text(label, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600)),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
+        ),
       ],
     );
   }

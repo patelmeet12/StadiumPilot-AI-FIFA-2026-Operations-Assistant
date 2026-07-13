@@ -17,9 +17,12 @@ class GetTransportOptions {
         co2EmissionsKg: 0.15,
         co2SavedKg: 3.20,
         ecoScore: 95,
-        isRecommended: preferredMode.toLowerCase() == 'metro' || preferredMode.isEmpty,
-        recommendationReason: 'Fastest eco-friendly choice. Bypasses matchday road traffic and drops you directly at Stadium Gate A.',
-        sustainabilityTip: 'Using public rail instead of ride-sharing cuts your greenhouse gas emissions by 95% today.',
+        isRecommended:
+            preferredMode.toLowerCase() == 'metro' || preferredMode.isEmpty,
+        recommendationReason:
+            'Fastest eco-friendly choice. Bypasses matchday road traffic and drops you directly at Stadium Gate A.',
+        sustainabilityTip:
+            'Using public rail instead of ride-sharing cuts your greenhouse gas emissions by 95% today.',
       ),
       TransportPlan(
         modeName: 'World Cup Shuttle (Express Bus)',
@@ -31,8 +34,10 @@ class GetTransportOptions {
         co2SavedKg: 2.95,
         ecoScore: 88,
         isRecommended: preferredMode.toLowerCase() == 'bus',
-        recommendationReason: 'Complimentary transit with ticket. Convenient group pickup from downtown hubs.',
-        sustainabilityTip: 'Shared electric bus shuttle reduces carbon footprint by pooling rides with 50 other fans.',
+        recommendationReason:
+            'Complimentary transit with ticket. Convenient group pickup from downtown hubs.',
+        sustainabilityTip:
+            'Shared electric bus shuttle reduces carbon footprint by pooling rides with 50 other fans.',
       ),
       TransportPlan(
         modeName: 'Ride-Share / Taxi (Drop-off Zone C)',
@@ -43,9 +48,13 @@ class GetTransportOptions {
         co2EmissionsKg: 4.80,
         co2SavedKg: 0.0,
         ecoScore: 20,
-        isRecommended: preferredMode.toLowerCase() == 'taxi' || preferredMode.toLowerCase() == 'rideshare',
-        recommendationReason: 'Door-to-door comfort, but subject to 15-minute congestion delay near Zone C.',
-        sustainabilityTip: 'Consider carpooling or using electric taxis to offset this high-emissions trip.',
+        isRecommended:
+            preferredMode.toLowerCase() == 'taxi' ||
+            preferredMode.toLowerCase() == 'rideshare',
+        recommendationReason:
+            'Door-to-door comfort, but subject to 15-minute congestion delay near Zone C.',
+        sustainabilityTip:
+            'Consider carpooling or using electric taxis to offset this high-emissions trip.',
       ),
       TransportPlan(
         modeName: 'Walking Eco Path (From Park & Ride North)',
@@ -57,8 +66,10 @@ class GetTransportOptions {
         co2SavedKg: 4.20,
         ecoScore: 100,
         isRecommended: preferredMode.toLowerCase() == 'walking',
-        recommendationReason: 'Healthy, active transport. Zero emissions, zero wait time, and passes through the FIFA Fan Festival.',
-        sustainabilityTip: 'Perfect choice for carbon neutrality! Saves 4.20kg of CO₂ and grants +10 green points.',
+        recommendationReason:
+            'Healthy, active transport. Zero emissions, zero wait time, and passes through the FIFA Fan Festival.',
+        sustainabilityTip:
+            'Perfect choice for carbon neutrality! Saves 4.20kg of CO₂ and grants +10 green points.',
       ),
     ];
   }

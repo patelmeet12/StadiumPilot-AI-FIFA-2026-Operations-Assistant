@@ -1,5 +1,6 @@
 class TransportPlan {
-  final String modeName; // e.g. "Metro Line 2", "Express shuttle", "Taxi/Ride Share"
+  final String
+  modeName; // e.g. "Metro Line 2", "Express shuttle", "Taxi/Ride Share"
   final String iconType; // "train", "bus", "car", "walk"
   final int durationMins;
   final double estimatedCost; // 0.0 for free public transit / walk

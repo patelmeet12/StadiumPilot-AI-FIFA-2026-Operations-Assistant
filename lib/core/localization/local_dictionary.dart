@@ -13,7 +13,8 @@ class LocalDictionary {
       'accessibility': 'Accessibility Hub',
       'sustainability': 'Eco-Advisor',
       'emergency_alert': 'EMERGENCY INSTRUCTION',
-      'emergency_msg': 'In case of evacuation, remain calm. Exit immediately through the nearest green lit gate (Gates A, B, or D). Avoid elevators. Listen to volunteer directions.',
+      'emergency_msg':
+          'In case of evacuation, remain calm. Exit immediately through the nearest green lit gate (Gates A, B, or D). Avoid elevators. Listen to volunteer directions.',
       'navigate_btn': 'Plan Route',
       'start_location': 'Start Location',
       'destination': 'Destination',
@@ -50,7 +51,8 @@ class LocalDictionary {
       'accessibility': 'Centro de accesibilidad',
       'sustainability': 'Asesor ecológico',
       'emergency_alert': 'INSTRUCCIÓN DE EMERGENCIA',
-      'emergency_msg': 'En caso de evacuación, mantenga la calma. Salga inmediatamente por la puerta verde iluminada más cercana (Puertas A, B o D). Evite los ascensores. Escuche las instrucciones de los voluntarios.',
+      'emergency_msg':
+          'En caso de evacuación, mantenga la calma. Salga inmediatamente por la puerta verde iluminada más cercana (Puertas A, B o D). Evite los ascensores. Escuche las instrucciones de los voluntarios.',
       'navigate_btn': 'Planificar ruta',
       'start_location': 'Ubicación inicial',
       'destination': 'Destino',
@@ -72,7 +74,8 @@ class LocalDictionary {
       'estimated_benefit': 'Beneficio estimado',
       'carbon_footprint': 'Huella de carbono',
       'recommendations': 'Recomendaciones del motor de decisiones de IA',
-      'leave_warning': 'Salga ahora para evitar la multitud posterior al partido.',
+      'leave_warning':
+          'Salga ahora para evitar la multitud posterior al partido.',
     },
     'fr': {
       'app_title': 'StadiumPilot AI',
@@ -87,7 +90,8 @@ class LocalDictionary {
       'accessibility': 'Hub d\'accessibilité',
       'sustainability': 'Conseiller écologique',
       'emergency_alert': 'CONSIGNE D\'URGENCE',
-      'emergency_msg': 'En cas d\'évacuation, restez calme. Sortez immédiatement par la porte verte éclairée la plus proche (Portes A, B ou D). Évitez les ascenseurs. Suivez les instructions des bénévoles.',
+      'emergency_msg':
+          'En cas d\'évacuation, restez calme. Sortez immédiatement par la porte verte éclairée la plus proche (Portes A, B ou D). Évitez les ascenseurs. Suivez les instructions des bénévoles.',
       'navigate_btn': 'Planifier l\'itinéraire',
       'start_location': 'Lieu de départ',
       'destination': 'Destination',
@@ -124,7 +128,8 @@ class LocalDictionary {
       'accessibility': 'सुगमता केंद्र',
       'sustainability': 'पर्यावरण सलाहकार',
       'emergency_alert': 'आपातकालीन निर्देश',
-      'emergency_msg': 'निकासी की स्थिति में, शांत रहें। तुरंत निकटतम हरी बत्ती वाले गेट (गेट A, B, या D) से बाहर निकलें। लिफ्ट का उपयोग न करें। स्वयंसेवकों के निर्देशों का पालन करें।',
+      'emergency_msg':
+          'निकासी की स्थिति में, शांत रहें। तुरंत निकटतम हरी बत्ती वाले गेट (गेट A, B, या D) से बाहर निकलें। लिफ्ट का उपयोग न करें। स्वयंसेवकों के निर्देशों का पालन करें।',
       'navigate_btn': 'मार्ग योजना बनाएं',
       'start_location': 'प्रारंभिक स्थान',
       'destination': 'गंतव्य',
@@ -161,7 +166,8 @@ class LocalDictionary {
       'accessibility': 'مركز سهولة الوصول',
       'sustainability': 'مستشار البيئة',
       'emergency_alert': 'تعليمات الطوارئ',
-      'emergency_msg': 'في حالة الإخلاء، يرجى التزام الهدوء. اخرج فوراً من أقرب بوابة مضيئة باللون الأخضر (البوابات A أو B أو D). تجنب المصاعد. استمع إلى توجيهات المتطوعين.',
+      'emergency_msg':
+          'في حالة الإخلاء، يرجى التزام الهدوء. اخرج فوراً من أقرب بوابة مضيئة باللون الأخضر (البوابات A أو B أو D). تجنب المصاعد. استمع إلى توجيهات المتطوعين.',
       'navigate_btn': 'تخطيط المسار',
       'start_location': 'نقطة الانطلاق',
       'destination': 'الوجهة',
@@ -198,7 +204,8 @@ class LocalDictionary {
       'accessibility': 'Portal de Acessibilidade',
       'sustainability': 'Orientador Ecológico',
       'emergency_alert': 'INSTRUÇÃO DE EMERGÊNCIA',
-      'emergency_msg': 'Em caso de evacuação, mantenha a calma. Saia imediatamente pelo portão verde iluminado mais próximo (Portões A, B ou D). Evite elevadores. Siga as orientações dos voluntários.',
+      'emergency_msg':
+          'Em caso de evacuação, mantenha a calma. Saia imediatamente pelo portão verde iluminado mais próximo (Portões A, B ou D). Evite elevadores. Siga as orientações dos voluntários.',
       'navigate_btn': 'Planejar Rota',
       'start_location': 'Local de Origem',
       'destination': 'Destino',
@@ -221,7 +228,7 @@ class LocalDictionary {
       'carbon_footprint': 'Pegada de Carbono',
       'recommendations': 'Recomendações do Motor de Decisão IA',
       'leave_warning': 'Saia agora para evitar a multidão pós-jogo.',
-    }
+    },
   };
 
   static String translate(String key, String langCode) {

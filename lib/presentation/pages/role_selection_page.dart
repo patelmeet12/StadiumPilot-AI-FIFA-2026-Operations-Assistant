@@ -20,28 +20,32 @@ class RoleSelectionPage extends ConsumerWidget {
         role: UserRole.fan,
         titleKey: 'role_fan',
         icon: Icons.sports_soccer,
-        description: 'Access ticket itineraries, smart navigation, food courts, and public transport guides.',
+        description:
+            'Access ticket itineraries, smart navigation, food courts, and public transport guides.',
         color: const Color(0xFF00875A),
       ),
       _RoleCardData(
         role: UserRole.volunteer,
         titleKey: 'role_volunteer',
         icon: Icons.volunteer_activism,
-        description: 'Complete operational checklists, respond to nearby incidents, and assist organizers.',
+        description:
+            'Complete operational checklists, respond to nearby incidents, and assist organizers.',
         color: const Color(0xFF6366F1),
       ),
       _RoleCardData(
         role: UserRole.organizer,
         titleKey: 'role_organizer',
         icon: Icons.analytics,
-        description: 'Monitor heatmaps, gate capacity meters, incident consoles, and dispatch volunteers.',
+        description:
+            'Monitor heatmaps, gate capacity meters, incident consoles, and dispatch volunteers.',
         color: const Color(0xFFFFC72C),
       ),
       _RoleCardData(
         role: UserRole.staff,
         titleKey: 'role_staff',
         icon: Icons.shield,
-        description: 'Access venue control, trigger announcements, resolve facility emergencies, and manage security.',
+        description:
+            'Access venue control, trigger announcements, resolve facility emergencies, and manage security.',
         color: const Color(0xFFEF4444),
       ),
     ];
@@ -53,11 +57,11 @@ class RoleSelectionPage extends ConsumerWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              theme.brightness == Brightness.dark 
-                  ? const Color(0xFF070D0A) 
+              theme.brightness == Brightness.dark
+                  ? const Color(0xFF070D0A)
                   : const Color(0xFFE8F0EB),
-              theme.brightness == Brightness.dark 
-                  ? const Color(0xFF0F261B) 
+              theme.brightness == Brightness.dark
+                  ? const Color(0xFF0F261B)
                   : const Color(0xFFCBE2D4),
             ],
           ),
@@ -75,14 +79,20 @@ class RoleSelectionPage extends ConsumerWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.assistant_navigation, size: 48, color: theme.colorScheme.primary),
+                      Icon(
+                        Icons.assistant_navigation,
+                        size: 48,
+                        color: theme.colorScheme.primary,
+                      ),
                       const SizedBox(width: 16),
                       Text(
                         LocalDictionary.translate('app_title', activeLanguage),
                         style: theme.textTheme.headlineLarge?.copyWith(
                           fontSize: 38,
                           letterSpacing: 1.2,
-                          color: theme.colorScheme.primary == Colors.yellow ? Colors.yellow : null,
+                          color: theme.colorScheme.primary == Colors.yellow
+                              ? Colors.yellow
+                              : null,
                         ),
                       ),
                     ],
@@ -111,7 +121,7 @@ class RoleSelectionPage extends ConsumerWidget {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 40),
-                  
+
                   // Role cards grid
                   LayoutBuilder(
                     builder: (context, constraints) {
@@ -123,7 +133,9 @@ class RoleSelectionPage extends ConsumerWidget {
                           crossAxisCount: crossAxisCount,
                           crossAxisSpacing: 20,
                           mainAxisSpacing: 20,
-                          childAspectRatio: constraints.maxWidth > 700 ? 1.6 : 1.4,
+                          childAspectRatio: constraints.maxWidth > 700
+                              ? 1.6
+                              : 1.4,
                         ),
                         itemCount: roles.length,
                         itemBuilder: (context, index) {
@@ -133,7 +145,9 @@ class RoleSelectionPage extends ConsumerWidget {
                             elevation: 4,
                             child: InkWell(
                               onTap: () async {
-                                await ref.read(userRoleProvider.notifier).setRole(data.role);
+                                await ref
+                                    .read(userRoleProvider.notifier)
+                                    .setRole(data.role);
                                 if (!context.mounted) return;
                                 context.go('/dashboard');
                               },
@@ -145,31 +159,43 @@ class RoleSelectionPage extends ConsumerWidget {
                                     Row(
                                       children: [
                                         CircleAvatar(
-                                          backgroundColor: data.color.withValues(alpha: 0.15),
+                                          backgroundColor: data.color
+                                              .withValues(alpha: 0.15),
                                           radius: 28,
-                                          child: Icon(data.icon, size: 28, color: data.color),
+                                          child: Icon(
+                                            data.icon,
+                                            size: 28,
+                                            color: data.color,
+                                          ),
                                         ),
                                         const Spacer(),
-                                        Icon(Icons.arrow_forward, color: theme.hintColor),
+                                        Icon(
+                                          Icons.arrow_forward,
+                                          color: theme.hintColor,
+                                        ),
                                       ],
                                     ),
                                     const Spacer(),
                                     Text(
-                                      LocalDictionary.translate(data.titleKey, activeLanguage),
-                                      style: theme.textTheme.titleLarge?.copyWith(
-                                        fontSize: 20,
-                                        color: activeTheme == AppThemeMode.highContrast 
-                                            ? Colors.yellow 
-                                            : null,
+                                      LocalDictionary.translate(
+                                        data.titleKey,
+                                        activeLanguage,
                                       ),
+                                      style: theme.textTheme.titleLarge
+                                          ?.copyWith(
+                                            fontSize: 20,
+                                            color:
+                                                activeTheme ==
+                                                    AppThemeMode.highContrast
+                                                ? Colors.yellow
+                                                : null,
+                                          ),
                                     ),
                                     const SizedBox(height: 8),
                                     Text(
                                       data.description,
-                                      style: theme.textTheme.bodyMedium?.copyWith(
-                                        fontSize: 13,
-                                        height: 1.4,
-                                      ),
+                                      style: theme.textTheme.bodyMedium
+                                          ?.copyWith(fontSize: 13, height: 1.4),
                                       maxLines: 3,
                                       overflow: TextOverflow.ellipsis,
                                     ),
@@ -183,7 +209,7 @@ class RoleSelectionPage extends ConsumerWidget {
                     },
                   ),
                   const SizedBox(height: 50),
-                  
+
                   // Language selection bar at bottom of role select
                   Wrap(
                     spacing: 12,
@@ -207,7 +233,12 @@ class RoleSelectionPage extends ConsumerWidget {
     );
   }
 
-  Widget _langButton(WidgetRef ref, String activeLang, String code, String label) {
+  Widget _langButton(
+    WidgetRef ref,
+    String activeLang,
+    String code,
+    String label,
+  ) {
     final isSelected = activeLang == code;
     return ChoiceChip(
       label: Text(label),

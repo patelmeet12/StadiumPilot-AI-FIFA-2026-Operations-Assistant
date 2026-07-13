@@ -10,10 +10,7 @@ import '../../presentation/pages/organizer_dashboard_page.dart';
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
   routes: [
-    GoRoute(
-      path: '/',
-      builder: (context, state) => const RoleSelectionPage(),
-    ),
+    GoRoute(path: '/', builder: (context, state) => const RoleSelectionPage()),
     GoRoute(
       path: '/dashboard',
       builder: (context, state) => const DashboardPage(),

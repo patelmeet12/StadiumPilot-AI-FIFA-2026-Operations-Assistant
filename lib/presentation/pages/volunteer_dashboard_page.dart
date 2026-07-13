@@ -15,9 +15,13 @@ class VolunteerDashboardPage extends ConsumerWidget {
 
     final completedTasksCount = tasks.where((t) => t.isCompleted).length;
     final totalTasksCount = tasks.length;
-    final progress = totalTasksCount == 0 ? 0.0 : completedTasksCount / totalTasksCount;
+    final progress = totalTasksCount == 0
+        ? 0.0
+        : completedTasksCount / totalTasksCount;
 
-    final openIncidents = incidents.where((i) => i.status != 'Resolved').toList();
+    final openIncidents = incidents
+        .where((i) => i.status != 'Resolved')
+        .toList();
 
     return StadiumShell(
       currentPath: '/volunteer',
@@ -29,7 +33,9 @@ class VolunteerDashboardPage extends ConsumerWidget {
             children: [
               Text(
                 'Volunteer Operations Desk',
-                style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+                style: theme.textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 4),
               const Text(
@@ -50,19 +56,27 @@ class VolunteerDashboardPage extends ConsumerWidget {
                           children: [
                             Text(
                               'Shift Duty Completion: ${(progress * 100).toInt()}%',
-                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
                             ),
                             const SizedBox(height: 8),
                             LinearProgressIndicator(
                               value: progress,
                               backgroundColor: Colors.grey.shade800,
-                              valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                theme.colorScheme.primary,
+                              ),
                               minHeight: 10,
                             ),
                             const SizedBox(height: 8),
                             Text(
                               'Completed $completedTasksCount out of $totalTasksCount assigned tasks.',
-                              style: const TextStyle(fontSize: 12, color: Colors.grey),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                              ),
                             ),
                           ],
                         ),
@@ -91,15 +105,21 @@ class VolunteerDashboardPage extends ConsumerWidget {
                               children: [
                                 const Text(
                                   'My Assigned Task Checklist',
-                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
                                 ),
                                 const SizedBox(height: 16),
                                 if (tasks.isEmpty)
-                                  const Text('No duties assigned for this shift.')
+                                  const Text(
+                                    'No duties assigned for this shift.',
+                                  )
                                 else
                                   ListView.separated(
                                     shrinkWrap: true,
-                                    physics: const NeverScrollableScrollPhysics(),
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
                                     itemCount: tasks.length,
                                     separatorBuilder: (c, i) => const Divider(),
                                     itemBuilder: (context, index) {
@@ -109,15 +129,25 @@ class VolunteerDashboardPage extends ConsumerWidget {
                                           t.title,
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
-                                            decoration: t.isCompleted ? TextDecoration.lineThrough : null,
-                                            color: t.isCompleted ? Colors.grey : null,
+                                            decoration: t.isCompleted
+                                                ? TextDecoration.lineThrough
+                                                : null,
+                                            color: t.isCompleted
+                                                ? Colors.grey
+                                                : null,
                                           ),
                                         ),
-                                        subtitle: Text('${t.location} • Priority: ${t.priority}'),
+                                        subtitle: Text(
+                                          '${t.location} • Priority: ${t.priority}',
+                                        ),
                                         value: t.isCompleted,
                                         activeColor: theme.colorScheme.primary,
                                         onChanged: (_) {
-                                          ref.read(volunteerTasksProvider.notifier).toggleTaskCompleted(t.id);
+                                          ref
+                                              .read(
+                                                volunteerTasksProvider.notifier,
+                                              )
+                                              .toggleTaskCompleted(t.id);
                                         },
                                         contentPadding: EdgeInsets.zero,
                                       );
@@ -139,18 +169,26 @@ class VolunteerDashboardPage extends ConsumerWidget {
                           children: [
                             const Text(
                               'Active Incident Feed',
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
                             ),
                             const SizedBox(height: 16),
                             if (openIncidents.isEmpty)
                               const Card(
                                 child: Padding(
                                   padding: EdgeInsets.all(20.0),
-                                  child: Text('All reported issues have been fully resolved.'),
+                                  child: Text(
+                                    'All reported issues have been fully resolved.',
+                                  ),
                                 ),
                               )
                             else
-                              ...openIncidents.map((i) => _buildIncidentCard(context, ref, i, theme)),
+                              ...openIncidents.map(
+                                (i) =>
+                                    _buildIncidentCard(context, ref, i, theme),
+                              ),
                           ],
                         ),
                       ),
@@ -158,13 +196,15 @@ class VolunteerDashboardPage extends ConsumerWidget {
                   );
                 },
               ),
-              
+
               // Mobile view stack list
               if (MediaQuery.of(context).size.width <= 900)
                 Padding(
                   padding: const EdgeInsets.only(top: 24.0),
                   child: Column(
-                    children: openIncidents.map((i) => _buildIncidentCard(context, ref, i, theme)).toList(),
+                    children: openIncidents
+                        .map((i) => _buildIncidentCard(context, ref, i, theme))
+                        .toList(),
                   ),
                 ),
             ],
@@ -174,7 +214,12 @@ class VolunteerDashboardPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildIncidentCard(BuildContext context, WidgetRef ref, Incident i, ThemeData theme) {
+  Widget _buildIncidentCard(
+    BuildContext context,
+    WidgetRef ref,
+    Incident i,
+    ThemeData theme,
+  ) {
     Color priorityColor = Colors.grey;
     if (i.priority == 'Critical') priorityColor = Colors.red;
     if (i.priority == 'High') priorityColor = Colors.amber.shade800;
@@ -190,29 +235,49 @@ class VolunteerDashboardPage extends ConsumerWidget {
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: priorityColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
                     i.priority.toUpperCase(),
-                    style: TextStyle(color: priorityColor, fontSize: 9, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: priorityColor,
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     i.title,
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 8),
-            Text('Location: ${i.location}', style: const TextStyle(color: Colors.amber, fontWeight: FontWeight.w600, fontSize: 12)),
+            Text(
+              'Location: ${i.location}',
+              style: const TextStyle(
+                color: Colors.amber,
+                fontWeight: FontWeight.w600,
+                fontSize: 12,
+              ),
+            ),
             const SizedBox(height: 4),
-            Text(i.description, style: const TextStyle(fontSize: 12, color: Colors.white70)),
+            Text(
+              i.description,
+              style: const TextStyle(fontSize: 12, color: Colors.white70),
+            ),
             const SizedBox(height: 12),
             Row(
               children: [
@@ -228,18 +293,34 @@ class VolunteerDashboardPage extends ConsumerWidget {
                 if (i.status == 'Open')
                   TextButton.icon(
                     icon: const Icon(Icons.handyman, size: 14),
-                    label: const Text('Assign to Me', style: TextStyle(fontSize: 12)),
+                    label: const Text(
+                      'Assign to Me',
+                      style: TextStyle(fontSize: 12),
+                    ),
                     onPressed: () {
-                      ref.read(incidentListProvider.notifier).updateIncidentStatus(i.id, 'Assigned');
+                      ref
+                          .read(incidentListProvider.notifier)
+                          .updateIncidentStatus(i.id, 'Assigned');
                     },
                   )
                 else if (i.status == 'Assigned')
                   ElevatedButton.icon(
                     icon: const Icon(Icons.check, size: 14),
-                    label: const Text('Mark Resolved', style: TextStyle(fontSize: 12)),
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.green, padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4)),
+                    label: const Text(
+                      'Mark Resolved',
+                      style: TextStyle(fontSize: 12),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 4,
+                      ),
+                    ),
                     onPressed: () {
-                      ref.read(incidentListProvider.notifier).updateIncidentStatus(i.id, 'Resolved');
+                      ref
+                          .read(incidentListProvider.notifier)
+                          .updateIncidentStatus(i.id, 'Resolved');
                     },
                   ),
               ],

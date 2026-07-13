@@ -7,7 +7,9 @@ import '../../data/repositories/stadium_repository_impl.dart';
 
 // Provider for SharedPreferences - initialized at startup
 final sharedPreferencesProvider = Provider<SharedPreferences>((ref) {
-  throw UnimplementedError("Initialize SharedPreferences in main and override this provider");
+  throw UnimplementedError(
+    "Initialize SharedPreferences in main and override this provider",
+  );
 });
 
 // Provider for SecureStorageService
@@ -29,7 +31,10 @@ class UserRoleNotifier extends Notifier<UserRole> {
     final secureStorage = ref.watch(secureStorageProvider);
     final saved = secureStorage.read('sp_user_role');
     if (saved != null) {
-      return UserRole.values.firstWhere((r) => r.name == saved, orElse: () => UserRole.fan);
+      return UserRole.values.firstWhere(
+        (r) => r.name == saved,
+        orElse: () => UserRole.fan,
+      );
     }
     return UserRole.fan;
   }
@@ -65,11 +70,7 @@ final localeProvider = NotifierProvider<LocaleNotifier, String>(() {
 });
 
 // Theme management supporting Light, Dark, and High Contrast
-enum AppThemeMode {
-  light,
-  dark,
-  highContrast;
-}
+enum AppThemeMode { light, dark, highContrast }
 
 class ThemeModeNotifier extends Notifier<AppThemeMode> {
   @override
@@ -77,7 +78,10 @@ class ThemeModeNotifier extends Notifier<AppThemeMode> {
     final secureStorage = ref.watch(secureStorageProvider);
     final saved = secureStorage.read('sp_theme_mode');
     if (saved != null) {
-      return AppThemeMode.values.firstWhere((t) => t.name == saved, orElse: () => AppThemeMode.dark);
+      return AppThemeMode.values.firstWhere(
+        (t) => t.name == saved,
+        orElse: () => AppThemeMode.dark,
+      );
     }
     return AppThemeMode.dark;
   }
@@ -103,6 +107,8 @@ class EmergencyAlertNotifier extends Notifier<bool> {
   }
 }
 
-final emergencyAlertProvider = NotifierProvider<EmergencyAlertNotifier, bool>(() {
-  return EmergencyAlertNotifier();
-});
+final emergencyAlertProvider = NotifierProvider<EmergencyAlertNotifier, bool>(
+  () {
+    return EmergencyAlertNotifier();
+  },
+);

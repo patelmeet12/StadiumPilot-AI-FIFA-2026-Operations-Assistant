@@ -56,18 +56,28 @@ class DashboardPage extends ConsumerWidget {
                     children: [
                       ElevatedButton.icon(
                         icon: const Icon(Icons.refresh, size: 16),
-                        label: const Text('Simulate Telemetry Update', style: TextStyle(fontSize: 12)),
+                        label: const Text(
+                          'Simulate Telemetry Update',
+                          style: TextStyle(fontSize: 12),
+                        ),
                         onPressed: () {
-                          ref.read(crowdStateProvider.notifier).forceFluctuate();
+                          ref
+                              .read(crowdStateProvider.notifier)
+                              .forceFluctuate();
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text('Crowd sensor telemetry updated successfully.'),
+                              content: Text(
+                                'Crowd sensor telemetry updated successfully.',
+                              ),
                               duration: Duration(seconds: 1),
                             ),
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -77,12 +87,22 @@ class DashboardPage extends ConsumerWidget {
                         onPressed: () async {
                           final repo = ref.read(stadiumRepositoryProvider);
                           await repo.resetSimulator();
-                          ref.read(crowdStateProvider.notifier).fetchCrowdState();
-                          ref.read(incidentListProvider.notifier).fetchIncidents();
-                          ref.read(volunteerTasksProvider.notifier).fetchTasks();
+                          ref
+                              .read(crowdStateProvider.notifier)
+                              .fetchCrowdState();
+                          ref
+                              .read(incidentListProvider.notifier)
+                              .fetchIncidents();
+                          ref
+                              .read(volunteerTasksProvider.notifier)
+                              .fetchTasks();
                           if (!context.mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('All data has been reset to defaults.')),
+                            const SnackBar(
+                              content: Text(
+                                'All data has been reset to defaults.',
+                              ),
+                            ),
                           );
                         },
                       ),
@@ -107,7 +127,11 @@ class DashboardPage extends ConsumerWidget {
                             children: [
                               _buildMatchTicketCard(context),
                               const SizedBox(height: 24),
-                              _buildDecisionEnginePanel(context, recommendationsAsync, activeLanguage),
+                              _buildDecisionEnginePanel(
+                                context,
+                                recommendationsAsync,
+                                activeLanguage,
+                              ),
                               const SizedBox(height: 24),
                               _buildQuickActionsRow(context, ref),
                             ],
@@ -119,7 +143,11 @@ class DashboardPage extends ConsumerWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              _buildCrowdStatusPanel(context, crowdState, activeLanguage),
+                              _buildCrowdStatusPanel(
+                                context,
+                                crowdState,
+                                activeLanguage,
+                              ),
                               const SizedBox(height: 24),
                               _buildTravelStatusPanel(context, activeLanguage),
                               const SizedBox(height: 24),
@@ -136,9 +164,17 @@ class DashboardPage extends ConsumerWidget {
                       children: [
                         _buildMatchTicketCard(context),
                         const SizedBox(height: 24),
-                        _buildDecisionEnginePanel(context, recommendationsAsync, activeLanguage),
+                        _buildDecisionEnginePanel(
+                          context,
+                          recommendationsAsync,
+                          activeLanguage,
+                        ),
                         const SizedBox(height: 24),
-                        _buildCrowdStatusPanel(context, crowdState, activeLanguage),
+                        _buildCrowdStatusPanel(
+                          context,
+                          crowdState,
+                          activeLanguage,
+                        ),
                         const SizedBox(height: 24),
                         _buildTravelStatusPanel(context, activeLanguage),
                         const SizedBox(height: 24),
@@ -166,7 +202,10 @@ class DashboardPage extends ConsumerWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: theme.colorScheme.primary.withValues(alpha: 0.3), width: 1.5),
+        side: BorderSide(
+          color: theme.colorScheme.primary.withValues(alpha: 0.3),
+          width: 1.5,
+        ),
       ),
       child: Container(
         decoration: BoxDecoration(
@@ -187,14 +226,21 @@ class DashboardPage extends ConsumerWidget {
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.amber.shade700,
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: const Text(
                     'FIFA MATCH TICKETS',
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 11),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 11,
+                    ),
                   ),
                 ),
                 const Spacer(),
@@ -204,7 +250,11 @@ class DashboardPage extends ConsumerWidget {
             const SizedBox(height: 16),
             const Text(
               'Argentina vs France',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24, letterSpacing: 0.5),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+                letterSpacing: 0.5,
+              ),
             ),
             const SizedBox(height: 6),
             Row(
@@ -223,7 +273,11 @@ class DashboardPage extends ConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _ticketField('GATE ENTRANCE', 'Gate B', theme.colorScheme.primary),
+                _ticketField(
+                  'GATE ENTRANCE',
+                  'Gate B',
+                  theme.colorScheme.primary,
+                ),
                 _ticketField('SECTION', 'Sec 128', Colors.white),
                 _ticketField('SEAT ROW', 'Row 14', Colors.white),
                 _ticketField('STADIUM SEAT', 'Seat 8', Colors.white),
@@ -239,13 +293,20 @@ class DashboardPage extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.w600)),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 10,
+            color: Colors.grey,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         const SizedBox(height: 4),
         Text(
           value,
           style: TextStyle(
-            fontSize: 16, 
-            fontWeight: FontWeight.bold, 
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
             color: accentColor == Colors.white ? null : accentColor,
           ),
         ),
@@ -255,7 +316,7 @@ class DashboardPage extends ConsumerWidget {
 
   // Card 2: AI Recommendations (Decision Engine)
   Widget _buildDecisionEnginePanel(
-    BuildContext context, 
+    BuildContext context,
     AsyncValue<List<AIRecommendation>> asyncRecommendations,
     String lang,
   ) {
@@ -268,7 +329,11 @@ class DashboardPage extends ConsumerWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.psychology, color: theme.colorScheme.secondary, size: 28),
+                Icon(
+                  Icons.psychology,
+                  color: theme.colorScheme.secondary,
+                  size: 28,
+                ),
                 const SizedBox(width: 8),
                 Text(
                   LocalDictionary.translate('recommendations', lang),
@@ -276,7 +341,10 @@ class DashboardPage extends ConsumerWidget {
                 ),
                 const Spacer(),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.green.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(6),
@@ -284,7 +352,14 @@ class DashboardPage extends ConsumerWidget {
                   child: const Row(
                     children: [
                       Icon(Icons.bolt, color: Colors.green, size: 14),
-                      Text('AI Live', style: TextStyle(color: Colors.green, fontSize: 11, fontWeight: FontWeight.bold)),
+                      Text(
+                        'AI Live',
+                        style: TextStyle(
+                          color: Colors.green,
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -293,10 +368,13 @@ class DashboardPage extends ConsumerWidget {
             const SizedBox(height: 16),
             asyncRecommendations.when(
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, stack) => Text('Error loading recommendations: $err'),
+              error: (err, stack) =>
+                  Text('Error loading recommendations: $err'),
               data: (recs) {
                 if (recs.isEmpty) {
-                  return const Text('All operations normal. No current anomalies detected.');
+                  return const Text(
+                    'All operations normal. No current anomalies detected.',
+                  );
                 }
                 return ListView.separated(
                   shrinkWrap: true,
@@ -306,9 +384,15 @@ class DashboardPage extends ConsumerWidget {
                   itemBuilder: (context, index) {
                     final r = recs[index];
                     Color priorityColor = Colors.grey;
-                    if (r.priority == 'Critical') priorityColor = Colors.red;
-                    if (r.priority == 'High') priorityColor = Colors.amber.shade800;
-                    if (r.priority == 'Medium') priorityColor = Colors.blue;
+                    if (r.priority == 'Critical') {
+                      priorityColor = Colors.red;
+                    }
+                    if (r.priority == 'High') {
+                      priorityColor = Colors.amber.shade800;
+                    }
+                    if (r.priority == 'Medium') {
+                      priorityColor = Colors.blue;
+                    }
 
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -316,25 +400,38 @@ class DashboardPage extends ConsumerWidget {
                         Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
                               decoration: BoxDecoration(
                                 color: priorityColor.withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
                                 r.priority.toUpperCase(),
-                                style: TextStyle(color: priorityColor, fontSize: 10, fontWeight: FontWeight.bold),
+                                style: TextStyle(
+                                  color: priorityColor,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                             const SizedBox(width: 8),
                             Text(
                               r.title,
-                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
                             ),
                             const Spacer(),
                             Text(
                               'Confidence: ${(r.confidenceLevel * 100).toInt()}%',
-                              style: const TextStyle(color: Colors.grey, fontSize: 11),
+                              style: const TextStyle(
+                                color: Colors.grey,
+                                fontSize: 11,
+                              ),
                             ),
                           ],
                         ),
@@ -342,24 +439,36 @@ class DashboardPage extends ConsumerWidget {
                         Text(
                           r.recommendation,
                           style: TextStyle(
-                            fontSize: 14, 
-                            fontWeight: FontWeight.w600, 
-                            color: theme.colorScheme.primary == Colors.yellow ? Colors.yellow : theme.colorScheme.primary,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: theme.colorScheme.primary == Colors.yellow
+                                ? Colors.yellow
+                                : theme.colorScheme.primary,
                           ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           r.reason,
-                          style: theme.textTheme.bodyMedium?.copyWith(fontSize: 12),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontSize: 12,
+                          ),
                         ),
                         const SizedBox(height: 6),
                         Row(
                           children: [
-                            const Icon(Icons.flash_on, size: 12, color: Colors.amber),
+                            const Icon(
+                              Icons.flash_on,
+                              size: 12,
+                              color: Colors.amber,
+                            ),
                             const SizedBox(width: 4),
                             Text(
                               'Benefit: ${r.estimatedBenefit}',
-                              style: const TextStyle(fontSize: 12, color: Colors.green, fontWeight: FontWeight.bold),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.green,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ],
                         ),
@@ -376,7 +485,11 @@ class DashboardPage extends ConsumerWidget {
   }
 
   // Card 3: Crowd status simulation
-  Widget _buildCrowdStatusPanel(BuildContext context, CrowdState state, String lang) {
+  Widget _buildCrowdStatusPanel(
+    BuildContext context,
+    CrowdState state,
+    String lang,
+  ) {
     final theme = Theme.of(context);
     return Card(
       child: Padding(
@@ -395,18 +508,29 @@ class DashboardPage extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 20),
-            
+
             // Section 1: Gates wait times
-            const Text('GATE CHECKPOINTS', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.grey)),
+            const Text(
+              'GATE CHECKPOINTS',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey,
+              ),
+            ),
             const SizedBox(height: 10),
             ...state.gateWaitTimes.entries.map((e) {
               final val = e.value;
-              final color = val >= 20 ? Colors.red : (val >= 10 ? Colors.amber : Colors.green);
+              final color = val >= 20
+                  ? Colors.red
+                  : (val >= 10 ? Colors.amber : Colors.green);
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4.0),
                 child: Row(
                   children: [
-                    Expanded(child: Text(e.key, style: const TextStyle(fontSize: 13))),
+                    Expanded(
+                      child: Text(e.key, style: const TextStyle(fontSize: 13)),
+                    ),
                     Container(
                       width: 100,
                       height: 8,
@@ -430,7 +554,11 @@ class DashboardPage extends ConsumerWidget {
                       width: 50,
                       child: Text(
                         '$val mins',
-                        style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: color),
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: color,
+                        ),
                         textAlign: TextAlign.right,
                       ),
                     ),
@@ -438,23 +566,42 @@ class DashboardPage extends ConsumerWidget {
                 ),
               );
             }),
-            
+
             const Divider(height: 24),
-            
+
             // Section 2: Concession lines
-            const Text('FOOD COURTS', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.grey)),
+            const Text(
+              'FOOD COURTS',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey,
+              ),
+            ),
             const SizedBox(height: 10),
             ...state.foodCourtWaitTimes.entries.map((e) {
               final val = e.value;
-              final color = val >= 18 ? Colors.red : (val >= 10 ? Colors.amber : Colors.green);
+              final color = val >= 18
+                  ? Colors.red
+                  : (val >= 10 ? Colors.amber : Colors.green);
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4.0),
                 child: Row(
                   children: [
-                    Expanded(child: Text(e.key, style: const TextStyle(fontSize: 13), overflow: TextOverflow.ellipsis)),
+                    Expanded(
+                      child: Text(
+                        e.key,
+                        style: const TextStyle(fontSize: 13),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
                     Text(
                       '${val}m wait',
-                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: color),
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: color,
+                      ),
                     ),
                   ],
                 ),
@@ -464,19 +611,34 @@ class DashboardPage extends ConsumerWidget {
             const Divider(height: 24),
 
             // Section 3: Restrooms lines
-            const Text('RESTROOM QUEUES', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.grey)),
+            const Text(
+              'RESTROOM QUEUES',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey,
+              ),
+            ),
             const SizedBox(height: 10),
             ...state.restroomWaitTimes.entries.map((e) {
               final val = e.value;
-              final color = val >= 12 ? Colors.red : (val >= 6 ? Colors.amber : Colors.green);
+              final color = val >= 12
+                  ? Colors.red
+                  : (val >= 6 ? Colors.amber : Colors.green);
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4.0),
                 child: Row(
                   children: [
-                    Expanded(child: Text(e.key, style: const TextStyle(fontSize: 13))),
+                    Expanded(
+                      child: Text(e.key, style: const TextStyle(fontSize: 13)),
+                    ),
                     Text(
                       '$val mins',
-                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: color),
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: color,
+                      ),
                     ),
                   ],
                 ),
@@ -557,7 +719,7 @@ class DashboardPage extends ConsumerWidget {
         'active': 'Translados ativos (frequência 5m)',
         'moderate': 'Congestionamento moderado',
         'busy': 'Tempo de espera alto (20m de espera)',
-      }
+      },
     };
     final t = localTravelDict[lang] ?? localTravelDict['en']!;
     return Card(
@@ -568,7 +730,11 @@ class DashboardPage extends ConsumerWidget {
           children: [
             Row(
               children: [
-                const Icon(Icons.directions_transit, color: Colors.teal, size: 26),
+                const Icon(
+                  Icons.directions_transit,
+                  color: Colors.teal,
+                  size: 26,
+                ),
                 const SizedBox(width: 12),
                 Text(
                   t['title']!,
@@ -580,20 +746,45 @@ class DashboardPage extends ConsumerWidget {
               ],
             ),
             const Divider(height: 24),
-            _buildTravelItem(Icons.subway, t['metro']!, t['normal']!, Colors.green),
+            _buildTravelItem(
+              Icons.subway,
+              t['metro']!,
+              t['normal']!,
+              Colors.green,
+            ),
             const SizedBox(height: 12),
-            _buildTravelItem(Icons.airport_shuttle, t['shuttle']!, t['active']!, Colors.green),
+            _buildTravelItem(
+              Icons.airport_shuttle,
+              t['shuttle']!,
+              t['active']!,
+              Colors.green,
+            ),
             const SizedBox(height: 12),
-            _buildTravelItem(Icons.traffic, t['traffic']!, t['moderate']!, Colors.amber),
+            _buildTravelItem(
+              Icons.traffic,
+              t['traffic']!,
+              t['moderate']!,
+              Colors.amber,
+            ),
             const SizedBox(height: 12),
-            _buildTravelItem(Icons.local_taxi, t['taxi']!, t['busy']!, Colors.red),
+            _buildTravelItem(
+              Icons.local_taxi,
+              t['taxi']!,
+              t['busy']!,
+              Colors.red,
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildTravelItem(IconData icon, String title, String status, Color indicatorColor) {
+  Widget _buildTravelItem(
+    IconData icon,
+    String title,
+    String status,
+    Color indicatorColor,
+  ) {
     return Semantics(
       label: 'Transit: $title, status: $status',
       child: Row(
@@ -604,8 +795,17 @@ class DashboardPage extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
-                Text(status, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  status,
+                  style: const TextStyle(fontSize: 11, color: Colors.grey),
+                ),
               ],
             ),
           ),
@@ -691,7 +891,7 @@ class DashboardPage extends ConsumerWidget {
         'available': 'Aberto (Zonas C e G)',
         'active': 'Carrinhos de golfe ativos',
         'verified': 'Verificado livre de obstruções',
-      }
+      },
     };
     final t = localAccessDict[lang] ?? localAccessDict['en']!;
     return Card(
@@ -702,7 +902,11 @@ class DashboardPage extends ConsumerWidget {
           children: [
             Row(
               children: [
-                const Icon(Icons.accessible_forward, color: Colors.indigo, size: 26),
+                const Icon(
+                  Icons.accessible_forward,
+                  color: Colors.indigo,
+                  size: 26,
+                ),
                 const SizedBox(width: 12),
                 Text(
                   t['title']!,
@@ -714,20 +918,45 @@ class DashboardPage extends ConsumerWidget {
               ],
             ),
             const Divider(height: 24),
-            _buildAccessItem(Icons.elevator, t['elevators']!, t['operating']!, Colors.green),
+            _buildAccessItem(
+              Icons.elevator,
+              t['elevators']!,
+              t['operating']!,
+              Colors.green,
+            ),
             const SizedBox(height: 12),
-            _buildAccessItem(Icons.volume_mute, t['sensory']!, t['available']!, Colors.green),
+            _buildAccessItem(
+              Icons.volume_mute,
+              t['sensory']!,
+              t['available']!,
+              Colors.green,
+            ),
             const SizedBox(height: 12),
-            _buildAccessItem(Icons.golf_course, t['shuttles']!, t['active']!, Colors.green),
+            _buildAccessItem(
+              Icons.golf_course,
+              t['shuttles']!,
+              t['active']!,
+              Colors.green,
+            ),
             const SizedBox(height: 12),
-            _buildAccessItem(Icons.explore, t['paths']!, t['verified']!, Colors.green),
+            _buildAccessItem(
+              Icons.explore,
+              t['paths']!,
+              t['verified']!,
+              Colors.green,
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildAccessItem(IconData icon, String title, String status, Color indicatorColor) {
+  Widget _buildAccessItem(
+    IconData icon,
+    String title,
+    String status,
+    Color indicatorColor,
+  ) {
     return Semantics(
       label: 'Accessibility utility: $title, status: $status',
       child: Row(
@@ -738,8 +967,17 @@ class DashboardPage extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
-                Text(status, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  status,
+                  style: const TextStyle(fontSize: 11, color: Colors.grey),
+                ),
               ],
             ),
           ),
@@ -780,7 +1018,10 @@ class DashboardPage extends ConsumerWidget {
                 const SizedBox(width: 8),
                 Text(
                   'Green Tournament score',
-                  style: theme.textTheme.titleLarge?.copyWith(fontSize: 18, color: Colors.green),
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontSize: 18,
+                    color: Colors.green,
+                  ),
                 ),
               ],
             ),
@@ -800,7 +1041,11 @@ class DashboardPage extends ConsumerWidget {
                     children: [
                       Text(
                         '85/100 Eco Rating',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.green),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: Colors.green,
+                        ),
                       ),
                       SizedBox(height: 4),
                       Text(
@@ -838,7 +1083,9 @@ class DashboardPage extends ConsumerWidget {
                 ElevatedButton.icon(
                   icon: const Icon(Icons.report_problem),
                   label: const Text('Report Hazard / Incident'),
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.deepOrange),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.deepOrange,
+                  ),
                   onPressed: () => _showIncidentForm(context, ref),
                 ),
                 ElevatedButton.icon(
@@ -854,7 +1101,9 @@ class DashboardPage extends ConsumerWidget {
                 ElevatedButton.icon(
                   icon: const Icon(Icons.accessible),
                   label: const Text('Step-Free Hub'),
-                  style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF6366F1)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF6366F1),
+                  ),
                   onPressed: () => context.go('/accessibility'),
                 ),
               ],
@@ -894,37 +1143,66 @@ class DashboardPage extends ConsumerWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       TextFormField(
-                        decoration: const InputDecoration(labelText: 'Short Title (e.g. Broken scan lane)'),
-                        validator: (val) => val == null || val.isEmpty ? 'Required' : null,
+                        decoration: const InputDecoration(
+                          labelText: 'Short Title (e.g. Broken scan lane)',
+                        ),
+                        validator: (val) =>
+                            val == null || val.isEmpty ? 'Required' : null,
                         onSaved: (val) => title = val ?? '',
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
-                        decoration: const InputDecoration(labelText: 'Location (e.g. Section 120 or Gate B outer)'),
-                        validator: (val) => val == null || val.isEmpty ? 'Required' : null,
+                        decoration: const InputDecoration(
+                          labelText:
+                              'Location (e.g. Section 120 or Gate B outer)',
+                        ),
+                        validator: (val) =>
+                            val == null || val.isEmpty ? 'Required' : null,
                         onSaved: (val) => location = val ?? '',
                       ),
                       const SizedBox(height: 8),
                       DropdownButtonFormField<String>(
                         initialValue: category,
-                        decoration: const InputDecoration(labelText: 'Category'),
-                        items: ['Medical', 'Crowd', 'Spill', 'Facility', 'Security']
-                            .map((cat) => DropdownMenuItem(value: cat, child: Text(cat)))
-                            .toList(),
-                        onChanged: (val) => setState(() => category = val ?? 'Crowd'),
+                        decoration: const InputDecoration(
+                          labelText: 'Category',
+                        ),
+                        items:
+                            [
+                                  'Medical',
+                                  'Crowd',
+                                  'Spill',
+                                  'Facility',
+                                  'Security',
+                                ]
+                                .map(
+                                  (cat) => DropdownMenuItem(
+                                    value: cat,
+                                    child: Text(cat),
+                                  ),
+                                )
+                                .toList(),
+                        onChanged: (val) =>
+                            setState(() => category = val ?? 'Crowd'),
                       ),
                       const SizedBox(height: 8),
                       DropdownButtonFormField<String>(
                         initialValue: priority,
-                        decoration: const InputDecoration(labelText: 'Priority Level'),
+                        decoration: const InputDecoration(
+                          labelText: 'Priority Level',
+                        ),
                         items: ['Low', 'Medium', 'High', 'Critical']
-                            .map((p) => DropdownMenuItem(value: p, child: Text(p)))
+                            .map(
+                              (p) => DropdownMenuItem(value: p, child: Text(p)),
+                            )
                             .toList(),
-                        onChanged: (val) => setState(() => priority = val ?? 'Medium'),
+                        onChanged: (val) =>
+                            setState(() => priority = val ?? 'Medium'),
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
-                        decoration: const InputDecoration(labelText: 'Detailed Description'),
+                        decoration: const InputDecoration(
+                          labelText: 'Detailed Description',
+                        ),
                         maxLines: 2,
                         onSaved: (val) => desc = val ?? '',
                       ),
@@ -952,15 +1230,19 @@ class DashboardPage extends ConsumerWidget {
                         description: desc,
                         reportedTime: DateTime.now(),
                       );
-                      
+
                       // Report incident and close
-                      await ref.read(incidentListProvider.notifier).reportIncident(newIncident);
+                      await ref
+                          .read(incidentListProvider.notifier)
+                          .reportIncident(newIncident);
                       if (!context.mounted) return;
                       Navigator.pop(context);
-                      
+
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('Incident reported. Decision support engine updated.'),
+                          content: Text(
+                            'Incident reported. Decision support engine updated.',
+                          ),
                           backgroundColor: Colors.deepOrange,
                         ),
                       );

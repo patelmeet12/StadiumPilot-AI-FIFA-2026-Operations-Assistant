@@ -74,9 +74,10 @@ class IncidentListNotifier extends Notifier<List<Incident>> {
   }
 }
 
-final incidentListProvider = NotifierProvider<IncidentListNotifier, List<Incident>>(() {
-  return IncidentListNotifier();
-});
+final incidentListProvider =
+    NotifierProvider<IncidentListNotifier, List<Incident>>(() {
+      return IncidentListNotifier();
+    });
 
 // 3. Volunteer Tasks Provider
 class VolunteerTasksNotifier extends Notifier<List<VolunteerTask>> {
@@ -96,7 +97,9 @@ class VolunteerTasksNotifier extends Notifier<List<VolunteerTask>> {
     final list = state;
     final index = list.indexWhere((t) => t.id == taskId);
     if (index != -1) {
-      final updatedTask = list[index].copyWith(isCompleted: !list[index].isCompleted);
+      final updatedTask = list[index].copyWith(
+        isCompleted: !list[index].isCompleted,
+      );
       final repo = ref.read(stadiumRepositoryProvider);
       await repo.updateVolunteerTask(updatedTask);
       await fetchTasks();
@@ -104,12 +107,15 @@ class VolunteerTasksNotifier extends Notifier<List<VolunteerTask>> {
   }
 }
 
-final volunteerTasksProvider = NotifierProvider<VolunteerTasksNotifier, List<VolunteerTask>>(() {
-  return VolunteerTasksNotifier();
-});
+final volunteerTasksProvider =
+    NotifierProvider<VolunteerTasksNotifier, List<VolunteerTask>>(() {
+      return VolunteerTasksNotifier();
+    });
 
 // 4. Reactive AI Decision Feed Provider
-final aiRecommendationsProvider = FutureProvider<List<AIRecommendation>>((ref) async {
+final aiRecommendationsProvider = FutureProvider<List<AIRecommendation>>((
+  ref,
+) async {
   final role = ref.watch(userRoleProvider);
   final crowd = ref.watch(crowdStateProvider);
   final incidents = ref.watch(incidentListProvider);

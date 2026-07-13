@@ -1,7 +1,9 @@
 class CrowdState {
   final Map<String, int> gateWaitTimes; // Gate Name -> Wait time in mins
-  final Map<String, int> foodCourtWaitTimes; // Food Court Name -> Wait time in mins
-  final Map<String, int> restroomWaitTimes; // Restroom Location -> Wait time in mins
+  final Map<String, int>
+  foodCourtWaitTimes; // Food Court Name -> Wait time in mins
+  final Map<String, int>
+  restroomWaitTimes; // Restroom Location -> Wait time in mins
   final Map<String, double> zoneDensities; // Zone Name -> Density (0.0 - 1.0)
 
   const CrowdState({
@@ -17,12 +19,12 @@ class CrowdState {
         'Gate A': 8,
         'Gate B': 25, // Congested
         'Gate C': 15,
-        'Gate D': 5,  // Fast alternative
+        'Gate D': 5, // Fast alternative
         'Gate E': 18,
       },
       foodCourtWaitTimes: {
         'Food Court 1 (North)': 20, // Congested
-        'Food Court 2 (South)': 6,  // Fast alternative
+        'Food Court 2 (South)': 6, // Fast alternative
         'Food Court 3 (East)': 14,
         'Food Court 4 (West)': 8,
       },

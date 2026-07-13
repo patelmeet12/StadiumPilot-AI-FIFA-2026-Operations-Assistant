@@ -26,7 +26,8 @@ class StaticStadiumData {
         location: 'Section 104 Corridor',
         priority: 'Medium',
         status: 'Open',
-        description: 'Large soda spill near the main concession stand. Slip hazard for fans walking to restrooms.',
+        description:
+            'Large soda spill near the main concession stand. Slip hazard for fans walking to restrooms.',
         reportedTime: now.subtract(const Duration(minutes: 15)),
       ),
       Incident(
@@ -36,7 +37,8 @@ class StaticStadiumData {
         location: 'Gate B Outer Ring',
         priority: 'High',
         status: 'Open',
-        description: 'High concentration of ticket scanners failing to scan digital barcodes. Backlog is extending into the bus loop.',
+        description:
+            'High concentration of ticket scanners failing to scan digital barcodes. Backlog is extending into the bus loop.',
         reportedTime: now.subtract(const Duration(minutes: 10)),
       ),
       Incident(
@@ -46,7 +48,8 @@ class StaticStadiumData {
         location: 'Food Court 1 (North)',
         priority: 'Low',
         status: 'Resolved',
-        description: 'Breaker tripped on hot dog grill. Spark electrician resolved it.',
+        description:
+            'Breaker tripped on hot dog grill. Spark electrician resolved it.',
         reportedTime: now.subtract(const Duration(minutes: 45)),
       ),
     ];
@@ -58,7 +61,8 @@ class StaticStadiumData {
       VolunteerTask(
         id: 'task_1',
         title: 'Direct Fans to Gate D Reroute',
-        description: 'Direct fans approaching congested Gate B towards the less crowded Gate D bypass.',
+        description:
+            'Direct fans approaching congested Gate B towards the less crowded Gate D bypass.',
         location: 'Gate B North Plaza',
         priority: 'High',
         isCompleted: false,
@@ -67,7 +71,8 @@ class StaticStadiumData {
       VolunteerTask(
         id: 'task_2',
         title: 'Verify Elevator Braille Check',
-        description: 'Ensure elevator West tactile buttons and braille signage are clean and readable.',
+        description:
+            'Ensure elevator West tactile buttons and braille signage are clean and readable.',
         location: 'Elevator West Concourse',
         priority: 'Medium',
         isCompleted: false,
@@ -76,7 +81,8 @@ class StaticStadiumData {
       VolunteerTask(
         id: 'task_3',
         title: 'Replenish Recycling Bin Signage',
-        description: 'Affix new FIFA sustainability recycling stickers to sorting bins in the West Concourse.',
+        description:
+            'Affix new FIFA sustainability recycling stickers to sorting bins in the West Concourse.',
         location: 'West Concourse Corridor',
         priority: 'Low',
         isCompleted: true,

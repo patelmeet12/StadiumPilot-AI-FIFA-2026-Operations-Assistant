@@ -29,7 +29,9 @@ class OrganizerDashboardPage extends ConsumerWidget {
             children: [
               Text(
                 'Tournament Organizer Console',
-                style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+                style: theme.textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 4),
               const Text(
@@ -40,16 +42,25 @@ class OrganizerDashboardPage extends ConsumerWidget {
 
               // Emergency trigger banner controls
               Card(
-                color: isEmergency ? Colors.red.withValues(alpha: 0.12) : theme.cardTheme.color,
+                color: isEmergency
+                    ? Colors.red.withValues(alpha: 0.12)
+                    : theme.cardTheme.color,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
-                  side: BorderSide(color: isEmergency ? Colors.red : Colors.grey.shade700, width: 1.5),
+                  side: BorderSide(
+                    color: isEmergency ? Colors.red : Colors.grey.shade700,
+                    width: 1.5,
+                  ),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Row(
                     children: [
-                      Icon(Icons.campaign, color: isEmergency ? Colors.red : Colors.grey, size: 32),
+                      Icon(
+                        Icons.campaign,
+                        color: isEmergency ? Colors.red : Colors.grey,
+                        size: 32,
+                      ),
                       const SizedBox(width: 16),
                       Expanded(
                         child: Column(
@@ -57,13 +68,19 @@ class OrganizerDashboardPage extends ConsumerWidget {
                           children: [
                             const Text(
                               'Global Emergency Announcement Broadcast',
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
                             ),
                             Text(
-                              isEmergency 
-                                  ? 'ACTIVE: Multilingual evacuation guidelines are broadcasting across all user platforms.' 
+                              isEmergency
+                                  ? 'ACTIVE: Multilingual evacuation guidelines are broadcasting across all user platforms.'
                                   : 'INACTIVE: Venue operates under standard protocol.',
-                              style: TextStyle(color: isEmergency ? Colors.red : Colors.grey, fontSize: 12),
+                              style: TextStyle(
+                                color: isEmergency ? Colors.red : Colors.grey,
+                                fontSize: 12,
+                              ),
                             ),
                           ],
                         ),
@@ -75,7 +92,11 @@ class OrganizerDashboardPage extends ConsumerWidget {
                           ref.read(emergencyAlertProvider.notifier).toggle(val);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text(val ? 'Emergency broadcast initiated.' : 'Emergency broadcast terminated.'),
+                              content: Text(
+                                val
+                                    ? 'Emergency broadcast initiated.'
+                                    : 'Emergency broadcast terminated.',
+                              ),
                               backgroundColor: val ? Colors.red : Colors.green,
                             ),
                           );
@@ -102,7 +123,10 @@ class OrganizerDashboardPage extends ConsumerWidget {
                           children: [
                             const Text(
                               'Stadium Flow Heatmap',
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
                             ),
                             const SizedBox(height: 12),
                             _buildHeatmapGrid(zoneDensities, theme),
@@ -122,10 +146,26 @@ class OrganizerDashboardPage extends ConsumerWidget {
                           children: [
                             const Text(
                               'Gate Entrance Load Analysis',
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
                             ),
                             const SizedBox(height: 12),
-                            _buildGateOccupancyCard(crowdState.gateWaitTimes, theme),
+                            _buildGateOccupancyCard(
+                              crowdState.gateWaitTimes,
+                              theme,
+                            ),
+                            const SizedBox(height: 24),
+                            const Text(
+                              'Volunteer Deployment & Availability',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            _buildVolunteerAvailabilityCard(theme),
                           ],
                         ),
                       ),
@@ -142,6 +182,15 @@ class OrganizerDashboardPage extends ConsumerWidget {
               ),
               const SizedBox(height: 12),
               _buildIncidentsTable(context, ref, incidents, theme),
+              const SizedBox(height: 32),
+
+              // Transit overview
+              const Text(
+                'Stadium Transit & Commute Overview',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
+              const SizedBox(height: 12),
+              _buildTransportationOverviewCard(theme),
             ],
           ),
         ),
@@ -170,7 +219,7 @@ class OrganizerDashboardPage extends ConsumerWidget {
         } else if (density >= 0.6) {
           gridColor = Colors.amber;
         }
-        
+
         return Container(
           decoration: BoxDecoration(
             color: gridColor.withValues(alpha: 0.12),
@@ -182,19 +231,31 @@ class OrganizerDashboardPage extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(entry.key, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+              Text(
+                entry.key,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                ),
+              ),
               const Spacer(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     'Density Coefficient: ${(density * 100).toInt()}%',
-                    style: TextStyle(color: gridColor, fontWeight: FontWeight.bold, fontSize: 12),
+                    style: TextStyle(
+                      color: gridColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
                   ),
                   Icon(
-                    density >= 0.8 
-                        ? Icons.warning 
-                        : (density >= 0.6 ? Icons.info_outline : Icons.check_circle_outline),
+                    density >= 0.8
+                        ? Icons.warning
+                        : (density >= 0.6
+                              ? Icons.info_outline
+                              : Icons.check_circle_outline),
                     color: gridColor,
                     size: 18,
                   ),
@@ -220,14 +281,21 @@ class OrganizerDashboardPage extends ConsumerWidget {
               children: [
                 Icon(Icons.lightbulb, color: Colors.amber),
                 SizedBox(width: 8),
-                Text('AI Operational Insights', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                Text(
+                  'AI Operational Insights',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                ),
               ],
             ),
             const SizedBox(height: 12),
             if (isGateBHot) ...[
               const Text(
                 '• CAPACITY ALERT: North Entrance (Gate B) queue is operating at 145% safety threshold limits. Recommending redirecting visitors to East Concourse (Gate D).',
-                style: TextStyle(fontSize: 13, height: 1.4, color: Colors.orange),
+                style: TextStyle(
+                  fontSize: 13,
+                  height: 1.4,
+                  color: Colors.orange,
+                ),
               ),
               const SizedBox(height: 8),
             ],
@@ -254,7 +322,9 @@ class OrganizerDashboardPage extends ConsumerWidget {
         child: Column(
           children: gateTimes.entries.map((e) {
             final val = e.value;
-            final color = val >= 20 ? Colors.red : (val >= 10 ? Colors.amber : Colors.green);
+            final color = val >= 20
+                ? Colors.red
+                : (val >= 10 ? Colors.amber : Colors.green);
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Column(
@@ -263,8 +333,21 @@ class OrganizerDashboardPage extends ConsumerWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(e.key, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
-                      Text('$val mins wait', style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 13)),
+                      Text(
+                        e.key,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                        ),
+                      ),
+                      Text(
+                        '$val mins wait',
+                        style: TextStyle(
+                          color: color,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 6),
@@ -284,7 +367,12 @@ class OrganizerDashboardPage extends ConsumerWidget {
   }
 
   // Incidents board panel
-  Widget _buildIncidentsTable(BuildContext context, WidgetRef ref, List<Incident> list, ThemeData theme) {
+  Widget _buildIncidentsTable(
+    BuildContext context,
+    WidgetRef ref,
+    List<Incident> list,
+    ThemeData theme,
+  ) {
     if (list.isEmpty) {
       return const Card(
         child: Padding(
@@ -302,12 +390,42 @@ class OrganizerDashboardPage extends ConsumerWidget {
           scrollDirection: Axis.horizontal,
           child: DataTable(
             columns: const [
-              DataColumn(label: Text('Category', style: TextStyle(fontWeight: FontWeight.bold))),
-              DataColumn(label: Text('Location', style: TextStyle(fontWeight: FontWeight.bold))),
-              DataColumn(label: Text('Description', style: TextStyle(fontWeight: FontWeight.bold))),
-              DataColumn(label: Text('Priority', style: TextStyle(fontWeight: FontWeight.bold))),
-              DataColumn(label: Text('Status', style: TextStyle(fontWeight: FontWeight.bold))),
-              DataColumn(label: Text('Actions', style: TextStyle(fontWeight: FontWeight.bold))),
+              DataColumn(
+                label: Text(
+                  'Category',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+              DataColumn(
+                label: Text(
+                  'Location',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+              DataColumn(
+                label: Text(
+                  'Description',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+              DataColumn(
+                label: Text(
+                  'Priority',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+              DataColumn(
+                label: Text(
+                  'Status',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+              DataColumn(
+                label: Text(
+                  'Actions',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
             ],
             rows: list.map((inc) {
               Color priorityColor = Colors.grey;
@@ -319,12 +437,30 @@ class OrganizerDashboardPage extends ConsumerWidget {
                 cells: [
                   DataCell(Text(inc.category)),
                   DataCell(Text(inc.location)),
-                  DataCell(SizedBox(width: 200, child: Text(inc.title, overflow: TextOverflow.ellipsis))),
+                  DataCell(
+                    SizedBox(
+                      width: 200,
+                      child: Text(inc.title, overflow: TextOverflow.ellipsis),
+                    ),
+                  ),
                   DataCell(
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(color: priorityColor.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(4)),
-                      child: Text(inc.priority, style: TextStyle(color: priorityColor, fontWeight: FontWeight.bold, fontSize: 11)),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: priorityColor.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        inc.priority,
+                        style: TextStyle(
+                          color: priorityColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 11,
+                        ),
+                      ),
                     ),
                   ),
                   DataCell(
@@ -332,9 +468,11 @@ class OrganizerDashboardPage extends ConsumerWidget {
                       inc.status.toUpperCase(),
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: inc.status == 'Resolved' 
-                            ? Colors.green 
-                            : (inc.status == 'Assigned' ? Colors.blue : Colors.red),
+                        color: inc.status == 'Resolved'
+                            ? Colors.green
+                            : (inc.status == 'Assigned'
+                                  ? Colors.blue
+                                  : Colors.red),
                       ),
                     ),
                   ),
@@ -343,18 +481,30 @@ class OrganizerDashboardPage extends ConsumerWidget {
                       children: [
                         if (inc.status == 'Open')
                           ElevatedButton(
-                            child: const Text('Assign Staff', style: TextStyle(fontSize: 11)),
+                            child: const Text(
+                              'Assign Staff',
+                              style: TextStyle(fontSize: 11),
+                            ),
                             onPressed: () {
-                              ref.read(incidentListProvider.notifier).updateIncidentStatus(inc.id, 'Assigned');
+                              ref
+                                  .read(incidentListProvider.notifier)
+                                  .updateIncidentStatus(inc.id, 'Assigned');
                             },
                           )
                         else if (inc.status == 'Assigned')
                           ElevatedButton(
-                            style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                            ),
                             onPressed: () {
-                              ref.read(incidentListProvider.notifier).updateIncidentStatus(inc.id, 'Resolved');
+                              ref
+                                  .read(incidentListProvider.notifier)
+                                  .updateIncidentStatus(inc.id, 'Resolved');
                             },
-                            child: const Text('Mark Resolved', style: TextStyle(fontSize: 11)),
+                            child: const Text(
+                              'Mark Resolved',
+                              style: TextStyle(fontSize: 11),
+                            ),
                           )
                         else
                           const Icon(Icons.check_circle, color: Colors.green),
@@ -367,6 +517,218 @@ class OrganizerDashboardPage extends ConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildVolunteerAvailabilityCard(ThemeData theme) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.people_outline, color: Colors.blue, size: 24),
+                const SizedBox(width: 8),
+                Text(
+                  '38 Active / 3 on Break',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            LinearProgressIndicator(
+              value: 38 / 41,
+              backgroundColor: theme.brightness == Brightness.dark
+                  ? Colors.grey.shade800
+                  : Colors.grey.shade200,
+              valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
+            ),
+            const SizedBox(height: 16),
+            _buildVolunteerRow(
+              'Plaza Entry Gates',
+              '14 Active',
+              '2 on break',
+              Colors.green,
+            ),
+            const SizedBox(height: 10),
+            _buildVolunteerRow(
+              'Concourse Concessions',
+              '10 Active',
+              '0 on break',
+              Colors.green,
+            ),
+            const SizedBox(height: 10),
+            _buildVolunteerRow(
+              'Medical & Accessibility',
+              '8 Active',
+              '1 on break',
+              Colors.amber,
+            ),
+            const SizedBox(height: 10),
+            _buildVolunteerRow(
+              'Security Checkpoints',
+              '6 Active',
+              '0 on break',
+              Colors.green,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVolunteerRow(
+    String zone,
+    String activeCount,
+    String breakCount,
+    Color color,
+  ) {
+    return Row(
+      children: [
+        Container(
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(
+            zone,
+            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+          ),
+        ),
+        Text(
+          '$activeCount ($breakCount)',
+          style: const TextStyle(fontSize: 12, color: Colors.grey),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTransportationOverviewCard(ThemeData theme) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final isWide = constraints.maxWidth > 700;
+            return isWide
+                ? Row(
+                    children: [
+                      Expanded(
+                        child: _buildTransitItem(
+                          Icons.subway,
+                          'FIFA Metro Line 1',
+                          'Normal (72% load)',
+                          Colors.green,
+                        ),
+                      ),
+                      const VerticalDivider(width: 24),
+                      Expanded(
+                        child: _buildTransitItem(
+                          Icons.airport_shuttle,
+                          'Express Shuttles',
+                          'High loops (85% load)',
+                          Colors.amber,
+                        ),
+                      ),
+                      const VerticalDivider(width: 24),
+                      Expanded(
+                        child: _buildTransitItem(
+                          Icons.local_parking,
+                          'Parking Lots',
+                          '94% Occupied',
+                          Colors.red,
+                        ),
+                      ),
+                      const VerticalDivider(width: 24),
+                      Expanded(
+                        child: _buildTransitItem(
+                          Icons.local_taxi,
+                          'Rideshare Stand',
+                          'Normal wait (12% delay)',
+                          Colors.green,
+                        ),
+                      ),
+                    ],
+                  )
+                : Column(
+                    children: [
+                      _buildTransitItem(
+                        Icons.subway,
+                        'FIFA Metro Line 1',
+                        'Normal (72% load)',
+                        Colors.green,
+                      ),
+                      const SizedBox(height: 16),
+                      _buildTransitItem(
+                        Icons.airport_shuttle,
+                        'Express Shuttles',
+                        'High loops (85% load)',
+                        Colors.amber,
+                      ),
+                      const SizedBox(height: 16),
+                      _buildTransitItem(
+                        Icons.local_parking,
+                        'Parking Lots',
+                        '94% Occupied',
+                        Colors.red,
+                      ),
+                      const SizedBox(height: 16),
+                      _buildTransitItem(
+                        Icons.local_taxi,
+                        'Rideshare Stand',
+                        'Normal wait (12% delay)',
+                        Colors.green,
+                      ),
+                    ],
+                  );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTransitItem(
+    IconData icon,
+    String title,
+    String status,
+    Color color,
+  ) {
+    return Row(
+      children: [
+        Icon(icon, size: 24, color: Colors.grey),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+              Text(
+                status,
+                style: const TextStyle(fontSize: 11, color: Colors.grey),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+        Container(
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
+      ],
     );
   }
 }

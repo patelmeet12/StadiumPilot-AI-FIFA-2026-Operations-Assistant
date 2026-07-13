@@ -63,7 +63,9 @@ class StadiumShell extends ConsumerWidget {
       ),
     ];
 
-    final filteredItems = menuItems.where((item) => item.roles.contains(activeRole)).toList();
+    final filteredItems = menuItems
+        .where((item) => item.roles.contains(activeRole))
+        .toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -73,7 +75,10 @@ class StadiumShell extends ConsumerWidget {
             const SizedBox(width: 8),
             Text(
               LocalDictionary.translate('app_title', activeLanguage),
-              style: const TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.1),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.1,
+              ),
             ),
           ],
         ),
@@ -90,21 +95,39 @@ class StadiumShell extends ConsumerWidget {
               }
             },
             items: const [
-              DropdownMenuItem(value: 'en', child: Text('EN ', style: TextStyle(color: Colors.white))),
-              DropdownMenuItem(value: 'es', child: Text('ES ', style: TextStyle(color: Colors.white))),
-              DropdownMenuItem(value: 'fr', child: Text('FR ', style: TextStyle(color: Colors.white))),
-              DropdownMenuItem(value: 'hi', child: Text('HI ', style: TextStyle(color: Colors.white))),
-              DropdownMenuItem(value: 'ar', child: Text('AR ', style: TextStyle(color: Colors.white))),
-              DropdownMenuItem(value: 'pt', child: Text('PT ', style: TextStyle(color: Colors.white))),
+              DropdownMenuItem(
+                value: 'en',
+                child: Text('EN ', style: TextStyle(color: Colors.white)),
+              ),
+              DropdownMenuItem(
+                value: 'es',
+                child: Text('ES ', style: TextStyle(color: Colors.white)),
+              ),
+              DropdownMenuItem(
+                value: 'fr',
+                child: Text('FR ', style: TextStyle(color: Colors.white)),
+              ),
+              DropdownMenuItem(
+                value: 'hi',
+                child: Text('HI ', style: TextStyle(color: Colors.white)),
+              ),
+              DropdownMenuItem(
+                value: 'ar',
+                child: Text('AR ', style: TextStyle(color: Colors.white)),
+              ),
+              DropdownMenuItem(
+                value: 'pt',
+                child: Text('PT ', style: TextStyle(color: Colors.white)),
+              ),
             ],
           ),
           const SizedBox(width: 8),
-          
+
           // Role switcher dropdown directly in header
           DropdownButton<UserRole>(
             value: activeRole,
-            dropdownColor: theme.brightness == Brightness.dark 
-                ? const Color(0xFF0F261B) 
+            dropdownColor: theme.brightness == Brightness.dark
+                ? const Color(0xFF0F261B)
                 : Colors.white,
             underline: const SizedBox(),
             icon: Icon(Icons.person, color: theme.colorScheme.secondary),
@@ -118,17 +141,19 @@ class StadiumShell extends ConsumerWidget {
                 value: role,
                 child: Text(
                   LocalDictionary.translate(
-                    role == UserRole.fan 
-                        ? 'role_fan' 
-                        : role == UserRole.volunteer 
-                            ? 'role_volunteer' 
-                            : role == UserRole.organizer 
-                                ? 'role_organizer' 
-                                : 'role_staff',
+                    role == UserRole.fan
+                        ? 'role_fan'
+                        : role == UserRole.volunteer
+                        ? 'role_volunteer'
+                        : role == UserRole.organizer
+                        ? 'role_organizer'
+                        : 'role_staff',
                     activeLanguage,
                   ),
                   style: TextStyle(
-                    color: theme.brightness == Brightness.dark ? Colors.white : Colors.black87,
+                    color: theme.brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black87,
                     fontSize: 13,
                   ),
                 ),
@@ -141,16 +166,20 @@ class StadiumShell extends ConsumerWidget {
           IconButton(
             tooltip: 'Contrast Toggle',
             icon: Icon(
-              activeTheme == AppThemeMode.highContrast 
-                  ? Icons.visibility_off 
+              activeTheme == AppThemeMode.highContrast
+                  ? Icons.visibility_off
                   : Icons.accessibility_new,
               color: Colors.white,
             ),
             onPressed: () {
               if (activeTheme == AppThemeMode.highContrast) {
-                ref.read(themeModeProvider.notifier).setTheme(AppThemeMode.dark);
+                ref
+                    .read(themeModeProvider.notifier)
+                    .setTheme(AppThemeMode.dark);
               } else {
-                ref.read(themeModeProvider.notifier).setTheme(AppThemeMode.highContrast);
+                ref
+                    .read(themeModeProvider.notifier)
+                    .setTheme(AppThemeMode.highContrast);
               }
             },
           ),
@@ -159,17 +188,19 @@ class StadiumShell extends ConsumerWidget {
           if (activeTheme != AppThemeMode.highContrast)
             IconButton(
               icon: Icon(
-                activeTheme == AppThemeMode.dark 
-                    ? Icons.wb_sunny 
+                activeTheme == AppThemeMode.dark
+                    ? Icons.wb_sunny
                     : Icons.brightness_3,
                 color: Colors.white,
               ),
               onPressed: () {
-                ref.read(themeModeProvider.notifier).setTheme(
-                  activeTheme == AppThemeMode.dark 
-                      ? AppThemeMode.light 
-                      : AppThemeMode.dark,
-                );
+                ref
+                    .read(themeModeProvider.notifier)
+                    .setTheme(
+                      activeTheme == AppThemeMode.dark
+                          ? AppThemeMode.light
+                          : AppThemeMode.dark,
+                    );
               },
             ),
           const SizedBox(width: 12),
@@ -182,39 +213,53 @@ class StadiumShell extends ConsumerWidget {
               padding: EdgeInsets.zero,
               children: [
                 DrawerHeader(
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.primary,
-                  ),
+                  decoration: BoxDecoration(color: theme.colorScheme.primary),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Text(
                         LocalDictionary.translate('app_title', activeLanguage),
-                        style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         'Role: ${activeRole.displayName}',
-                        style: TextStyle(color: theme.colorScheme.secondary, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          color: theme.colorScheme.secondary,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   ),
                 ),
-                ...filteredItems.map((item) => ListTile(
-                  leading: Icon(item.icon, color: currentPath == item.path ? theme.colorScheme.primary : null),
-                  title: Text(
-                    LocalDictionary.translate(item.labelKey, activeLanguage),
-                    style: TextStyle(
-                      fontWeight: currentPath == item.path ? FontWeight.bold : null,
+                ...filteredItems.map(
+                  (item) => ListTile(
+                    leading: Icon(
+                      item.icon,
+                      color: currentPath == item.path
+                          ? theme.colorScheme.primary
+                          : null,
                     ),
+                    title: Text(
+                      LocalDictionary.translate(item.labelKey, activeLanguage),
+                      style: TextStyle(
+                        fontWeight: currentPath == item.path
+                            ? FontWeight.bold
+                            : null,
+                      ),
+                    ),
+                    selected: currentPath == item.path,
+                    onTap: () {
+                      Navigator.pop(context);
+                      context.go(item.path);
+                    },
                   ),
-                  selected: currentPath == item.path,
-                  onTap: () {
-                    Navigator.pop(context);
-                    context.go(item.path);
-                  },
-                )),
+                ),
                 const Divider(),
                 ListTile(
                   leading: const Icon(Icons.switch_account),
@@ -227,7 +272,7 @@ class StadiumShell extends ConsumerWidget {
               ],
             ),
           );
-        }
+        },
       ),
       body: Column(
         children: [
@@ -245,21 +290,33 @@ class StadiumShell extends ConsumerWidget {
                       const Icon(Icons.warning, color: Colors.white, size: 24),
                       const SizedBox(width: 8),
                       Text(
-                        LocalDictionary.translate('emergency_alert', activeLanguage),
-                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16, letterSpacing: 1.1),
+                        LocalDictionary.translate(
+                          'emergency_alert',
+                          activeLanguage,
+                        ),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          letterSpacing: 1.1,
+                        ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 4),
                   Text(
                     LocalDictionary.translate('emergency_msg', activeLanguage),
-                    style: const TextStyle(color: Colors.white, fontSize: 13, height: 1.3),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 13,
+                      height: 1.3,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                 ],
               ),
             ),
-          
+
           // Main layout content split responsive
           Expanded(
             child: Row(
@@ -272,7 +329,9 @@ class StadiumShell extends ConsumerWidget {
                       border: Border(
                         right: BorderSide(
                           color: theme.dividerColor,
-                          width: activeTheme == AppThemeMode.highContrast ? 2.0 : 0.5,
+                          width: activeTheme == AppThemeMode.highContrast
+                              ? 2.0
+                              : 0.5,
                         ),
                       ),
                       color: theme.cardTheme.color ?? theme.cardColor,
@@ -285,10 +344,14 @@ class StadiumShell extends ConsumerWidget {
                           padding: const EdgeInsets.all(16),
                           margin: const EdgeInsets.symmetric(horizontal: 12),
                           decoration: BoxDecoration(
-                            color: theme.colorScheme.primary.withValues(alpha: 0.08),
+                            color: theme.colorScheme.primary.withValues(
+                              alpha: 0.08,
+                            ),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                              color: theme.colorScheme.primary.withValues(
+                                alpha: 0.3,
+                              ),
                               width: 1,
                             ),
                           ),
@@ -309,12 +372,20 @@ class StadiumShell extends ConsumerWidget {
                                       activeRole.displayName,
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
-                                        color: activeTheme == AppThemeMode.highContrast 
-                                            ? Colors.yellow 
+                                        color:
+                                            activeTheme ==
+                                                AppThemeMode.highContrast
+                                            ? Colors.yellow
                                             : theme.textTheme.titleLarge?.color,
                                       ),
                                     ),
-                                    const Text('FIFA 2026 Crew', style: TextStyle(fontSize: 11, color: Colors.grey)),
+                                    const Text(
+                                      'FIFA 2026 Crew',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -322,90 +393,123 @@ class StadiumShell extends ConsumerWidget {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        
+
                         // Menu items
                         Expanded(
                           child: ListView(
                             children: filteredItems.map((item) {
                               final isSelected = currentPath == item.path;
                               return Container(
-                                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(8),
-                                  color: isSelected 
-                                      ? theme.colorScheme.primary.withValues(alpha: 0.15) 
+                                  color: isSelected
+                                      ? theme.colorScheme.primary.withValues(
+                                          alpha: 0.15,
+                                        )
                                       : Colors.transparent,
                                 ),
                                 child: ListTile(
                                   dense: true,
                                   leading: Icon(
                                     item.icon,
-                                    color: isSelected ? theme.colorScheme.primary : theme.iconTheme.color,
+                                    color: isSelected
+                                        ? theme.colorScheme.primary
+                                        : theme.iconTheme.color,
                                   ),
                                   title: Text(
-                                    LocalDictionary.translate(item.labelKey, activeLanguage),
+                                    LocalDictionary.translate(
+                                      item.labelKey,
+                                      activeLanguage,
+                                    ),
                                     style: TextStyle(
                                       fontSize: 14,
-                                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                                      color: isSelected 
-                                          ? theme.colorScheme.primary 
+                                      fontWeight: isSelected
+                                          ? FontWeight.bold
+                                          : FontWeight.normal,
+                                      color: isSelected
+                                          ? theme.colorScheme.primary
                                           : theme.textTheme.bodyLarge?.color,
                                     ),
                                   ),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
                                   onTap: () => context.go(item.path),
                                 ),
                               );
                             }).toList(),
                           ),
                         ),
-                        
+
                         // Bottom Log Out Option
                         const Divider(),
                         ListTile(
                           dense: true,
-                          leading: const Icon(Icons.exit_to_app, color: Colors.grey),
-                          title: const Text('Change Portal', style: TextStyle(color: Colors.grey)),
+                          leading: const Icon(
+                            Icons.exit_to_app,
+                            color: Colors.grey,
+                          ),
+                          title: const Text(
+                            'Change Portal',
+                            style: TextStyle(color: Colors.grey),
+                          ),
                           onTap: () => context.go('/'),
                         ),
                         const SizedBox(height: 16),
                       ],
                     ),
                   ),
-                
+
                 // Active workspace page
-                Expanded(
-                  child: child,
-                ),
+                Expanded(child: child),
               ],
             ),
           ),
         ],
       ),
-      
+
       // Bottom navigation bar for mobile devices
       bottomNavigationBar: MediaQuery.of(context).size.width <= 900
           ? BottomNavigationBar(
-              currentIndex: filteredItems.indexWhere((item) => item.path == currentPath) == -1 
-                  ? 0 
-                  : filteredItems.indexWhere((item) => item.path == currentPath),
+              currentIndex:
+                  filteredItems.indexWhere(
+                        (item) => item.path == currentPath,
+                      ) ==
+                      -1
+                  ? 0
+                  : filteredItems.indexWhere(
+                      (item) => item.path == currentPath,
+                    ),
               type: BottomNavigationBarType.fixed,
               backgroundColor: theme.appBarTheme.backgroundColor,
               selectedItemColor: theme.colorScheme.secondary,
               unselectedItemColor: Colors.white70,
-              selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
+              selectedLabelStyle: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 11,
+              ),
               unselectedLabelStyle: const TextStyle(fontSize: 10),
               items: filteredItems.map((item) {
                 return BottomNavigationBarItem(
                   icon: Icon(item.icon),
-                  label: LocalDictionary.translate(item.labelKey, activeLanguage),
+                  label: LocalDictionary.translate(
+                    item.labelKey,
+                    activeLanguage,
+                  ),
                 );
               }).toList(),
             )
           : null,
       floatingActionButton: FloatingActionButton.extended(
         icon: const Icon(Icons.psychology),
-        label: const Text('AI Pilot', style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 0.5)),
+        label: const Text(
+          'AI Pilot',
+          style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 0.5),
+        ),
         backgroundColor: theme.colorScheme.primary,
         foregroundColor: Colors.white,
         onPressed: () => _showAIChatbot(context, activeLanguage, activeRole),
@@ -419,58 +523,76 @@ class StadiumShell extends ConsumerWidget {
       'en': {
         'title': 'AI Operational Assistant',
         'placeholder': 'Ask StadiumPilot AI...',
-        'welcome_fan': 'Welcome to StadiumPilot AI. Ask me about your match ticket, recommended arrival times, queue bypasses, navigation routes, or transportation!',
-        'welcome_volunteer': 'Volunteer AI Assist ready. Ask me about your tasks, how to report incidents, check facility operations, or evacuation instructions.',
-        'welcome_organizer': 'Operations Desk Console AI active. Ask me about gate density limits, dispatching volunteers, or emergency protocols.',
+        'welcome_fan':
+            'Welcome to StadiumPilot AI. Ask me about your match ticket, recommended arrival times, queue bypasses, navigation routes, or transportation!',
+        'welcome_volunteer':
+            'Volunteer AI Assist ready. Ask me about your tasks, how to report incidents, check facility operations, or evacuation instructions.',
+        'welcome_organizer':
+            'Operations Desk Console AI active. Ask me about gate density limits, dispatching volunteers, or emergency protocols.',
         'send': 'Send',
       },
       'es': {
         'title': 'Asistente Operativo de IA',
         'placeholder': 'Pregunta a StadiumPilot AI...',
-        'welcome_fan': 'Bienvenido a StadiumPilot AI. ¡Pregúntame sobre tu boleto, tiempos de llegada recomendados, desvíos de colas, rutas de navegación o transporte!',
-        'welcome_volunteer': 'Asistencia de IA de voluntariado lista. Pregúntame sobre tus tareas, cómo informar incidentes o instrucciones de evacuación.',
-        'welcome_organizer': 'IA de Consola activa. Pregúntame sobre límites de densidad de puertas, despacho de voluntarios o protocolos de emergencia.',
+        'welcome_fan':
+            'Bienvenido a StadiumPilot AI. ¡Pregúntame sobre tu boleto, tiempos de llegada recomendados, desvíos de colas, rutas de navegación o transporte!',
+        'welcome_volunteer':
+            'Asistencia de IA de voluntariado lista. Pregúntame sobre tus tareas, cómo informar incidentes o instrucciones de evacuación.',
+        'welcome_organizer':
+            'IA de Consola activa. Pregúntame sobre límites de densidad de puertas, despacho de voluntarios o protocolos de emergencia.',
         'send': 'Enviar',
       },
       'fr': {
         'title': 'Assistant Opérationnel IA',
         'placeholder': 'Demandez à StadiumPilot IA...',
-        'welcome_fan': 'Bienvenue sur StadiumPilot IA. Posez-moi des questions sur vos billets, heures d\'arrivée, contournement de files, itinéraires ou transports !',
-        'welcome_volunteer': 'IA d\'aide aux bénévoles prête. Interrogez-moi sur vos tâches, signalements d\'incidents ou consignes d\'évacuation.',
-        'welcome_organizer': 'IA de la console des opérations active. Posez des questions sur le flux des portes, affectation des bénévoles ou protocoles d\'urgence.',
+        'welcome_fan':
+            'Bienvenue sur StadiumPilot IA. Posez-moi des questions sur vos billets, heures d\'arrivée, contournement de files, itinéraires ou transports !',
+        'welcome_volunteer':
+            'IA d\'aide aux bénévoles prête. Interrogez-moi sur vos tâches, signalements d\'incidents ou consignes d\'évacuation.',
+        'welcome_organizer':
+            'IA de la console des opérations active. Posez des questions sur le flux des portes, affectation des bénévoles ou protocoles d\'urgence.',
         'send': 'Envoyer',
       },
       'hi': {
         'title': 'एआई संचालन सहायक',
         'placeholder': 'StadiumPilot AI से पूछें...',
-        'welcome_fan': 'StadiumPilot AI में आपका स्वागत है। मुझसे अपने टिकट, अनुशंसित आगमन समय, कतार बाईपास, मार्ग या परिवहन के बारे में पूछें!',
-        'welcome_volunteer': 'स्वयंसेवक एआई सहायता तैयार है। अपने कार्यों, घटनाओं की रिपोर्ट करने या निकासी निर्देशों के बारे में पूछें।',
-        'welcome_organizer': 'ऑपरेशन्स डेस्क कंसोल एआई सक्रिय है। गेट घनत्व सीमा, स्वयंसेवकों को भेजने, या आपातकालीन प्रोटोकॉल के बारे में पूछें।',
+        'welcome_fan':
+            'StadiumPilot AI में आपका स्वागत है। मुझसे अपने टिकट, अनुशंसित आगमन समय, कतार बाईपास, मार्ग या परिवहन के बारे में पूछें!',
+        'welcome_volunteer':
+            'स्वयंसेवक एआई सहायता तैयार है। अपने कार्यों, घटनाओं की रिपोर्ट करने या निकासी निर्देशों के बारे में पूछें।',
+        'welcome_organizer':
+            'ऑपरेशन्स डेस्क कंसोल एआई सक्रिय है। गेट घनत्व सीमा, स्वयंसेवकों को भेजने, या आपातकालीन प्रोटोकॉल के बारे में पूछें।',
         'send': 'भेजें',
       },
       'ar': {
         'title': 'مساعد العمليات الذكي',
         'placeholder': 'اسأل مساعد الذكاء الاصطناعي...',
-        'welcome_fan': 'مرحباً بك في StadiumPilot AI. اسألني عن تذكرتك، أو أوقات الوصول الموصى بها، أو تجاوز الطوابير، أو مسارات التنقل، أو وسائل النقل!',
-        'welcome_volunteer': 'مساعد المتطوعين الذكي جاهز. اسألني عن مهامك، أو كيفية الإبلاغ عن الحوادث، أو تعليمات الإخلاء.',
-        'welcome_organizer': 'مساعد لوحة التحكم التشغيلية نشط. اسألني عن حدود كثافة البوابات، أو إرسال المتطوعين، أو بروتوكولات الطوارئ.',
+        'welcome_fan':
+            'مرحباً بك في StadiumPilot AI. اسألني عن تذكرتك، أو أوقات الوصول الموصى بها، أو تجاوز الطوابير، أو مسارات التنقل، أو وسائل النقل!',
+        'welcome_volunteer':
+            'مساعد المتطوعين الذكي جاهز. اسألني عن مهامك، أو كيفية الإبلاغ عن الحوادث، أو تعليمات الإخلاء.',
+        'welcome_organizer':
+            'مساعد لوحة التحكم التشغيلية نشط. اسألني عن حدود كثافة البوابات، أو إرسال المتطوعين، أو بروتوكولات الطوارئ.',
         'send': 'إرسال',
       },
       'pt': {
         'title': 'Assistente Operacional IA',
         'placeholder': 'Pergunte ao StadiumPilot IA...',
-        'welcome_fan': 'Bem-vindo ao StadiumPilot IA. Pergunte-me sobre seu ingresso, horários de chegada recomendados, desvios de filas, rotas ou transporte!',
-        'welcome_volunteer': 'Assistência de IA de voluntários pronta. Pergunte-me sobre suas tarefas, como relatar incidentes ou instruções de evacuação.',
-        'welcome_organizer': 'IA do console de operações ativa. Pergunte sobre densidade de portões, despacho de voluntários ou protocolos de emergência.',
+        'welcome_fan':
+            'Bem-vindo ao StadiumPilot IA. Pergunte-me sobre seu ingresso, horários de chegada recomendados, desvios de filas, rotas ou transporte!',
+        'welcome_volunteer':
+            'Assistência de IA de voluntários pronta. Pergunte-me sobre suas tarefas, como relatar incidentes ou instruções de evacuação.',
+        'welcome_organizer':
+            'IA do console de operações ativa. Pergunte sobre densidade de portões, despacho de voluntários ou protocolos de emergência.',
         'send': 'Enviar',
-      }
+      },
     };
     final t = localChatDict[lang] ?? localChatDict['en']!;
-    final welcome = role == UserRole.organizer 
-        ? t['welcome_organizer']! 
-        : role == UserRole.volunteer 
-            ? t['welcome_volunteer']! 
-            : t['welcome_fan']!;
+    final welcome = role == UserRole.organizer
+        ? t['welcome_organizer']!
+        : role == UserRole.volunteer
+        ? t['welcome_volunteer']!
+        : t['welcome_fan']!;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -554,7 +676,12 @@ class _AIChatWidgetState extends State<_AIChatWidget> {
   String _generateAIReply(String query, String lang) {
     final q = query.toLowerCase();
 
-    if (q.contains('ticket') || q.contains('boleto') || q.contains('billet') || q.contains('टिकट') || q.contains('تذكر') || q.contains('ingresso')) {
+    if (q.contains('ticket') ||
+        q.contains('boleto') ||
+        q.contains('billet') ||
+        q.contains('टिकट') ||
+        q.contains('تذكر') ||
+        q.contains('ingresso')) {
       if (lang == 'es') {
         return 'StadiumPilot AI (95% de confianza): Su boleto para Argentina vs Francia está confirmado en la Sección 128, Fila N, Asiento 12. Se recomienda ingresar por la Puerta C a las 18:30 para evitar controles.';
       } else if (lang == 'fr') {
@@ -569,7 +696,13 @@ class _AIChatWidgetState extends State<_AIChatWidget> {
       return 'StadiumPilot AI (95% confidence): Your ticket for Argentina vs France is confirmed in Section 128, Row N, Seat 12. Recommended entry is via Gate C at 18:30 to bypass congested checkpoints.';
     }
 
-    if (q.contains('route') || q.contains('navigate') || q.contains('ruta') || q.contains('ir a') || q.contains('मार्ग') || q.contains('مسار') || q.contains('caminho')) {
+    if (q.contains('route') ||
+        q.contains('navigate') ||
+        q.contains('ruta') ||
+        q.contains('ir a') ||
+        q.contains('मार्ग') ||
+        q.contains('مسار') ||
+        q.contains('caminho')) {
       if (lang == 'es') {
         return 'StadiumPilot AI (98% de confianza): La ruta más rápida es a través de la explanada norte. Si necesita una ruta sin escalones, active el modo Silla de ruedas para usar los ascensores del sector oeste.';
       } else if (lang == 'fr') {
@@ -584,23 +717,51 @@ class _AIChatWidgetState extends State<_AIChatWidget> {
       return 'StadiumPilot AI (98% confidence): The fastest route is via the North Esplanade. If you need step-free access, enable Wheelchair-friendly mode to prioritize elevator shafts in the West corridor.';
     }
 
-    if (q.contains('food') || q.contains('eat') || q.contains('comida') || q.contains('concession') || q.contains('खा') || q.contains('طعام') || q.contains('restaurante')) {
+    if (q.contains('food') ||
+        q.contains('eat') ||
+        q.contains('comida') ||
+        q.contains('concession') ||
+        q.contains('खा') ||
+        q.contains('طعام') ||
+        q.contains('restaurante')) {
       return 'StadiumPilot AI (94% confidence): Food Court A has a 20-minute wait. AI suggests ordering from Concession C (Zone G) where wait time is currently under 4 minutes. You will save approximately 16 minutes.';
     }
 
-    if (q.contains('metro') || q.contains('bus') || q.contains('transit') || q.contains('transport') || q.contains('परिवहन') || q.contains('حافلة') || q.contains('مترو') || q.contains('trânsito')) {
+    if (q.contains('metro') ||
+        q.contains('bus') ||
+        q.contains('transit') ||
+        q.contains('transport') ||
+        q.contains('परिवहन') ||
+        q.contains('حافلة') ||
+        q.contains('مترو') ||
+        q.contains('trânsito')) {
       return 'StadiumPilot AI (97% confidence): Express Metro Line 1 is operating with 3m frequencies. Parking Lots are at 92% capacity. Taking the Metro reduces carbon footprint by 84% compared to ride-sharing.';
     }
 
-    if (q.contains('incident') || q.contains('spill') || q.contains('medical') || q.contains('घटना') || q.contains('حادث') || q.contains('spills')) {
+    if (q.contains('incident') ||
+        q.contains('spill') ||
+        q.contains('medical') ||
+        q.contains('घटना') ||
+        q.contains('حادث') ||
+        q.contains('spills')) {
       return 'StadiumPilot AI Dispatch: Active incident (Spill in Sec 104 Corridor) has been assigned to Volunteer Zone B. Staff is en-route. Use the Organizer console to dispatch additional personnel.';
     }
 
-    if (q.contains('emergency') || q.contains('evacuate') || q.contains('safety') || q.contains('आपात') || q.contains('طوارئ') || q.contains('segurança')) {
+    if (q.contains('emergency') ||
+        q.contains('evacuate') ||
+        q.contains('safety') ||
+        q.contains('आपात') ||
+        q.contains('طوارئ') ||
+        q.contains('segurança')) {
       return 'StadiumPilot AI Emergency Protocol: Evacuate calmly. Proceed to nearest illuminated green exit signage. Avoid lift shafts. Follow instructions from Zone A/B Volunteer leaders.';
     }
 
-    if (q.contains('accessibility') || q.contains('elevator') || q.contains('wheelchair') || q.contains('सुगमता') || q.contains('سهولة') || q.contains('acessib')) {
+    if (q.contains('accessibility') ||
+        q.contains('elevator') ||
+        q.contains('wheelchair') ||
+        q.contains('सुगमता') ||
+        q.contains('سهولة') ||
+        q.contains('acessib')) {
       return 'StadiumPilot AI (99% confidence): Elevator shafts East & West are fully operational. Accessibility golf cart loops are running. Low-noise sensory rooms are available in Zones C and G.';
     }
 
@@ -644,7 +805,10 @@ class _AIChatWidgetState extends State<_AIChatWidget> {
                 const SizedBox(width: 12),
                 Text(
                   widget.title,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
                 const Spacer(),
                 IconButton(
@@ -664,7 +828,9 @@ class _AIChatWidgetState extends State<_AIChatWidget> {
                 final msg = _messages[index];
                 final isAI = msg['sender'] == 'ai';
                 return Align(
-                  alignment: isAI ? Alignment.centerLeft : Alignment.centerRight,
+                  alignment: isAI
+                      ? Alignment.centerLeft
+                      : Alignment.centerRight,
                   child: Container(
                     margin: const EdgeInsets.symmetric(vertical: 6),
                     padding: const EdgeInsets.all(12),
@@ -672,22 +838,28 @@ class _AIChatWidgetState extends State<_AIChatWidget> {
                       maxWidth: MediaQuery.of(context).size.width * 0.75,
                     ),
                     decoration: BoxDecoration(
-                      color: isAI 
-                          ? (widget.theme.brightness == Brightness.dark 
-                              ? Colors.grey.shade900 
-                              : Colors.grey.shade200)
+                      color: isAI
+                          ? (widget.theme.brightness == Brightness.dark
+                                ? Colors.grey.shade900
+                                : Colors.grey.shade200)
                           : widget.theme.colorScheme.primary,
                       borderRadius: BorderRadius.circular(12).copyWith(
-                        topLeft: isAI ? const Radius.circular(0) : const Radius.circular(12),
-                        topRight: isAI ? const Radius.circular(12) : const Radius.circular(0),
+                        topLeft: isAI
+                            ? const Radius.circular(0)
+                            : const Radius.circular(12),
+                        topRight: isAI
+                            ? const Radius.circular(12)
+                            : const Radius.circular(0),
                       ),
                     ),
                     child: Text(
                       msg['text']!,
                       style: TextStyle(
                         fontSize: 13,
-                        color: isAI 
-                            ? (widget.theme.brightness == Brightness.dark ? Colors.white : Colors.black87)
+                        color: isAI
+                            ? (widget.theme.brightness == Brightness.dark
+                                  ? Colors.white
+                                  : Colors.black87)
                             : Colors.white,
                       ),
                     ),
@@ -707,7 +879,10 @@ class _AIChatWidgetState extends State<_AIChatWidget> {
                     style: const TextStyle(fontSize: 13),
                     decoration: InputDecoration(
                       hintText: widget.placeholder,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(24),
                       ),
@@ -722,9 +897,15 @@ class _AIChatWidgetState extends State<_AIChatWidget> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(24),
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 18,
+                      vertical: 12,
+                    ),
                   ),
-                  child: Text(widget.sendLabel, style: const TextStyle(fontSize: 12)),
+                  child: Text(
+                    widget.sendLabel,
+                    style: const TextStyle(fontSize: 12),
+                  ),
                 ),
               ],
             ),
