@@ -594,28 +594,31 @@ class DashboardPage extends ConsumerWidget {
   }
 
   Widget _buildTravelItem(IconData icon, String title, String status, Color indicatorColor) {
-    return Row(
-      children: [
-        Icon(icon, size: 20, color: Colors.grey),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
-              Text(status, style: const TextStyle(fontSize: 11, color: Colors.grey)),
-            ],
+    return Semantics(
+      label: 'Transit: $title, status: $status',
+      child: Row(
+        children: [
+          Icon(icon, size: 20, color: Colors.grey),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                Text(status, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+              ],
+            ),
           ),
-        ),
-        Container(
-          width: 10,
-          height: 10,
-          decoration: BoxDecoration(
-            color: indicatorColor,
-            shape: BoxShape.circle,
+          Container(
+            width: 10,
+            height: 10,
+            decoration: BoxDecoration(
+              color: indicatorColor,
+              shape: BoxShape.circle,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -725,28 +728,31 @@ class DashboardPage extends ConsumerWidget {
   }
 
   Widget _buildAccessItem(IconData icon, String title, String status, Color indicatorColor) {
-    return Row(
-      children: [
-        Icon(icon, size: 20, color: Colors.grey),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
-              Text(status, style: const TextStyle(fontSize: 11, color: Colors.grey)),
-            ],
+    return Semantics(
+      label: 'Accessibility utility: $title, status: $status',
+      child: Row(
+        children: [
+          Icon(icon, size: 20, color: Colors.grey),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                Text(status, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+              ],
+            ),
           ),
-        ),
-        Container(
-          width: 10,
-          height: 10,
-          decoration: BoxDecoration(
-            color: indicatorColor,
-            shape: BoxShape.circle,
+          Container(
+            width: 10,
+            height: 10,
+            decoration: BoxDecoration(
+              color: indicatorColor,
+              shape: BoxShape.circle,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
