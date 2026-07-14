@@ -30,6 +30,22 @@ class MockActiveScenarioNotifier extends ActiveScenarioNotifier {
   SimulationScenario build() => mockScenario;
 }
 
+class MockUserRoleNotifier extends UserRoleNotifier {
+  final UserRole mockRole;
+  MockUserRoleNotifier(this.mockRole);
+
+  @override
+  UserRole build() => mockRole;
+}
+
+class MockIncidentListNotifier extends IncidentListNotifier {
+  final List<Incident> mockIncidents;
+  MockIncidentListNotifier(this.mockIncidents);
+
+  @override
+  List<Incident> build() => mockIncidents;
+}
+
 class MockCrowdStateNotifier extends CrowdStateNotifier {
   final CrowdState mockState;
   MockCrowdStateNotifier(this.mockState);
@@ -728,6 +744,57 @@ void main() {
         );
         expect(powerRec.priority, equals('Critical'));
         expect(powerRec.recommendation, contains('Elevators are offline'));
+      },
+    );
+  });
+
+  group('StadiumPilot AI - Proactive Alerts Engine Tests', () {
+    test(
+      'Should generate proactive notifications when delay and surge occur',
+      () async {
+        final container = ProviderContainer(
+          overrides: [
+            userRoleProvider.overrideWith(
+              () => MockUserRoleNotifier(UserRole.fan),
+            ),
+            selectedMatchProvider.overrideWith(
+              () => MockSelectedMatchNotifier('match_usa_england'),
+            ),
+            incidentListProvider.overrideWith(
+              () => MockIncidentListNotifier([]),
+            ),
+            crowdStateProvider.overrideWith(
+              () => MockCrowdStateNotifier(
+                const CrowdState(
+                  zoneDensities: {'Gate B': 0.8},
+                  gateWaitTimes: {'Gate B': 25},
+                  foodCourtWaitTimes: {'Food Court 1 (North)': 20},
+                  restroomWaitTimes: {'Restrooms Level 1 East': 15},
+                ),
+              ),
+            ),
+            activeScenarioProvider.overrideWith(
+              () =>
+                  MockActiveScenarioNotifier(SimulationScenario.transportDelay),
+            ),
+          ],
+        );
+
+        final alerts = await container.read(proactiveAlertsProvider.future);
+
+        // Verify Metro delay alert is proactive
+        final metroAlert = alerts.firstWhere((a) => a.id == 'metro_delayed');
+        expect(metroAlert.title, contains('Transit Delay Alert'));
+        expect(metroAlert.color, equals(Colors.orange));
+
+        // Verify Restroom alert is proactive
+        final restroomAlert = alerts.firstWhere(
+          (a) => a.id == 'restroom_queue',
+        );
+        expect(
+          restroomAlert.description,
+          contains('Level 1 East restroom queue has increased'),
+        );
       },
     );
   });

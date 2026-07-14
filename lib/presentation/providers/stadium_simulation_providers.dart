@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/crowd_state.dart';
 import '../../domain/entities/incident.dart';
@@ -414,4 +415,152 @@ final riskPredictionsProvider = FutureProvider<List<OperationalRisk>>((
   );
 
   return risks;
+});
+
+// 9. AI Proactive Alert Entities & Provider
+class ProactiveAlert {
+  final String id;
+  final String title;
+  final String description;
+  final IconData icon;
+  final Color color;
+  final String time;
+
+  const ProactiveAlert({
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.icon,
+    required this.color,
+    required this.time,
+  });
+}
+
+final proactiveAlertsProvider = FutureProvider<List<ProactiveAlert>>((
+  ref,
+) async {
+  final role = ref.watch(userRoleProvider);
+  final crowd = ref.watch(crowdStateProvider);
+  final activeScenario = ref.watch(activeScenarioProvider);
+  final incidents = ref.watch(incidentListProvider);
+  final matchId = ref.watch(selectedMatchProvider);
+  final preset = MatchPreset.presets.firstWhere(
+    (p) => p.matchId == matchId,
+    orElse: () => MatchPreset.presets.first,
+  );
+
+  final List<ProactiveAlert> alerts = [];
+
+  // 1. Leave Now Warning
+  if (activeScenario == SimulationScenario.extraTime ||
+      activeScenario == SimulationScenario.penaltyShootout ||
+      preset.attendanceProjection >= 80000) {
+    alerts.add(
+      const ProactiveAlert(
+        id: 'leave_now',
+        title: 'Action Recommended: Leave Now',
+        description:
+            'Surge projection shows exit platforms are starting to bottleneck. Head to Metro Line 2 immediately.',
+        icon: Icons.exit_to_app,
+        color: Colors.orange,
+        time: 'Just now',
+      ),
+    );
+  }
+
+  // 2. Gate B becoming crowded alert
+  final gateBWait = crowd.gateWaitTimes['Gate B'] ?? 0;
+  if (gateBWait >= 18) {
+    alerts.add(
+      ProactiveAlert(
+        id: 'gate_b_crowded',
+        title: 'Gate B Inflow Surge Warning',
+        description:
+            'Gate B wait times are currently $gateBWait mins and rising. Rerouting via Gate D (5 min wait) is advised.',
+        icon: Icons.sensor_door,
+        color: Colors.red,
+        time: '2 mins ago',
+      ),
+    );
+  }
+
+  // 3. Metro delayed alert
+  if (activeScenario == SimulationScenario.transportDelay) {
+    alerts.add(
+      const ProactiveAlert(
+        id: 'metro_delayed',
+        title: 'Transit Delay Alert: FIFA Metro Line 1',
+        description:
+            '20 minutes signal failure delay reported by Municipal transit authority. Seek walking Eco-Paths.',
+        icon: Icons.subway,
+        color: Colors.orange,
+        time: 'Just now',
+      ),
+    );
+  }
+
+  // 4. Restroom queue increasing alert
+  final restroomWait = crowd.restroomWaitTimes['Restrooms Level 1 East'] ?? 0;
+  if (restroomWait >= 12) {
+    alerts.add(
+      ProactiveAlert(
+        id: 'restroom_queue',
+        title: 'Concourse Restroom Alert',
+        description:
+            'Level 1 East restroom queue has increased to $restroomWait mins. Level 2 South (3 mins wait) is clear.',
+        icon: Icons.wc,
+        color: Colors.blue,
+        time: '5 mins ago',
+      ),
+    );
+  }
+
+  // 5. Food court overloaded alert
+  final foodWait = crowd.foodCourtWaitTimes['Food Court 1 (North)'] ?? 0;
+  if (foodWait >= 18) {
+    alerts.add(
+      ProactiveAlert(
+        id: 'food_court_overload',
+        title: 'Food Court 1 Overload Warning',
+        description:
+            'North food court wait time has hit $foodWait mins. Bypassing via South court or ordering on mobile is advised.',
+        icon: Icons.fastfood,
+        color: Colors.orange,
+        time: 'Just now',
+      ),
+    );
+  }
+
+  // 6. Accessibility elevator busy alert
+  alerts.add(
+    const ProactiveAlert(
+      id: 'elevator_busy',
+      title: 'Elevator West High Utilization',
+      description:
+          'Vertical elevator transit near Section 120 has reached high load index. Expect up to 4 mins delay.',
+      icon: Icons.elevator,
+      color: Colors.blue,
+      time: '3 mins ago',
+    ),
+  );
+
+  // 7. Volunteer assistance needed nearby alert
+  if (role == UserRole.volunteer) {
+    final openIncidents = incidents.where((i) => i.status == 'Open').toList();
+    if (openIncidents.isNotEmpty) {
+      alerts.add(
+        ProactiveAlert(
+          id: 'volunteer_needed',
+          title: 'Assistance Needed Nearby: ${openIncidents.first.location}',
+          description:
+              'Incident "${openIncidents.first.title}" remains unassigned. Report to location immediately.',
+          icon: Icons.contact_support,
+          color: Colors.red,
+          time: 'Just now',
+        ),
+      );
+    }
+  }
+
+  return alerts;
 });

@@ -115,6 +115,8 @@ class DashboardPage extends ConsumerWidget {
 
               _buildLiveWeatherWarningBanner(ref, theme),
               const SizedBox(height: 24),
+              _buildAIProactiveBanner(ref, theme),
+              const SizedBox(height: 24),
 
               // Responsive grid layout
               LayoutBuilder(
@@ -1461,6 +1463,152 @@ class DashboardPage extends ConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildAIProactiveBanner(WidgetRef ref, ThemeData theme) {
+    final alertsAsync = ref.watch(proactiveAlertsProvider);
+
+    return alertsAsync.when(
+      loading: () => const SizedBox.shrink(),
+      error: (err, stack) => const SizedBox.shrink(),
+      data: (alerts) {
+        if (alerts.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        return Card(
+          elevation: 3,
+          shadowColor: theme.colorScheme.primary.withValues(alpha: 0.1),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: const BoxDecoration(
+                        color: Colors.green,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'AI Proactive Live Monitor Alerts',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    const Spacer(),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        '${alerts.length} active notifications',
+                        style: TextStyle(
+                          fontSize: 9,
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.primary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  height: 105,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: alerts.length,
+                    itemBuilder: (context, index) {
+                      final a = alerts[index];
+                      return Container(
+                        width: 280,
+                        margin: const EdgeInsets.only(right: 12),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: theme.brightness == Brightness.dark
+                              ? Colors.grey.shade900
+                              : Colors.grey.shade100,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: a.color.withValues(alpha: 0.3),
+                            width: 1.5,
+                          ),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(a.icon, color: a.color, size: 20),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          a.title,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 11,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      Text(
+                                        a.time,
+                                        style: const TextStyle(
+                                          fontSize: 8,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Expanded(
+                                    child: Text(
+                                      a.description,
+                                      style: TextStyle(
+                                        fontSize: 9.5,
+                                        color:
+                                            theme.brightness == Brightness.dark
+                                            ? Colors.white70
+                                            : Colors.black87,
+                                        height: 1.3,
+                                      ),
+                                      maxLines: 3,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
