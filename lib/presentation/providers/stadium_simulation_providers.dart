@@ -9,6 +9,7 @@ import '../../domain/entities/user_role.dart';
 import '../../domain/entities/match_detail.dart';
 import '../../domain/entities/volunteer_deployment.dart';
 import '../../domain/entities/operational_risk.dart';
+import '../../domain/entities/simulation_scenario.dart';
 import '../../domain/usecases/get_ai_recommendations.dart';
 import 'app_state_providers.dart';
 
@@ -238,6 +239,20 @@ final shiftCheckInProvider = NotifierProvider<ShiftCheckInNotifier, bool>(() {
   return ShiftCheckInNotifier();
 });
 
+class ActiveScenarioNotifier extends Notifier<SimulationScenario> {
+  @override
+  SimulationScenario build() => SimulationScenario.none;
+
+  void setScenario(SimulationScenario scenario) {
+    state = scenario;
+  }
+}
+
+final activeScenarioProvider =
+    NotifierProvider<ActiveScenarioNotifier, SimulationScenario>(() {
+      return ActiveScenarioNotifier();
+    });
+
 // 7. Reactive AI Decision Feed Provider
 final aiRecommendationsProvider = FutureProvider<List<AIRecommendation>>((
   ref,
@@ -248,6 +263,7 @@ final aiRecommendationsProvider = FutureProvider<List<AIRecommendation>>((
   final tasks = ref.watch(volunteerTasksProvider);
   final matchId = ref.watch(selectedMatchProvider);
   final deployment = ref.watch(volunteerDeploymentProvider);
+  final activeScenario = ref.watch(activeScenarioProvider);
 
   final preset = MatchPreset.presets.firstWhere(
     (p) => p.matchId == matchId,
@@ -264,6 +280,7 @@ final aiRecommendationsProvider = FutureProvider<List<AIRecommendation>>((
     weatherAlert: preset.weatherAlert,
     temperature: preset.temperature,
     deployment: deployment,
+    activeScenario: activeScenario,
   );
 });
 

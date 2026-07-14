@@ -4,6 +4,7 @@ import '../../domain/entities/incident.dart';
 import '../../domain/entities/crowd_state.dart';
 import '../../domain/entities/match_detail.dart';
 import '../../domain/entities/volunteer_deployment.dart';
+import '../../domain/entities/simulation_scenario.dart';
 import '../providers/app_state_providers.dart';
 import '../providers/stadium_simulation_providers.dart';
 import '../widgets/stadium_shell.dart';
@@ -1037,6 +1038,50 @@ class OrganizerDashboardPage extends ConsumerWidget {
                             ref
                                 .read(selectedMatchProvider.notifier)
                                 .setMatch(val);
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: InputDecorator(
+                    decoration: const InputDecoration(
+                      labelText: 'Simulate AI Operational Scenario Preset',
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                    ),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<SimulationScenario>(
+                        isExpanded: true,
+                        value: ref.watch(activeScenarioProvider),
+                        items: SimulationScenario.values.map((scen) {
+                          return DropdownMenuItem(
+                            value: scen,
+                            child: Text(scen.displayName),
+                          );
+                        }).toList(),
+                        onChanged: (val) {
+                          if (val != null) {
+                            ref
+                                .read(activeScenarioProvider.notifier)
+                                .setScenario(val);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Simulation active: ${val.displayName} scenario running!',
+                                ),
+                                backgroundColor: Colors.blue,
+                              ),
+                            );
                           }
                         },
                       ),

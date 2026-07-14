@@ -6,6 +6,7 @@ import 'package:stadium_pilot_ai/domain/entities/user_role.dart';
 import 'package:stadium_pilot_ai/domain/entities/crowd_state.dart';
 import 'package:stadium_pilot_ai/domain/entities/incident.dart';
 import 'package:stadium_pilot_ai/domain/entities/volunteer_deployment.dart';
+import 'package:stadium_pilot_ai/domain/entities/simulation_scenario.dart';
 import 'package:stadium_pilot_ai/domain/usecases/calculate_route.dart';
 import 'package:stadium_pilot_ai/presentation/providers/stadium_simulation_providers.dart';
 import 'package:stadium_pilot_ai/domain/usecases/get_transport_options.dart';
@@ -20,6 +21,14 @@ import 'package:stadium_pilot_ai/presentation/pages/organizer_dashboard_page.dar
 import 'package:stadium_pilot_ai/presentation/providers/app_state_providers.dart';
 import 'package:stadium_pilot_ai/core/services/secure_storage_service.dart';
 import 'package:stadium_pilot_ai/data/repositories/stadium_repository_impl.dart';
+
+class MockActiveScenarioNotifier extends ActiveScenarioNotifier {
+  final SimulationScenario mockScenario;
+  MockActiveScenarioNotifier(this.mockScenario);
+
+  @override
+  SimulationScenario build() => mockScenario;
+}
 
 class MockCrowdStateNotifier extends CrowdStateNotifier {
   final CrowdState mockState;
@@ -680,6 +689,45 @@ void main() {
         );
         expect(weatherRisk.probability, equals(0.95));
         expect(weatherRisk.riskCategory, equals('Weather'));
+      },
+    );
+  });
+
+  group('StadiumPilot AI - Active Scenario Simulation Tests', () {
+    test(
+      'Should generate scenario-specific recommendations for Heavy Rain and Power Failure',
+      () async {
+        final engine = GetAIRecommendations();
+
+        final rainRecs = await engine.call(
+          role: UserRole.volunteer,
+          location: 'Concourse Lobby',
+          crowdState: CrowdState.initial(),
+          incidents: [],
+          tasks: [],
+          activeScenario: SimulationScenario.heavyRain,
+        );
+
+        final rainRec = rainRecs.firstWhere(
+          (r) => r.id == 'scenario_heavy_rain',
+        );
+        expect(rainRec.title, contains('Heavy Rain'));
+        expect(rainRec.recommendation, contains('ponchos'));
+
+        final powerRecs = await engine.call(
+          role: UserRole.fan,
+          location: 'Section 104',
+          crowdState: CrowdState.initial(),
+          incidents: [],
+          tasks: [],
+          activeScenario: SimulationScenario.powerFailure,
+        );
+
+        final powerRec = powerRecs.firstWhere(
+          (r) => r.id == 'scenario_power_failure',
+        );
+        expect(powerRec.priority, equals('Critical'));
+        expect(powerRec.recommendation, contains('Elevators are offline'));
       },
     );
   });

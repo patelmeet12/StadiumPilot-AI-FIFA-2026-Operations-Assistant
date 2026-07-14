@@ -4,6 +4,7 @@ import '../entities/crowd_state.dart';
 import '../entities/incident.dart';
 import '../entities/volunteer_task.dart';
 import '../entities/volunteer_deployment.dart';
+import '../entities/simulation_scenario.dart';
 
 /// Contextual reasoning engine that processes multiple inputs simultaneously to formulate AI recommendations.
 class GetAIRecommendations {
@@ -22,6 +23,7 @@ class GetAIRecommendations {
     bool accessibilityRequired = false,
     int familySize = 2,
     String matchPhase = 'Pre-Match',
+    SimulationScenario activeScenario = SimulationScenario.none,
   }) async {
     final List<AIRecommendation> recommendations = [];
     final timeContext = currentTime ?? DateTime.now();
@@ -483,6 +485,235 @@ class GetAIRecommendations {
           ),
         );
       }
+    }
+
+    // Scenario Simulation Engine Recommendations
+    switch (activeScenario) {
+      case SimulationScenario.heavyRain:
+        recommendations.add(
+          AIRecommendation(
+            id: 'scenario_heavy_rain',
+            title: 'Scenario Mode: Heavy Rain Logistics',
+            recommendation: role == UserRole.fan
+                ? 'Check out free rain poncho distribution hubs at Gate check areas of $stadiumName.'
+                : 'Distribute rain ponchos at Gate entries and activate concourse floor dryers to prevent slips.',
+            reason:
+                'Active Heavy Rain scenario simulated. Concourse moisture sensors report high slippage risk.',
+            estimatedBenefit: 'Prevents slip incidents and keeps fans dry.',
+            priority: 'Medium',
+            confidenceLevel: 0.94,
+            category: 'Safety',
+            alternativeOptions: const [
+              'Advise fans to purchase umbrellas at concourse shops',
+              'Delay outer gate open times by 10 minutes',
+            ],
+            estimatedTimeSavedMinutes: 5,
+            estimatedWalkingDistanceSavedMeters: 20,
+            estimatedCo2ReductionKg: 0.0,
+            operationalImpact:
+                'Reduces concourse slip hazards by 80% and increases comfort indexes.',
+          ),
+        );
+        break;
+
+      case SimulationScenario.extraTime:
+        recommendations.add(
+          AIRecommendation(
+            id: 'scenario_extra_time',
+            title: 'Scenario Mode: Extra Time Logistics',
+            recommendation: role == UserRole.fan
+                ? 'Note that stadium concessions remain open during extra time. Transit lines are extended.'
+                : 'Extend concession stand opening hours by 30 minutes and delay local train egress schedule standby.',
+            reason:
+                'Match has entered Extra Time phase. Exit surges are delayed by 30-40 minutes at $stadiumName.',
+            estimatedBenefit:
+                'Maintains refreshment supply index and aligns transit loops.',
+            priority: 'High',
+            confidenceLevel: 0.96,
+            category: 'Crowd',
+            alternativeOptions: const [
+              'Close concessions and restrict fans to bottled water distribution',
+              'Request transit platform holding gate delay locks',
+            ],
+            estimatedTimeSavedMinutes: 30,
+            estimatedWalkingDistanceSavedMeters: 0,
+            estimatedCo2ReductionKg: 0.8,
+            operationalImpact:
+                'Prevents mass post-match transit line gridlock at local stations.',
+          ),
+        );
+        break;
+
+      case SimulationScenario.penaltyShootout:
+        recommendations.add(
+          AIRecommendation(
+            id: 'scenario_penalty_shootout',
+            title: 'Scenario Mode: Penalty Shootout Security',
+            recommendation: role == UserRole.fan
+                ? 'Remain seated. Secure egress routes will be opened immediately after shootout completion.'
+                : 'Pre-position security personnel at pitch-side boundaries and standby emergency exit gates.',
+            reason:
+                'Penalty Shootout phase active. High risk of pitch invasion or localized crowd surge exit rushes at $stadiumName.',
+            estimatedBenefit: 'Prevents field intrusion risks completely.',
+            priority: 'High',
+            confidenceLevel: 0.97,
+            category: 'Safety',
+            alternativeOptions: const [
+              'Double outer perimeter patrol counts',
+              'Trigger PA warning broadcasts against field entry',
+            ],
+            estimatedTimeSavedMinutes: 10,
+            estimatedWalkingDistanceSavedMeters: 40,
+            estimatedCo2ReductionKg: 0.0,
+            operationalImpact:
+                'Maintains strict perimeter boundary protocols, ensuring safety compliance.',
+          ),
+        );
+        break;
+
+      case SimulationScenario.transportDelay:
+        recommendations.add(
+          AIRecommendation(
+            id: 'scenario_transport_delay',
+            title: 'Scenario Mode: Public Transport Delay Rerouting',
+            recommendation: role == UserRole.fan
+                ? 'Commuter Rail platform is delayed by 25 mins. Visit Plaza Concourse entertainment zones.'
+                : 'Broadcast local commuter rail platform delays on stadium big screens and activate plaza entertainment loops.',
+            reason:
+                'Public Transport Delay active: Metro Line 1 reports signal malfunction (Current Time: ${timeContext.hour}:${timeContext.minute.toString().padLeft(2, '0')}).',
+            estimatedBenefit:
+                'Prevents platform overcrowding and keeps fans engaged.',
+            priority: 'High',
+            confidenceLevel: 0.93,
+            category: 'Transit',
+            alternativeOptions: const [
+              'Open secondary parking egress lanes for ride-share taxis',
+              'Hold fans inside concourses for 15 minutes',
+            ],
+            estimatedTimeSavedMinutes: 20,
+            estimatedWalkingDistanceSavedMeters:
+                -100, // Extra walking to concessions
+            estimatedCo2ReductionKg: 1.25,
+            operationalImpact:
+                'Saves terminal crowd platform overloads by 40%.',
+          ),
+        );
+        break;
+
+      case SimulationScenario.medicalEmergency:
+        recommendations.add(
+          AIRecommendation(
+            id: 'scenario_medical_emergency',
+            title: 'Scenario Mode: Medical Response Route Clearance',
+            recommendation: role == UserRole.fan
+                ? 'Keep evacuation lane West clear for emergency responder movements.'
+                : 'Clear emergency vehicle ingress lane A and dispatch standby medical volunteer squad 2 to Section 104.',
+            reason:
+                'Medical Emergency scenario simulated: report of fan medical distress at $stadiumName concourse lobby.',
+            estimatedBenefit:
+                'Speeds up medic response and protects guest safety.',
+            priority: 'Critical',
+            confidenceLevel: 0.99,
+            category: 'Safety',
+            alternativeOptions: const [
+              'Escort patient to nearest first-aid kiosk via wheelchair',
+              'Alert municipal EMS responders standby',
+            ],
+            estimatedTimeSavedMinutes: 4,
+            estimatedWalkingDistanceSavedMeters: 150,
+            estimatedCo2ReductionKg: 0.0,
+            operationalImpact:
+                'Saves 4 minutes in medical response transit time, ensuring golden-hour target is met.',
+          ),
+        );
+        break;
+
+      case SimulationScenario.vipArrival:
+        recommendations.add(
+          AIRecommendation(
+            id: 'scenario_vip_arrival',
+            title: 'Scenario Mode: VIP Escort & Pathway Security',
+            recommendation: role == UserRole.fan
+                ? 'VIP motorcade is passing. Gate C entry lobby is temporarily restricted (3 mins).'
+                : 'Activate secure VIP corridor section 110 and deploy 2 escort coordinators to Gate C check-in.',
+            reason:
+                'VIP Motorcade arrival scheduled in 5 minutes at $stadiumName (Match Phase: $matchPhase).',
+            estimatedBenefit:
+                'Secures VIP transit timeline and protocol compliance.',
+            priority: 'Medium',
+            confidenceLevel: 0.91,
+            category: 'Navigation',
+            alternativeOptions: const [
+              'Hold general public ticket checks at Gate C section 2 for 3 minutes',
+              'Redirect VIP corridor escort via South loading elevator',
+            ],
+            estimatedTimeSavedMinutes: 8,
+            estimatedWalkingDistanceSavedMeters: 80,
+            estimatedCo2ReductionKg: 0.0,
+            operationalImpact:
+                'Secures VIP timeline protocol compliance with zero friction index.',
+          ),
+        );
+        break;
+
+      case SimulationScenario.powerFailure:
+        recommendations.add(
+          AIRecommendation(
+            id: 'scenario_power_failure',
+            title: 'Scenario Mode: Power Grid Restoration Operations',
+            recommendation: role == UserRole.fan
+                ? 'Secondary concourse lighting is active. Elevators are offline; please use main exit stairs.'
+                : 'De-energize secondary elevator loops, activate concourse battery backup lights, and deploy volunteers with flashlights.',
+            reason:
+                'Power Failure scenario active: grid drop detected at Concourse sector 2 of $stadiumName.',
+            estimatedBenefit:
+                'Maintains concourse visibility and avoids guest exit panic.',
+            priority: 'Critical',
+            confidenceLevel: 0.99,
+            category: 'Safety',
+            alternativeOptions: const [
+              'Redirect concourse traffic to South Gate outer exits',
+              'Instruct concession vendors to halt electronic payments',
+            ],
+            estimatedTimeSavedMinutes: 12,
+            estimatedWalkingDistanceSavedMeters: 180,
+            estimatedCo2ReductionKg: 0.5,
+            operationalImpact:
+                'Prevents stampede warnings and guides crowd to secure open-air plazas.',
+          ),
+        );
+        break;
+
+      case SimulationScenario.crowdSurge:
+        recommendations.add(
+          AIRecommendation(
+            id: 'scenario_crowd_surge',
+            title: 'Scenario Mode: Entrance Surge Marshalling',
+            recommendation: role == UserRole.fan
+                ? 'Entrance Gate B is overloaded. Please follow guide rails to Gate D.'
+                : 'Deploy emergency crowd barriers at Gate B outer check-point, and broadcast Gate D bypass instructions.',
+            reason:
+                'Crowd Surge scenario active: ticket inflow rates at plaza gate have exceeded 150/minute at $stadiumName.',
+            estimatedBenefit:
+                'Lowers outer gate crush density index to safe limits.',
+            priority: 'Critical',
+            confidenceLevel: 0.98,
+            category: 'Crowd',
+            alternativeOptions: const [
+              'Temporarily lock outer ticketing wickets for 2 minutes',
+              'Deploy gate-marshalling security team',
+            ],
+            estimatedTimeSavedMinutes: 15,
+            estimatedWalkingDistanceSavedMeters: 120,
+            estimatedCo2ReductionKg: 0.1,
+            operationalImpact:
+                'Maintains local gate crowd pressure metrics within safety limits.',
+          ),
+        );
+        break;
+
+      case SimulationScenario.none:
+        break;
     }
 
     return recommendations;
