@@ -5,7 +5,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stadium_pilot_ai/domain/entities/user_role.dart';
 import 'package:stadium_pilot_ai/domain/entities/crowd_state.dart';
 import 'package:stadium_pilot_ai/domain/entities/incident.dart';
-import 'package:stadium_pilot_ai/domain/entities/match_detail.dart';
 import 'package:stadium_pilot_ai/domain/entities/volunteer_deployment.dart';
 import 'package:stadium_pilot_ai/domain/usecases/calculate_route.dart';
 import 'package:stadium_pilot_ai/domain/usecases/get_transport_options.dart';
@@ -578,7 +577,7 @@ void main() {
         );
         expect(
           translation.reason,
-          contains('Reported description is in non-English format'),
+          contains('Reported description was submitted in non-English format'),
         );
       },
     );

@@ -9,6 +9,13 @@ class AIRecommendation {
   final String
   category; // "Navigation", "Crowd", "Transit", "Accessibility", "Safety"
 
+  // Contextual reasoning attributes
+  final List<String> alternativeOptions;
+  final int estimatedTimeSavedMinutes;
+  final int estimatedWalkingDistanceSavedMeters;
+  final double estimatedCo2ReductionKg;
+  final String operationalImpact;
+
   const AIRecommendation({
     required this.id,
     required this.title,
@@ -18,5 +25,10 @@ class AIRecommendation {
     required this.priority,
     required this.confidenceLevel,
     required this.category,
+    this.alternativeOptions = const [],
+    this.estimatedTimeSavedMinutes = 0,
+    this.estimatedWalkingDistanceSavedMeters = 0,
+    this.estimatedCo2ReductionKg = 0.0,
+    this.operationalImpact = 'No system-level friction.',
   });
 }
