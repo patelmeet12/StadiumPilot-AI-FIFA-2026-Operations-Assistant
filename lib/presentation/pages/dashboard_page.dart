@@ -335,9 +335,12 @@ class DashboardPage extends ConsumerWidget {
                   size: 28,
                 ),
                 const SizedBox(width: 8),
-                Text(
-                  LocalDictionary.translate('recommendations', lang),
-                  style: theme.textTheme.titleLarge?.copyWith(fontSize: 18),
+                Expanded(
+                  child: Text(
+                    LocalDictionary.translate('recommendations', lang),
+                    style: theme.textTheme.titleLarge?.copyWith(fontSize: 18),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
                 const Spacer(),
                 Container(
@@ -418,11 +421,14 @@ class DashboardPage extends ConsumerWidget {
                               ),
                             ),
                             const SizedBox(width: 8),
-                            Text(
-                              r.title,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
+                            Expanded(
+                              child: Text(
+                                r.title,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                ),
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                             const Spacer(),
@@ -462,12 +468,15 @@ class DashboardPage extends ConsumerWidget {
                               color: Colors.amber,
                             ),
                             const SizedBox(width: 4),
-                            Text(
-                              'Benefit: ${r.estimatedBenefit}',
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: Colors.green,
-                                fontWeight: FontWeight.bold,
+                            Expanded(
+                              child: Text(
+                                'Benefit: ${r.estimatedBenefit}',
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.green,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ],
@@ -501,9 +510,12 @@ class DashboardPage extends ConsumerWidget {
               children: [
                 const Icon(Icons.people, color: Colors.blue, size: 26),
                 const SizedBox(width: 8),
-                Text(
-                  'Live Stadium Congestion',
-                  style: theme.textTheme.titleLarge?.copyWith(fontSize: 18),
+                Expanded(
+                  child: Text(
+                    'Live Stadium Congestion',
+                    style: theme.textTheme.titleLarge?.copyWith(fontSize: 18),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ],
             ),
@@ -736,11 +748,14 @@ class DashboardPage extends ConsumerWidget {
                   size: 26,
                 ),
                 const SizedBox(width: 12),
-                Text(
-                  t['title']!,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 0.5,
+                Expanded(
+                  child: Text(
+                    t['title']!,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.5,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
@@ -908,11 +923,14 @@ class DashboardPage extends ConsumerWidget {
                   size: 26,
                 ),
                 const SizedBox(width: 12),
-                Text(
-                  t['title']!,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 0.5,
+                Expanded(
+                  child: Text(
+                    t['title']!,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.5,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
@@ -1016,11 +1034,14 @@ class DashboardPage extends ConsumerWidget {
               children: [
                 const Icon(Icons.eco, color: Colors.green, size: 28),
                 const SizedBox(width: 8),
-                Text(
-                  'Green Tournament score',
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontSize: 18,
-                    color: Colors.green,
+                Expanded(
+                  child: Text(
+                    'Green Tournament score',
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontSize: 18,
+                      color: Colors.green,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
@@ -1162,6 +1183,7 @@ class DashboardPage extends ConsumerWidget {
                       ),
                       const SizedBox(height: 8),
                       DropdownButtonFormField<String>(
+                        isExpanded: true,
                         initialValue: category,
                         decoration: const InputDecoration(
                           labelText: 'Category',
@@ -1186,6 +1208,7 @@ class DashboardPage extends ConsumerWidget {
                       ),
                       const SizedBox(height: 8),
                       DropdownButtonFormField<String>(
+                        isExpanded: true,
                         initialValue: priority,
                         decoration: const InputDecoration(
                           labelText: 'Priority Level',

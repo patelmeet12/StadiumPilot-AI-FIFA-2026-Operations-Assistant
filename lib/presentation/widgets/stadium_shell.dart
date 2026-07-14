@@ -73,11 +73,14 @@ class StadiumShell extends ConsumerWidget {
           children: [
             Icon(Icons.sports_soccer, color: theme.colorScheme.secondary),
             const SizedBox(width: 8),
-            Text(
-              LocalDictionary.translate('app_title', activeLanguage),
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.1,
+            Expanded(
+              child: Text(
+                LocalDictionary.translate('app_title', activeLanguage),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.1,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],

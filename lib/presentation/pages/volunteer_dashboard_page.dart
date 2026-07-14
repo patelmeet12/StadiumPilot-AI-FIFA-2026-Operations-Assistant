@@ -87,126 +87,112 @@ class VolunteerDashboardPage extends ConsumerWidget {
               ),
               const SizedBox(height: 24),
 
-              // Splitting tasks and incidents
               LayoutBuilder(
                 builder: (context, constraints) {
                   final isWide = constraints.maxWidth > 900;
-                  return Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Checklist column
-                      Expanded(
-                        flex: 3,
-                        child: Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(20.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  'My Assigned Task Checklist',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                                if (tasks.isEmpty)
-                                  const Text(
-                                    'No duties assigned for this shift.',
-                                  )
-                                else
-                                  ListView.separated(
-                                    shrinkWrap: true,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    itemCount: tasks.length,
-                                    separatorBuilder: (c, i) => const Divider(),
-                                    itemBuilder: (context, index) {
-                                      final t = tasks[index];
-                                      return CheckboxListTile(
-                                        title: Text(
-                                          t.title,
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            decoration: t.isCompleted
-                                                ? TextDecoration.lineThrough
-                                                : null,
-                                            color: t.isCompleted
-                                                ? Colors.grey
-                                                : null,
-                                          ),
-                                        ),
-                                        subtitle: Text(
-                                          '${t.location} • Priority: ${t.priority}',
-                                        ),
-                                        value: t.isCompleted,
-                                        activeColor: theme.colorScheme.primary,
-                                        onChanged: (_) {
-                                          ref
-                                              .read(
-                                                volunteerTasksProvider.notifier,
-                                              )
-                                              .toggleTaskCompleted(t.id);
-                                        },
-                                        contentPadding: EdgeInsets.zero,
-                                      );
-                                    },
-                                  ),
-                              ],
+
+                  final checklistWidget = Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'My Assigned Task Checklist',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
                             ),
                           ),
-                        ),
-                      ),
-
-                      if (isWide) const SizedBox(width: 24),
-
-                      // Incident dispatch board
-                      Expanded(
-                        flex: isWide ? 2 : 5,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Active Incident Feed',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            if (openIncidents.isEmpty)
-                              const Card(
-                                child: Padding(
-                                  padding: EdgeInsets.all(20.0),
-                                  child: Text(
-                                    'All reported issues have been fully resolved.',
+                          const SizedBox(height: 16),
+                          if (tasks.isEmpty)
+                            const Text('No duties assigned for this shift.')
+                          else
+                            ListView.separated(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: tasks.length,
+                              separatorBuilder: (c, i) => const Divider(),
+                              itemBuilder: (context, index) {
+                                final t = tasks[index];
+                                return CheckboxListTile(
+                                  title: Text(
+                                    t.title,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      decoration: t.isCompleted
+                                          ? TextDecoration.lineThrough
+                                          : null,
+                                      color: t.isCompleted ? Colors.grey : null,
+                                    ),
                                   ),
-                                ),
-                              )
-                            else
-                              ...openIncidents.map(
-                                (i) =>
-                                    _buildIncidentCard(context, ref, i, theme),
-                              ),
-                          ],
+                                  subtitle: Text(
+                                    '${t.location} • Priority: ${t.priority}',
+                                  ),
+                                  value: t.isCompleted,
+                                  activeColor: theme.colorScheme.primary,
+                                  onChanged: (_) {
+                                    ref
+                                        .read(volunteerTasksProvider.notifier)
+                                        .toggleTaskCompleted(t.id);
+                                  },
+                                  contentPadding: EdgeInsets.zero,
+                                );
+                              },
+                            ),
+                        ],
+                      ),
+                    ),
+                  );
+
+                  final incidentFeedWidget = Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Active Incident Feed',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
                         ),
                       ),
+                      const SizedBox(height: 16),
+                      if (openIncidents.isEmpty)
+                        const Card(
+                          child: Padding(
+                            padding: EdgeInsets.all(20.0),
+                            child: Text(
+                              'All reported issues have been fully resolved.',
+                            ),
+                          ),
+                        )
+                      else
+                        ...openIncidents.map(
+                          (i) => _buildIncidentCard(context, ref, i, theme),
+                        ),
                     ],
                   );
+
+                  if (isWide) {
+                    return Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(flex: 3, child: checklistWidget),
+                        const SizedBox(width: 24),
+                        Expanded(flex: 2, child: incidentFeedWidget),
+                      ],
+                    );
+                  } else {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        checklistWidget,
+                        const SizedBox(height: 24),
+                        incidentFeedWidget,
+                      ],
+                    );
+                  }
                 },
               ),
-
-              // Mobile view stack list
-              if (MediaQuery.of(context).size.width <= 900)
-                Padding(
-                  padding: const EdgeInsets.only(top: 24.0),
-                  child: Column(
-                    children: openIncidents
-                        .map((i) => _buildIncidentCard(context, ref, i, theme))
-                        .toList(),
-                  ),
-                ),
             ],
           ),
         ),

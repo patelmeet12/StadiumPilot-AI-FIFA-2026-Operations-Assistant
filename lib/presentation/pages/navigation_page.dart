@@ -117,6 +117,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
 
                                 // Start location
                                 DropdownButtonFormField<String>(
+                                  isExpanded: true,
                                   initialValue: _startLocation,
                                   decoration: const InputDecoration(
                                     labelText: 'Start Location',
@@ -141,6 +142,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
 
                                 // Destination location
                                 DropdownButtonFormField<String>(
+                                  isExpanded: true,
                                   initialValue: _destination,
                                   decoration: const InputDecoration(
                                     labelText: 'Destination Venue Zone',

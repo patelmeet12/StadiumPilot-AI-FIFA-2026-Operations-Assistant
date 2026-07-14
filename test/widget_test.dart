@@ -9,6 +9,12 @@ import 'package:stadium_pilot_ai/domain/usecases/calculate_route.dart';
 import 'package:stadium_pilot_ai/domain/usecases/get_transport_options.dart';
 import 'package:stadium_pilot_ai/domain/usecases/get_ai_recommendations.dart';
 import 'package:stadium_pilot_ai/presentation/pages/role_selection_page.dart';
+import 'package:stadium_pilot_ai/presentation/pages/dashboard_page.dart';
+import 'package:stadium_pilot_ai/presentation/pages/navigation_page.dart';
+import 'package:stadium_pilot_ai/presentation/pages/transport_page.dart';
+import 'package:stadium_pilot_ai/presentation/pages/accessibility_page.dart';
+import 'package:stadium_pilot_ai/presentation/pages/volunteer_dashboard_page.dart';
+import 'package:stadium_pilot_ai/presentation/pages/organizer_dashboard_page.dart';
 import 'package:stadium_pilot_ai/presentation/providers/app_state_providers.dart';
 import 'package:stadium_pilot_ai/core/services/secure_storage_service.dart';
 import 'package:stadium_pilot_ai/data/repositories/stadium_repository_impl.dart';
@@ -307,5 +313,161 @@ void main() {
         expect(resetIncidents.any((i) => i.id == 'test_inc_123'), isFalse);
       },
     );
+  });
+
+  group('StadiumPilot AI - Page Rendering Widget Tests', () {
+    testWidgets('Should render DashboardPage and check panels', (
+      WidgetTester tester,
+    ) async {
+      tester.view.physicalSize = const Size(1440, 900);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      SharedPreferences.setMockInitialValues({});
+      final sharedPreferences = await SharedPreferences.getInstance();
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+          ],
+          child: const MaterialApp(home: DashboardPage()),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      expect(find.text('Operations Desk'), findsWidgets);
+      expect(find.text('Local Travel Status'), findsOneWidget);
+      expect(find.text('Accessibility Operations'), findsOneWidget);
+    });
+
+    testWidgets('Should render NavigationPage and check components', (
+      WidgetTester tester,
+    ) async {
+      tester.view.physicalSize = const Size(1440, 900);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      SharedPreferences.setMockInitialValues({});
+      final sharedPreferences = await SharedPreferences.getInstance();
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+          ],
+          child: const MaterialApp(home: NavigationPage()),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+      expect(find.text('AI Navigation Assistant'), findsOneWidget);
+    });
+
+    testWidgets('Should render TransportPage and check transit modes', (
+      WidgetTester tester,
+    ) async {
+      tester.view.physicalSize = const Size(1440, 900);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      SharedPreferences.setMockInitialValues({});
+      final sharedPreferences = await SharedPreferences.getInstance();
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+          ],
+          child: const MaterialApp(home: TransportPage()),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+      expect(
+        find.text('Transportation & Sustainability Advisor'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('Should render AccessibilityPage and check options', (
+      WidgetTester tester,
+    ) async {
+      tester.view.physicalSize = const Size(1440, 900);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      SharedPreferences.setMockInitialValues({});
+      final sharedPreferences = await SharedPreferences.getInstance();
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+          ],
+          child: const MaterialApp(home: AccessibilityPage()),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+      expect(find.text('Accessibility Companion'), findsOneWidget);
+    });
+
+    testWidgets('Should render VolunteerDashboardPage and check checklists', (
+      WidgetTester tester,
+    ) async {
+      tester.view.physicalSize = const Size(1440, 900);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      SharedPreferences.setMockInitialValues({});
+      final sharedPreferences = await SharedPreferences.getInstance();
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+          ],
+          child: const MaterialApp(home: VolunteerDashboardPage()),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+      expect(find.text('Volunteer Operations Desk'), findsOneWidget);
+      expect(find.text('My Assigned Task Checklist'), findsOneWidget);
+    });
+
+    testWidgets('Should render OrganizerDashboardPage and check panels', (
+      WidgetTester tester,
+    ) async {
+      tester.view.physicalSize = const Size(1440, 900);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      SharedPreferences.setMockInitialValues({});
+      final sharedPreferences = await SharedPreferences.getInstance();
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+          ],
+          child: const MaterialApp(home: OrganizerDashboardPage()),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+      expect(find.text('Tournament Organizer Console'), findsOneWidget);
+      expect(find.text('Stadium Flow Heatmap'), findsOneWidget);
+      expect(find.text('Volunteer Deployment & Availability'), findsOneWidget);
+      expect(find.text('Stadium Transit & Commute Overview'), findsOneWidget);
+    });
   });
 }

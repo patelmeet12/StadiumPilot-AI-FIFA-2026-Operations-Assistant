@@ -100,6 +100,7 @@ class _TransportPageState extends ConsumerState<TransportPage> {
                                 ),
                                 const SizedBox(height: 20),
                                 DropdownButtonFormField<String>(
+                                  isExpanded: true,
                                   initialValue: _origin,
                                   decoration: const InputDecoration(
                                     labelText: 'Origin Point',
@@ -109,7 +110,10 @@ class _TransportPageState extends ConsumerState<TransportPage> {
                                       .map(
                                         (loc) => DropdownMenuItem(
                                           value: loc,
-                                          child: Text(loc),
+                                          child: Text(
+                                            loc,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
                                         ),
                                       )
                                       .toList(),
@@ -132,6 +136,7 @@ class _TransportPageState extends ConsumerState<TransportPage> {
                                 ),
                                 const SizedBox(height: 16),
                                 DropdownButtonFormField<String>(
+                                  isExpanded: true,
                                   initialValue: _preferredMode,
                                   decoration: const InputDecoration(
                                     labelText: 'Preferred Transport Mode',

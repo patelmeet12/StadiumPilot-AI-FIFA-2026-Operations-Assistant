@@ -242,12 +242,15 @@ class OrganizerDashboardPage extends ConsumerWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Density Coefficient: ${(density * 100).toInt()}%',
-                    style: TextStyle(
-                      color: gridColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
+                  Expanded(
+                    child: Text(
+                      'Density Coefficient: ${(density * 100).toInt()}%',
+                      style: TextStyle(
+                        color: gridColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   Icon(
@@ -277,13 +280,16 @@ class OrganizerDashboardPage extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Row(
-              children: [
+            Row(
+              children: const [
                 Icon(Icons.lightbulb, color: Colors.amber),
                 SizedBox(width: 8),
-                Text(
-                  'AI Operational Insights',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                Expanded(
+                  child: Text(
+                    'AI Operational Insights',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ],
             ),
