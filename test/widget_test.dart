@@ -7,6 +7,7 @@ import 'package:stadium_pilot_ai/domain/entities/crowd_state.dart';
 import 'package:stadium_pilot_ai/domain/entities/incident.dart';
 import 'package:stadium_pilot_ai/domain/entities/volunteer_deployment.dart';
 import 'package:stadium_pilot_ai/domain/usecases/calculate_route.dart';
+import 'package:stadium_pilot_ai/presentation/providers/stadium_simulation_providers.dart';
 import 'package:stadium_pilot_ai/domain/usecases/get_transport_options.dart';
 import 'package:stadium_pilot_ai/domain/usecases/get_ai_recommendations.dart';
 import 'package:stadium_pilot_ai/presentation/pages/role_selection_page.dart';
@@ -19,6 +20,22 @@ import 'package:stadium_pilot_ai/presentation/pages/organizer_dashboard_page.dar
 import 'package:stadium_pilot_ai/presentation/providers/app_state_providers.dart';
 import 'package:stadium_pilot_ai/core/services/secure_storage_service.dart';
 import 'package:stadium_pilot_ai/data/repositories/stadium_repository_impl.dart';
+
+class MockCrowdStateNotifier extends CrowdStateNotifier {
+  final CrowdState mockState;
+  MockCrowdStateNotifier(this.mockState);
+
+  @override
+  CrowdState build() => mockState;
+}
+
+class MockSelectedMatchNotifier extends SelectedMatchNotifier {
+  final String mockMatchId;
+  MockSelectedMatchNotifier(this.mockMatchId);
+
+  @override
+  String build() => mockMatchId;
+}
 
 void main() {
   group('StadiumPilot AI - Navigation Engine Tests', () {
@@ -621,6 +638,48 @@ void main() {
           reallocateRec.recommendation,
           contains('Reallocate 4 volunteers from Concourse Concessions'),
         );
+      },
+    );
+  });
+
+  group('StadiumPilot AI - Predictive Risk Engine Tests', () {
+    test(
+      'Should generate predictive risks matching gate and weather presets',
+      () async {
+        final container = ProviderContainer(
+          overrides: [
+            crowdStateProvider.overrideWith(
+              () => MockCrowdStateNotifier(
+                const CrowdState(
+                  zoneDensities: {'Gate B': 0.8},
+                  gateWaitTimes: {'Gate B': 25},
+                  foodCourtWaitTimes: {'Food Court 1 (North)': 10},
+                  restroomWaitTimes: {},
+                ),
+              ),
+            ),
+            selectedMatchProvider.overrideWith(
+              () => MockSelectedMatchNotifier('match_usa_england'),
+            ), // Has lightning
+          ],
+        );
+
+        final risks = await container.read(riskPredictionsProvider.future);
+
+        // Verify gate congestion risk
+        final gateRisk = risks.firstWhere((r) => r.id == 'risk_gate_b');
+        expect(gateRisk.probability, equals(0.88));
+        expect(
+          gateRisk.preventiveAction,
+          contains('reroute incoming fans to Gate D'),
+        );
+
+        // Verify weather lightning risk
+        final weatherRisk = risks.firstWhere(
+          (r) => r.id == 'risk_weather_lightning',
+        );
+        expect(weatherRisk.probability, equals(0.95));
+        expect(weatherRisk.riskCategory, equals('Weather'));
       },
     );
   });

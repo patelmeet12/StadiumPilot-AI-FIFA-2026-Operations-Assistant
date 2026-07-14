@@ -16,9 +16,11 @@ class ReallocateFromNotifier extends Notifier<String> {
   void set(String val) => state = val;
 }
 
-final reallocateFromProvider = NotifierProvider<ReallocateFromNotifier, String>(() {
-  return ReallocateFromNotifier();
-});
+final reallocateFromProvider = NotifierProvider<ReallocateFromNotifier, String>(
+  () {
+    return ReallocateFromNotifier();
+  },
+);
 
 class ReallocateToNotifier extends Notifier<String> {
   @override
@@ -38,9 +40,11 @@ class ReallocateCountNotifier extends Notifier<int> {
   void set(int val) => state = val;
 }
 
-final reallocateCountProvider = NotifierProvider<ReallocateCountNotifier, int>(() {
-  return ReallocateCountNotifier();
-});
+final reallocateCountProvider = NotifierProvider<ReallocateCountNotifier, int>(
+  () {
+    return ReallocateCountNotifier();
+  },
+);
 
 class OrganizerDashboardPage extends ConsumerWidget {
   const OrganizerDashboardPage({super.key});
@@ -215,6 +219,16 @@ class OrganizerDashboardPage extends ConsumerWidget {
                               ref,
                               theme,
                             ),
+                            const SizedBox(height: 24),
+                            const Text(
+                              'AI Risk Prediction & Preventive Action Hub',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            _buildRiskPredictionCard(context, ref, theme),
                           ],
                         ),
                       ),
@@ -580,7 +594,9 @@ class OrganizerDashboardPage extends ConsumerWidget {
     WidgetRef ref,
     ThemeData theme,
   ) {
-    final VolunteerDeployment deployment = ref.watch(volunteerDeploymentProvider);
+    final VolunteerDeployment deployment = ref.watch(
+      volunteerDeploymentProvider,
+    );
     final fromZone = ref.watch(reallocateFromProvider);
     final toZone = ref.watch(reallocateToProvider);
     final reallocateCount = ref.watch(reallocateCountProvider);
@@ -656,17 +672,32 @@ class OrganizerDashboardPage extends ConsumerWidget {
                     decoration: const InputDecoration(
                       labelText: 'Source',
                       border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                     ),
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
                         isExpanded: true,
                         value: fromZone,
                         items: const [
-                          DropdownMenuItem(value: 'plaza', child: Text('Plaza')),
-                          DropdownMenuItem(value: 'concourse', child: Text('Concourse')),
-                          DropdownMenuItem(value: 'medical', child: Text('Medical')),
-                          DropdownMenuItem(value: 'security', child: Text('Security')),
+                          DropdownMenuItem(
+                            value: 'plaza',
+                            child: Text('Plaza'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'concourse',
+                            child: Text('Concourse'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'medical',
+                            child: Text('Medical'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'security',
+                            child: Text('Security'),
+                          ),
                         ],
                         onChanged: (val) {
                           if (val != null) {
@@ -685,17 +716,32 @@ class OrganizerDashboardPage extends ConsumerWidget {
                     decoration: const InputDecoration(
                       labelText: 'Target',
                       border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                     ),
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
                         isExpanded: true,
                         value: toZone,
                         items: const [
-                          DropdownMenuItem(value: 'plaza', child: Text('Plaza')),
-                          DropdownMenuItem(value: 'concourse', child: Text('Concourse')),
-                          DropdownMenuItem(value: 'medical', child: Text('Medical')),
-                          DropdownMenuItem(value: 'security', child: Text('Security')),
+                          DropdownMenuItem(
+                            value: 'plaza',
+                            child: Text('Plaza'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'concourse',
+                            child: Text('Concourse'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'medical',
+                            child: Text('Medical'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'security',
+                            child: Text('Security'),
+                          ),
                         ],
                         onChanged: (val) {
                           if (val != null) {
@@ -716,17 +762,32 @@ class OrganizerDashboardPage extends ConsumerWidget {
                     decoration: const InputDecoration(
                       labelText: 'Count',
                       border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                     ),
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton<int>(
                         isExpanded: true,
                         value: reallocateCount,
                         items: const [
-                          DropdownMenuItem(value: 1, child: Text('1 Volunteer')),
-                          DropdownMenuItem(value: 2, child: Text('2 Volunteers')),
-                          DropdownMenuItem(value: 4, child: Text('4 Volunteers')),
-                          DropdownMenuItem(value: 5, child: Text('5 Volunteers')),
+                          DropdownMenuItem(
+                            value: 1,
+                            child: Text('1 Volunteer'),
+                          ),
+                          DropdownMenuItem(
+                            value: 2,
+                            child: Text('2 Volunteers'),
+                          ),
+                          DropdownMenuItem(
+                            value: 4,
+                            child: Text('4 Volunteers'),
+                          ),
+                          DropdownMenuItem(
+                            value: 5,
+                            child: Text('5 Volunteers'),
+                          ),
                         ],
                         onChanged: (val) {
                           if (val != null) {
@@ -954,7 +1015,10 @@ class OrganizerDashboardPage extends ConsumerWidget {
                     decoration: const InputDecoration(
                       labelText: 'Select Fixture Telemetry Mode',
                       border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
                     ),
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
@@ -970,7 +1034,9 @@ class OrganizerDashboardPage extends ConsumerWidget {
                         }).toList(),
                         onChanged: (val) {
                           if (val != null) {
-                            ref.read(selectedMatchProvider.notifier).setMatch(val);
+                            ref
+                                .read(selectedMatchProvider.notifier)
+                                .setMatch(val);
                           }
                         },
                       ),
@@ -1259,6 +1325,230 @@ class OrganizerDashboardPage extends ConsumerWidget {
             overflow: TextOverflow.ellipsis,
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildRiskPredictionCard(
+    BuildContext context,
+    WidgetRef ref,
+    ThemeData theme,
+  ) {
+    final risksAsync = ref.watch(riskPredictionsProvider);
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.radar, color: theme.colorScheme.error, size: 24),
+                const SizedBox(width: 8),
+                const Expanded(
+                  child: Text(
+                    'AI Real-Time Predictive Risk Center',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            risksAsync.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (err, stack) => Text('Error loading risks: $err'),
+              data: (risks) {
+                if (risks.isEmpty) {
+                  return Row(
+                    children: [
+                      const Icon(
+                        Icons.check_circle,
+                        color: Colors.green,
+                        size: 16,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'No anomalies predicted. All logistics metrics within safety thresholds.',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                }
+
+                return ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: risks.length,
+                  separatorBuilder: (c, i) => const Divider(height: 24),
+                  itemBuilder: (context, index) {
+                    final r = risks[index];
+                    final isCritical = r.probability >= 0.85;
+                    final alertColor = isCritical
+                        ? Colors.red
+                        : Colors.amber.shade800;
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: alertColor.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                '${(r.probability * 100).toInt()}% RISK PROBABILITY',
+                                style: TextStyle(
+                                  color: alertColor,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            const Spacer(),
+                            Text(
+                              r.timeline,
+                              style: const TextStyle(
+                                fontSize: 11,
+                                color: Colors.grey,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          r.title,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          r.description,
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: Colors.grey,
+                            height: 1.3,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: theme.brightness == Brightness.dark
+                                ? Colors.grey.shade800
+                                : Colors.grey.shade100,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: Colors.blue.withValues(alpha: 0.3),
+                              width: 1,
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Row(
+                                children: [
+                                  Icon(
+                                    Icons.shield,
+                                    color: Colors.blue,
+                                    size: 12,
+                                  ),
+                                  SizedBox(width: 4),
+                                  Text(
+                                    'AI PREVENTIVE RECOMMENDATION ACTION:',
+                                    style: TextStyle(
+                                      fontSize: 9,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                r.preventiveAction,
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  height: 1.3,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.flash_on,
+                              color: Colors.green,
+                              size: 12,
+                            ),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                'Mitigation Benefit: ${r.expectedImpact}',
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  color: Colors.green,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 4),
+                              side: BorderSide(color: alertColor),
+                            ),
+                            icon: Icon(
+                              Icons.send_and_archive,
+                              size: 14,
+                              color: alertColor,
+                            ),
+                            label: Text(
+                              'Execute Preventive Dispatch',
+                              style: TextStyle(fontSize: 11, color: alertColor),
+                            ),
+                            onPressed: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Executed mitigation: ${r.title} preventive routing deployed!',
+                                  ),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

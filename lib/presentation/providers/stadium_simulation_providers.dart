@@ -8,6 +8,7 @@ import '../../domain/entities/ai_recommendation.dart';
 import '../../domain/entities/user_role.dart';
 import '../../domain/entities/match_detail.dart';
 import '../../domain/entities/volunteer_deployment.dart';
+import '../../domain/entities/operational_risk.dart';
 import '../../domain/usecases/get_ai_recommendations.dart';
 import 'app_state_providers.dart';
 
@@ -264,4 +265,136 @@ final aiRecommendationsProvider = FutureProvider<List<AIRecommendation>>((
     temperature: preset.temperature,
     deployment: deployment,
   );
+});
+
+// 8. AI Risk Prediction Provider
+final riskPredictionsProvider = FutureProvider<List<OperationalRisk>>((
+  ref,
+) async {
+  final crowdState = ref.watch(crowdStateProvider);
+  final matchId = ref.watch(selectedMatchProvider);
+  final preset = MatchPreset.presets.firstWhere(
+    (p) => p.matchId == matchId,
+    orElse: () => MatchPreset.presets.first,
+  );
+
+  final List<OperationalRisk> risks = [];
+
+  // 1. Gate Congestion Prediction
+  final gateBWait = crowdState.gateWaitTimes['Gate B'] ?? 0;
+  if (gateBWait >= 15) {
+    risks.add(
+      const OperationalRisk(
+        id: 'risk_gate_b',
+        title: 'High Congestion Warning: Gate B entry lanes',
+        riskCategory: 'Gate',
+        probability: 0.88,
+        timeline: 'Within 15 minutes',
+        description:
+            'RFID inflow sensors detect a surge of 4,500 fans arriving via North Commuter Rail walking routes toward Gate B.',
+        preventiveAction:
+            'Trigger mobile app push alerts to reroute incoming fans to Gate D and activate volunteer marshalling at MetLife plaza.',
+        expectedImpact:
+            'Bypasses bottleneck, reducing peak gate queue delays by 22%.',
+      ),
+    );
+  }
+
+  // 2. Medical Station Overload
+  if (preset.weatherAlert == 'Extreme Heat Alert') {
+    risks.add(
+      const OperationalRisk(
+        id: 'risk_medical_heat',
+        title: 'Thermal Distress Surge: Medical Desk West',
+        riskCategory: 'Medical',
+        probability: 0.76,
+        timeline: 'Within 30 minutes',
+        description:
+            'Ambient temperatures of 36°C combined with high plaza congestion are projected to double heat exhaust incidents.',
+        preventiveAction:
+            'Pre-deploy cooling packs, dispatch 3 accessibility volunteers to Section 112 lobby, and increase water supplies.',
+        expectedImpact:
+            'Stabilizes emergency responder dispatch delay below 3 mins.',
+      ),
+    );
+  }
+
+  // 3. Transportation delays
+  final railUsage = preset.railUsageRate;
+  if (railUsage >= 0.80) {
+    risks.add(
+      const OperationalRisk(
+        id: 'risk_transit_delay',
+        title: 'Platform Overcrowding: FIFA Metro Line 1',
+        riskCategory: 'Transit',
+        probability: 0.92,
+        timeline: 'Post-Match',
+        description:
+            'Projected train boardings exceed platform holding capacity due to high transit preference (88% commuter rail).',
+        preventiveAction:
+            'Request transit authority to dispatch 2 additional loop trains and open secondary walking transit routes.',
+        expectedImpact:
+            'Prevents platform exit locks, saving 25 mins exit queue time.',
+      ),
+    );
+  }
+
+  // 4. Crowd Surge Prediction
+  final foodCourt1Wait =
+      crowdState.foodCourtWaitTimes['Food Court 1 (North)'] ?? 0;
+  if (foodCourt1Wait >= 15) {
+    risks.add(
+      const OperationalRisk(
+        id: 'risk_crowd_surge',
+        title: 'Concourse Bottleneck: North Food Court Corridor',
+        riskCategory: 'Crowd',
+        probability: 0.72,
+        timeline: 'During Half-Time',
+        description:
+            'Crowd densities are projected to exceed 4 persons/sqm near North Food Court during half-time concession rush.',
+        preventiveAction:
+            'Activate structural routing barrier guide rails, and redirect walk flows to the wider South concessions lobby.',
+        expectedImpact:
+            'Maintains walkway speeds above 1.1 m/s, preventing localized crushing hazards.',
+      ),
+    );
+  }
+
+  // 5. Weather impact
+  if (preset.weatherAlert == 'Heavy Lightning Warning') {
+    risks.add(
+      const OperationalRisk(
+        id: 'risk_weather_lightning',
+        title: 'Structural Clearance Risk: Seating Deck Area',
+        riskCategory: 'Weather',
+        probability: 0.95,
+        timeline: 'Immediate',
+        description:
+            'Active lightning strikes recorded within 5 miles. 82% probability of lightning strike within MetLife stadium envelope.',
+        preventiveAction:
+            'Initiate immediate seating deck evacuation broadcast and move all open-area fans inside concourses.',
+        expectedImpact:
+            'Protects personal safety, minimizing severe weather hazard index.',
+      ),
+    );
+  }
+
+  // 6. Exit bottlenecks
+  risks.add(
+    const OperationalRisk(
+      id: 'risk_exit_bottleneck',
+      title: 'Gate Clearance Bottleneck: Gate A egress routes',
+      riskCategory: 'Exit',
+      probability: 0.65,
+      timeline: 'Post-Match',
+      description:
+          'Egress modeling predicts exit bottlenecks at Gate A due to narrow outer fence construction design.',
+      preventiveAction:
+          'Open secondary escape gates A3 and A4, and flash exit bypass directions on standard big screens.',
+      expectedImpact:
+          'Reduces post-match stadium exit clearance time by 18 mins.',
+    ),
+  );
+
+  return risks;
 });
