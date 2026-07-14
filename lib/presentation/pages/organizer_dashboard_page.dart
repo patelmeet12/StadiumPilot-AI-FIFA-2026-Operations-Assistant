@@ -178,6 +178,7 @@ class OrganizerDashboardPage extends ConsumerWidget {
                             _buildOperationalInsightsCard(crowdState, theme),
                             const SizedBox(height: 24),
                             _buildAnalyticsKPICard(
+                              ref,
                               theme,
                               crowdState,
                               incidents,
@@ -1188,139 +1189,269 @@ class OrganizerDashboardPage extends ConsumerWidget {
   }
 
   Widget _buildAnalyticsKPICard(
+    WidgetRef ref,
     ThemeData theme,
     CrowdState crowd,
     List<Incident> incidents,
   ) {
-    final resolvedCount = incidents.where((i) => i.status == 'Resolved').length;
-    final totalIncidents = incidents.length;
-    final incidentRate = totalIncidents == 0
-        ? 100
-        : (resolvedCount / totalIncidents * 100).toInt();
+    // 1. Average Waiting Time
+    final avgWait = crowd.gateWaitTimes.values.isEmpty
+        ? 0.0
+        : crowd.gateWaitTimes.values.reduce((a, b) => a + b) /
+              crowd.gateWaitTimes.length;
+
+    // 2. Average Crowd Density
+    final avgDensity = crowd.zoneDensities.values.isEmpty
+        ? 0.0
+        : crowd.zoneDensities.values.reduce((a, b) => a + b) /
+              crowd.zoneDensities.length;
+
+    // 3. Gate Utilization
+    final totalGates = crowd.gateWaitTimes.length;
+    final balancedGates = crowd.gateWaitTimes.values
+        .where((w) => w <= 18)
+        .length;
+    final gateUtil = totalGates == 0 ? 0.0 : (balancedGates / totalGates);
+
+    // 4. Volunteer Efficiency
+    const volEff = 94.2;
+
+    // 5. Accessibility Requests
+    final accessIncidents = incidents
+        .where(
+          (i) =>
+              i.category.toLowerCase().contains('access') ||
+              i.description.toLowerCase().contains('rampa') ||
+              i.title.toLowerCase().contains('wheelchair'),
+        )
+        .length;
+    final accessReq = accessIncidents + 14; // Mock base + live active
+
+    // 6. Medical Incidents
+    final medicalIncidents = incidents
+        .where(
+          (i) =>
+              i.category.toLowerCase().contains('medical') ||
+              i.description.toLowerCase().contains('resbaló') ||
+              i.title.toLowerCase().contains('caída'),
+        )
+        .length;
+
+    // 7. Sustainability Score
+    final matchId = ref.watch(selectedMatchProvider);
+    final preset = MatchPreset.presets.firstWhere(
+      (p) => p.matchId == matchId,
+      orElse: () => MatchPreset.presets.first,
+    );
+    final sustainability = (preset.railUsageRate * 100).toInt();
+
+    // 8. Transport Efficiency
+    const transportEff = 92.5;
+
+    // 9. Operational Health Score
+    final healthScore = (100 - (avgWait * 1.5) - (avgDensity * 10))
+        .clamp(50, 99)
+        .toInt();
+
+    // 10. Risk Index
+    final isLightning = preset.weatherAlert == 'Heavy Lightning Warning';
+    final isHeat = preset.weatherAlert == 'Extreme Heat Alert';
+    final riskIndex =
+        (isLightning ? 95 : (isHeat ? 76 : (avgWait >= 20 ? 88 : 45))).toInt();
+
+    // 11. Live AI Confidence
+    const aiConfidence = 96;
 
     return Card(
       elevation: 2,
       child: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final isWide = constraints.maxWidth > 650;
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.analytics, color: theme.colorScheme.secondary),
-                const SizedBox(width: 8),
-                const Expanded(
-                  child: Text(
-                    'AI Operational KPIs & Impact Analytics',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                Row(
+                  children: [
+                    Icon(Icons.analytics, color: theme.colorScheme.secondary),
+                    const SizedBox(width: 8),
+                    const Expanded(
+                      child: Text(
+                        'AI Operational KPIs & Impact Analytics',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                GridView.count(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  crossAxisCount: isWide ? 3 : 2,
+                  childAspectRatio: 2.3,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  children: [
+                    _buildKPITile(
+                      'Avg Waiting Time',
+                      '${avgWait.toStringAsFixed(1)} mins',
+                      avgWait > 15
+                          ? 'High Congestion Warning'
+                          : 'Normal Flow Delay',
+                      avgWait > 15 ? Colors.red : Colors.green,
+                      theme,
+                    ),
+                    _buildKPITile(
+                      'Avg Crowd Density',
+                      '${(avgDensity * 100).toStringAsFixed(1)}%',
+                      avgDensity > 0.7
+                          ? 'Crush Safety Check'
+                          : 'Safe Distribution',
+                      avgDensity > 0.7 ? Colors.red : Colors.green,
+                      theme,
+                    ),
+                    _buildKPITile(
+                      'Gate Utilization',
+                      '${(gateUtil * 100).toStringAsFixed(0)}%',
+                      '$balancedGates of $totalGates gates balanced',
+                      gateUtil < 0.6 ? Colors.amber.shade800 : Colors.green,
+                      theme,
+                    ),
+                    _buildKPITile(
+                      'Volunteer Efficiency',
+                      '$volEff%',
+                      'Task completions/hr',
+                      Colors.green,
+                      theme,
+                    ),
+                    _buildKPITile(
+                      'Accessibility Requests',
+                      '$accessReq active',
+                      'Ramps & Step-free routing',
+                      Colors.blue,
+                      theme,
+                    ),
+                    _buildKPITile(
+                      'Medical Incidents',
+                      '$medicalIncidents open',
+                      medicalIncidents > 0
+                          ? 'First-Aid Squad alert'
+                          : 'No major anomalies',
+                      medicalIncidents > 0 ? Colors.red : Colors.green,
+                      theme,
+                    ),
+                    _buildKPITile(
+                      'Sustainability Score',
+                      '$sustainability/100',
+                      'Eco transit index',
+                      Colors.green,
+                      theme,
+                    ),
+                    _buildKPITile(
+                      'Transport Efficiency',
+                      '$transportEff%',
+                      'Metro share optimal',
+                      Colors.blue,
+                      theme,
+                    ),
+                    _buildKPITile(
+                      'Operational Health',
+                      '$healthScore%',
+                      'Overall safety index',
+                      healthScore < 75 ? Colors.amber.shade800 : Colors.green,
+                      theme,
+                    ),
+                    _buildKPITile(
+                      'Risk Index',
+                      '$riskIndex%',
+                      riskIndex > 80
+                          ? 'Mitigation recommended'
+                          : 'Low risk profile',
+                      riskIndex > 80 ? Colors.red : Colors.green,
+                      theme,
+                    ),
+                    _buildKPITile(
+                      'Live AI Confidence',
+                      '$aiConfidence%',
+                      'Real-time reasoning logs',
+                      Colors.blue,
+                      theme,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                const Divider(),
+                const SizedBox(height: 12),
+                const Text(
+                  'Live Mitigation Performance Index',
+                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    const Expanded(
+                      flex: 3,
+                      child: Text(
+                        'AI Direct Flow (Optimized)',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.green,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 7,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: const LinearProgressIndicator(
+                          value: 0.94,
+                          backgroundColor: Colors.transparent,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.green,
+                          ),
+                          minHeight: 8,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    const Expanded(
+                      flex: 3,
+                      child: Text(
+                        'Standard Flow (Bottleneck)',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 7,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: const LinearProgressIndicator(
+                          value: 0.62,
+                          backgroundColor: Colors.transparent,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+                          minHeight: 8,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
-            ),
-            const SizedBox(height: 16),
-            GridView.count(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: 2,
-              childAspectRatio: 2.2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              children: [
-                _buildKPITile(
-                  'Concourse Flow',
-                  '94.2%',
-                  '+3.1% Optimization Benefit',
-                  Colors.green,
-                  theme,
-                ),
-                _buildKPITile(
-                  'Avg Commuter CO₂',
-                  '1.15 kg',
-                  '-28.4% Carbon Reduced',
-                  Colors.green,
-                  theme,
-                ),
-                _buildKPITile(
-                  'Incident Resolve Rate',
-                  '$incidentRate%',
-                  '$resolvedCount resolved of $totalIncidents',
-                  Colors.blue,
-                  theme,
-                ),
-                _buildKPITile(
-                  'Staff Utilization Index',
-                  '92.6%',
-                  'Target threshold: >85%',
-                  Colors.amber.shade800,
-                  theme,
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            const Divider(),
-            const SizedBox(height: 12),
-            const Text(
-              'Live Mitigation Performance Index',
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                const Expanded(
-                  flex: 3,
-                  child: Text(
-                    'AI Direct Flow (Optimized)',
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: Colors.green,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 7,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
-                    child: const LinearProgressIndicator(
-                      value: 0.94,
-                      backgroundColor: Colors.transparent,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
-                      minHeight: 8,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 6),
-            Row(
-              children: [
-                const Expanded(
-                  flex: 3,
-                  child: Text(
-                    'Standard Flow (Bottleneck)',
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: Colors.red,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 7,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
-                    child: const LinearProgressIndicator(
-                      value: 0.62,
-                      backgroundColor: Colors.transparent,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
-                      minHeight: 8,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
+            );
+          },
         ),
       ),
     );
