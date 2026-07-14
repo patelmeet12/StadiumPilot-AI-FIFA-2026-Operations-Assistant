@@ -400,92 +400,194 @@ class DashboardPage extends ConsumerWidget {
                     if (r.priority == 'Medium') {
                       priorityColor = Colors.blue;
                     }
+                    // Explainable AI (XAI) input data list
+                    final List<String> dataInfluenced = [];
+                    if (r.id.contains('weather') ||
+                        r.id.contains('lightning') ||
+                        r.id.contains('heat')) {
+                      dataInfluenced.addAll([
+                        'Live Weather Radar Node',
+                        'Plaza/Seating Thermal Sensors',
+                        'Venue Weather Warning System',
+                      ]);
+                    } else if (r.id.contains('gate') ||
+                        r.id.contains('food') ||
+                        r.id.contains('crowd') ||
+                        r.id.contains('reallocate')) {
+                      dataInfluenced.addAll([
+                        'Crowd Flow Analytics Camera',
+                        'RFID Gate Queue Telemetry',
+                        'Staff Dispatch Roster',
+                      ]);
+                    } else if (r.id.contains('translate')) {
+                      dataInfluenced.addAll([
+                        'Multi-lingual Incident Intake',
+                        'NLP Translation Parser',
+                      ]);
+                    } else {
+                      dataInfluenced.addAll([
+                        'Static Stadium Routing Maps',
+                        'Elevator Operational Status logs',
+                      ]);
+                    }
 
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 2,
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: theme.brightness == Brightness.dark
+                            ? Colors.grey.shade900
+                            : Colors.grey.shade100,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: priorityColor.withValues(alpha: 0.3),
+                          width: 1.5,
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: priorityColor.withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  r.priority.toUpperCase(),
+                                  style: TextStyle(
+                                    color: priorityColor,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ),
-                              decoration: BoxDecoration(
-                                color: priorityColor.withValues(alpha: 0.15),
-                                borderRadius: BorderRadius.circular(4),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  r.title,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
-                              child: Text(
-                                r.priority.toUpperCase(),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            r.recommendation,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: theme.colorScheme.primary,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          const Divider(),
+                          const SizedBox(height: 8),
+                          // Explainable AI Header
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.auto_awesome,
+                                color: theme.colorScheme.secondary,
+                                size: 14,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                'Explainable AI (XAI) Reasoning Log',
                                 style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 11,
+                                  letterSpacing: 0.5,
+                                  color: theme.colorScheme.secondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          _buildExplainableField(
+                            'Why this recommendation?',
+                            r.reason,
+                            theme,
+                          ),
+                          const SizedBox(height: 6),
+                          _buildExplainableField(
+                            'What data influenced it?',
+                            dataInfluenced.join(' • '),
+                            theme,
+                          ),
+                          const SizedBox(height: 6),
+                          _buildExplainableField(
+                            'Alternative Options:',
+                            r.alternativeOptions.isEmpty
+                                ? 'None'
+                                : r.alternativeOptions.join(' OR '),
+                            theme,
+                          ),
+                          const SizedBox(height: 6),
+                          _buildExplainableField(
+                            'Expected Benefit:',
+                            '${r.estimatedBenefit} '
+                                '(Saves ${r.estimatedTimeSavedMinutes} mins, '
+                                're-routes ${r.estimatedWalkingDistanceSavedMeters}m walk, '
+                                'saves ${r.estimatedCo2ReductionKg}kg CO₂)',
+                            theme,
+                          ),
+                          const SizedBox(height: 6),
+                          _buildExplainableField(
+                            'Operational Impact:',
+                            r.operationalImpact,
+                            theme,
+                          ),
+                          const SizedBox(height: 10),
+                          // Confidence percentage bar
+                          Row(
+                            children: [
+                              const Text(
+                                'AI Confidence: ',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              Expanded(
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(4),
+                                  child: LinearProgressIndicator(
+                                    value: r.confidenceLevel,
+                                    minHeight: 6,
+                                    backgroundColor:
+                                        theme.brightness == Brightness.dark
+                                        ? Colors.grey.shade800
+                                        : Colors.grey.shade200,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      priorityColor,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                '${(r.confidenceLevel * 100).toInt()}%',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
                                   color: priorityColor,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                r.title,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            const Spacer(),
-                            Text(
-                              'Confidence: ${(r.confidenceLevel * 100).toInt()}%',
-                              style: const TextStyle(
-                                color: Colors.grey,
-                                fontSize: 11,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          r.recommendation,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: theme.colorScheme.primary == Colors.yellow
-                                ? Colors.yellow
-                                : theme.colorScheme.primary,
+                            ],
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          r.reason,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            fontSize: 12,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.flash_on,
-                              size: 12,
-                              color: Colors.amber,
-                            ),
-                            const SizedBox(width: 4),
-                            Expanded(
-                              child: Text(
-                                'Benefit: ${r.estimatedBenefit}',
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.green,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                        ],
+                      ),
                     );
                   },
                 );
@@ -1334,6 +1436,31 @@ class DashboardPage extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildExplainableField(String label, String value, ThemeData theme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label.toUpperCase(),
+          style: const TextStyle(
+            fontSize: 9,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey,
+            letterSpacing: 0.5,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontSize: 11,
+            height: 1.3,
+          ),
+        ),
+      ],
     );
   }
 }
