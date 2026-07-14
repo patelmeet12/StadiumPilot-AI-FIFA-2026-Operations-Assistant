@@ -2,9 +2,45 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/incident.dart';
 import '../../domain/entities/crowd_state.dart';
+import '../../domain/entities/match_detail.dart';
+import '../../domain/entities/volunteer_deployment.dart';
 import '../providers/app_state_providers.dart';
 import '../providers/stadium_simulation_providers.dart';
 import '../widgets/stadium_shell.dart';
+
+// Local UI state providers for the Staff Reallocation Console
+class ReallocateFromNotifier extends Notifier<String> {
+  @override
+  String build() => 'concourse';
+
+  void set(String val) => state = val;
+}
+
+final reallocateFromProvider = NotifierProvider<ReallocateFromNotifier, String>(() {
+  return ReallocateFromNotifier();
+});
+
+class ReallocateToNotifier extends Notifier<String> {
+  @override
+  String build() => 'plaza';
+
+  void set(String val) => state = val;
+}
+
+final reallocateToProvider = NotifierProvider<ReallocateToNotifier, String>(() {
+  return ReallocateToNotifier();
+});
+
+class ReallocateCountNotifier extends Notifier<int> {
+  @override
+  int build() => 2;
+
+  void set(int val) => state = val;
+}
+
+final reallocateCountProvider = NotifierProvider<ReallocateCountNotifier, int>(() {
+  return ReallocateCountNotifier();
+});
 
 class OrganizerDashboardPage extends ConsumerWidget {
   const OrganizerDashboardPage({super.key});
@@ -38,6 +74,9 @@ class OrganizerDashboardPage extends ConsumerWidget {
                 'Live venue operations command center. Monitor structural flows, dispatch staff, and manage stadium-wide broadcasts.',
                 style: TextStyle(color: Colors.grey, fontSize: 13),
               ),
+              const SizedBox(height: 24),
+
+              _buildMatchFixtureSelector(context, ref, theme),
               const SizedBox(height: 24),
 
               // Emergency trigger banner controls
@@ -132,6 +171,12 @@ class OrganizerDashboardPage extends ConsumerWidget {
                             _buildHeatmapGrid(zoneDensities, theme),
                             const SizedBox(height: 24),
                             _buildOperationalInsightsCard(crowdState, theme),
+                            const SizedBox(height: 24),
+                            _buildAnalyticsKPICard(
+                              theme,
+                              crowdState,
+                              incidents,
+                            ),
                           ],
                         ),
                       ),
@@ -165,7 +210,11 @@ class OrganizerDashboardPage extends ConsumerWidget {
                               ),
                             ),
                             const SizedBox(height: 12),
-                            _buildVolunteerAvailabilityCard(theme),
+                            _buildVolunteerAvailabilityCard(
+                              context,
+                              ref,
+                              theme,
+                            ),
                           ],
                         ),
                       ),
@@ -526,7 +575,16 @@ class OrganizerDashboardPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildVolunteerAvailabilityCard(ThemeData theme) {
+  Widget _buildVolunteerAvailabilityCard(
+    BuildContext context,
+    WidgetRef ref,
+    ThemeData theme,
+  ) {
+    final VolunteerDeployment deployment = ref.watch(volunteerDeploymentProvider);
+    final fromZone = ref.watch(reallocateFromProvider);
+    final toZone = ref.watch(reallocateToProvider);
+    final reallocateCount = ref.watch(reallocateCountProvider);
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -538,7 +596,7 @@ class OrganizerDashboardPage extends ConsumerWidget {
                 const Icon(Icons.people_outline, color: Colors.blue, size: 24),
                 const SizedBox(width: 8),
                 Text(
-                  '38 Active / 3 on Break',
+                  '${deployment.totalActive} Active / ${deployment.totalBreak} on Break',
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -547,7 +605,9 @@ class OrganizerDashboardPage extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             LinearProgressIndicator(
-              value: 38 / 41,
+              value: deployment.totalVolunteers == 0
+                  ? 0
+                  : deployment.totalActive / deployment.totalVolunteers,
               backgroundColor: theme.brightness == Brightness.dark
                   ? Colors.grey.shade800
                   : Colors.grey.shade200,
@@ -556,30 +616,147 @@ class OrganizerDashboardPage extends ConsumerWidget {
             const SizedBox(height: 16),
             _buildVolunteerRow(
               'Plaza Entry Gates',
-              '14 Active',
-              '2 on break',
+              '${deployment.plazaActive} Active',
+              '${deployment.plazaBreak} on break',
               Colors.green,
             ),
             const SizedBox(height: 10),
             _buildVolunteerRow(
               'Concourse Concessions',
-              '10 Active',
-              '0 on break',
+              '${deployment.concourseActive} Active',
+              '${deployment.concourseBreak} on break',
               Colors.green,
             ),
             const SizedBox(height: 10),
             _buildVolunteerRow(
               'Medical & Accessibility',
-              '8 Active',
-              '1 on break',
+              '${deployment.medicalActive} Active',
+              '${deployment.medicalBreak} on break',
               Colors.amber,
             ),
             const SizedBox(height: 10),
             _buildVolunteerRow(
               'Security Checkpoints',
-              '6 Active',
-              '0 on break',
+              '${deployment.securityActive} Active',
+              '${deployment.securityBreak} on break',
               Colors.green,
+            ),
+            const SizedBox(height: 20),
+            const Divider(),
+            const SizedBox(height: 12),
+            const Text(
+              'Staff Dispatch Reallocation Controller',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: InputDecorator(
+                    decoration: const InputDecoration(
+                      labelText: 'Source',
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    ),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        isExpanded: true,
+                        value: fromZone,
+                        items: const [
+                          DropdownMenuItem(value: 'plaza', child: Text('Plaza')),
+                          DropdownMenuItem(value: 'concourse', child: Text('Concourse')),
+                          DropdownMenuItem(value: 'medical', child: Text('Medical')),
+                          DropdownMenuItem(value: 'security', child: Text('Security')),
+                        ],
+                        onChanged: (val) {
+                          if (val != null) {
+                            ref.read(reallocateFromProvider.notifier).set(val);
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                const Icon(Icons.arrow_forward, size: 16, color: Colors.grey),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: InputDecorator(
+                    decoration: const InputDecoration(
+                      labelText: 'Target',
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    ),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        isExpanded: true,
+                        value: toZone,
+                        items: const [
+                          DropdownMenuItem(value: 'plaza', child: Text('Plaza')),
+                          DropdownMenuItem(value: 'concourse', child: Text('Concourse')),
+                          DropdownMenuItem(value: 'medical', child: Text('Medical')),
+                          DropdownMenuItem(value: 'security', child: Text('Security')),
+                        ],
+                        onChanged: (val) {
+                          if (val != null) {
+                            ref.read(reallocateToProvider.notifier).set(val);
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: InputDecorator(
+                    decoration: const InputDecoration(
+                      labelText: 'Count',
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    ),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<int>(
+                        isExpanded: true,
+                        value: reallocateCount,
+                        items: const [
+                          DropdownMenuItem(value: 1, child: Text('1 Volunteer')),
+                          DropdownMenuItem(value: 2, child: Text('2 Volunteers')),
+                          DropdownMenuItem(value: 4, child: Text('4 Volunteers')),
+                          DropdownMenuItem(value: 5, child: Text('5 Volunteers')),
+                        ],
+                        onChanged: (val) {
+                          if (val != null) {
+                            ref.read(reallocateCountProvider.notifier).set(val);
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                ElevatedButton(
+                  onPressed: fromZone == toZone
+                      ? null
+                      : () {
+                          ref
+                              .read(volunteerDeploymentProvider.notifier)
+                              .reallocate(fromZone, toZone, reallocateCount);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Redeployed $reallocateCount staff successfully!',
+                              ),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                        },
+                  child: const Text('Redeploy'),
+                ),
+              ],
             ),
           ],
         ),
@@ -735,6 +912,354 @@ class OrganizerDashboardPage extends ConsumerWidget {
           decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
       ],
+    );
+  }
+
+  Widget _buildMatchFixtureSelector(
+    BuildContext context,
+    WidgetRef ref,
+    ThemeData theme,
+  ) {
+    final activeMatchId = ref.watch(selectedMatchProvider);
+    final currentPreset = MatchPreset.presets.firstWhere(
+      (p) => p.matchId == activeMatchId,
+      orElse: () => MatchPreset.presets.first,
+    );
+
+    return Card(
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.sports_soccer, color: theme.colorScheme.primary),
+                const SizedBox(width: 8),
+                const Expanded(
+                  child: Text(
+                    'FIFA 2026 Fixture Command Panel',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: InputDecorator(
+                    decoration: const InputDecoration(
+                      labelText: 'Select Fixture Telemetry Mode',
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    ),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        isExpanded: true,
+                        value: activeMatchId,
+                        items: MatchPreset.presets.map((preset) {
+                          return DropdownMenuItem(
+                            value: preset.matchId,
+                            child: Text(
+                              '${preset.homeTeam} vs ${preset.awayTeam} (${preset.matchId == "match_argentina_france" ? "Final Match" : "Group Stage"})',
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (val) {
+                          if (val != null) {
+                            ref.read(selectedMatchProvider.notifier).setMatch(val);
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final isWide = constraints.maxWidth > 550;
+                final kids = [
+                  _buildTelemetryInfoItem(
+                    'Weather Warning',
+                    currentPreset.weatherAlert,
+                    currentPreset.weatherAlert == 'None'
+                        ? Colors.green
+                        : Colors.red,
+                    theme,
+                  ),
+                  _buildTelemetryInfoItem(
+                    'Temperature',
+                    '${currentPreset.temperature.toInt()}°C',
+                    Colors.blue,
+                    theme,
+                  ),
+                  _buildTelemetryInfoItem(
+                    'Projected Fans',
+                    '${currentPreset.attendanceProjection}',
+                    Colors.amber.shade800,
+                    theme,
+                  ),
+                  _buildTelemetryInfoItem(
+                    'VIP Dispatch',
+                    currentPreset.vipMediaPriority,
+                    currentPreset.vipMediaPriority == 'Critical'
+                        ? Colors.red
+                        : Colors.blue,
+                    theme,
+                  ),
+                ];
+                return isWide
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: kids.map((w) => Expanded(child: w)).toList(),
+                      )
+                    : Column(
+                        children: kids
+                            .map(
+                              (w) => Padding(
+                                padding: const EdgeInsets.only(bottom: 12),
+                                child: w,
+                              ),
+                            )
+                            .toList(),
+                      );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTelemetryInfoItem(
+    String label,
+    String value,
+    Color statusColor,
+    ThemeData theme,
+  ) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 4),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: theme.brightness == Brightness.dark
+            ? Colors.grey.shade900
+            : Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 11,
+              color: Colors.grey,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+              color: statusColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAnalyticsKPICard(
+    ThemeData theme,
+    CrowdState crowd,
+    List<Incident> incidents,
+  ) {
+    final resolvedCount = incidents.where((i) => i.status == 'Resolved').length;
+    final totalIncidents = incidents.length;
+    final incidentRate = totalIncidents == 0
+        ? 100
+        : (resolvedCount / totalIncidents * 100).toInt();
+
+    return Card(
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.analytics, color: theme.colorScheme.secondary),
+                const SizedBox(width: 8),
+                const Expanded(
+                  child: Text(
+                    'AI Operational KPIs & Impact Analytics',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            GridView.count(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              crossAxisCount: 2,
+              childAspectRatio: 2.2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              children: [
+                _buildKPITile(
+                  'Concourse Flow',
+                  '94.2%',
+                  '+3.1% Optimization Benefit',
+                  Colors.green,
+                  theme,
+                ),
+                _buildKPITile(
+                  'Avg Commuter CO₂',
+                  '1.15 kg',
+                  '-28.4% Carbon Reduced',
+                  Colors.green,
+                  theme,
+                ),
+                _buildKPITile(
+                  'Incident Resolve Rate',
+                  '$incidentRate%',
+                  '$resolvedCount resolved of $totalIncidents',
+                  Colors.blue,
+                  theme,
+                ),
+                _buildKPITile(
+                  'Staff Utilization Index',
+                  '92.6%',
+                  'Target threshold: >85%',
+                  Colors.amber.shade800,
+                  theme,
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            const Divider(),
+            const SizedBox(height: 12),
+            const Text(
+              'Live Mitigation Performance Index',
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                const Expanded(
+                  flex: 3,
+                  child: Text(
+                    'AI Direct Flow (Optimized)',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Colors.green,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 7,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: const LinearProgressIndicator(
+                      value: 0.94,
+                      backgroundColor: Colors.transparent,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                      minHeight: 8,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Row(
+              children: [
+                const Expanded(
+                  flex: 3,
+                  child: Text(
+                    'Standard Flow (Bottleneck)',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Colors.red,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 7,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: const LinearProgressIndicator(
+                      value: 0.62,
+                      backgroundColor: Colors.transparent,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+                      minHeight: 8,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildKPITile(
+    String label,
+    String value,
+    String benefit,
+    Color color,
+    ThemeData theme,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: theme.brightness == Brightness.dark
+            ? Colors.grey.shade900
+            : Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 11,
+              color: Colors.grey,
+              fontWeight: FontWeight.w500,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            benefit,
+            style: const TextStyle(fontSize: 9, color: Colors.grey),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
     );
   }
 }

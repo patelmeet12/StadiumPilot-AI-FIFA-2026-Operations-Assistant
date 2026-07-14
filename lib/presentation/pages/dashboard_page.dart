@@ -6,6 +6,7 @@ import '../../core/localization/local_dictionary.dart';
 import '../../domain/entities/incident.dart';
 import '../../domain/entities/ai_recommendation.dart';
 import '../../domain/entities/crowd_state.dart';
+import '../../domain/entities/match_detail.dart';
 import '../providers/app_state_providers.dart';
 import '../providers/stadium_simulation_providers.dart';
 import '../widgets/stadium_shell.dart';
@@ -110,6 +111,9 @@ class DashboardPage extends ConsumerWidget {
                   ),
                 ],
               ),
+              const SizedBox(height: 24),
+
+              _buildLiveWeatherWarningBanner(ref, theme),
               const SizedBox(height: 24),
 
               // Responsive grid layout
@@ -1277,6 +1281,59 @@ class DashboardPage extends ConsumerWidget {
           },
         );
       },
+    );
+  }
+
+  Widget _buildLiveWeatherWarningBanner(WidgetRef ref, ThemeData theme) {
+    final matchId = ref.watch(selectedMatchProvider);
+    final preset = MatchPreset.presets.firstWhere(
+      (p) => p.matchId == matchId,
+      orElse: () => MatchPreset.presets.first,
+    );
+
+    if (preset.weatherAlert == 'None') {
+      return const SizedBox.shrink();
+    }
+
+    final isLightning = preset.weatherAlert.toLowerCase().contains('lightning');
+    final icon = isLightning ? Icons.flash_on : Icons.thermostat;
+    final alertColor = isLightning ? Colors.red : Colors.amber.shade900;
+
+    return Card(
+      color: alertColor.withValues(alpha: 0.15),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: alertColor, width: 1.5),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            Icon(icon, color: alertColor, size: 28),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'TOURNAMENT WEATHER ALERT: ${preset.weatherAlert.toUpperCase()}',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                      color: alertColor,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Severe weather detected nearby. Please review the AI Decision Support Recommendations below for safety rerouting and guidelines.',
+                    style: TextStyle(fontSize: 11, color: Colors.white70),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

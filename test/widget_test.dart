@@ -5,6 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stadium_pilot_ai/domain/entities/user_role.dart';
 import 'package:stadium_pilot_ai/domain/entities/crowd_state.dart';
 import 'package:stadium_pilot_ai/domain/entities/incident.dart';
+import 'package:stadium_pilot_ai/domain/entities/match_detail.dart';
+import 'package:stadium_pilot_ai/domain/entities/volunteer_deployment.dart';
 import 'package:stadium_pilot_ai/domain/usecases/calculate_route.dart';
 import 'package:stadium_pilot_ai/domain/usecases/get_transport_options.dart';
 import 'package:stadium_pilot_ai/domain/usecases/get_ai_recommendations.dart';
@@ -468,6 +470,159 @@ void main() {
       expect(find.text('Stadium Flow Heatmap'), findsOneWidget);
       expect(find.text('Volunteer Deployment & Availability'), findsOneWidget);
       expect(find.text('Stadium Transit & Commute Overview'), findsOneWidget);
+      expect(find.text('FIFA 2026 Fixture Command Panel'), findsOneWidget);
+      expect(
+        find.text('AI Operational KPIs & Impact Analytics'),
+        findsOneWidget,
+      );
     });
+
+    testWidgets(
+      'Should render VolunteerDashboardPage check-in simulator and badge',
+      (WidgetTester tester) async {
+        tester.view.physicalSize = const Size(1440, 900);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+
+        SharedPreferences.setMockInitialValues({});
+        final sharedPreferences = await SharedPreferences.getInstance();
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+            ],
+            child: const MaterialApp(home: VolunteerDashboardPage()),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+        expect(find.text('ACTIVE VOLUNTEER ASSIGNMENT ZONE'), findsOneWidget);
+        expect(find.text('Shift Duty: CHECK-IN REQUIRED'), findsOneWidget);
+        expect(find.text('Scan Check-In QR Code'), findsOneWidget);
+      },
+    );
+  });
+
+  group('StadiumPilot AI - Enhanced Safety & Weather Telemetry Tests', () {
+    final crowdState = CrowdState.initial();
+
+    test(
+      'Should generate severe weather warnings for lightning conditions',
+      () async {
+        final engine = GetAIRecommendations();
+        final fanRecs = await engine.call(
+          role: UserRole.fan,
+          location: 'Sec 120',
+          crowdState: crowdState,
+          incidents: [],
+          tasks: [],
+          weatherAlert: 'Heavy Lightning Warning',
+        );
+
+        final weatherAlert = fanRecs.firstWhere(
+          (r) => r.id == 'rec_weather_lightning_fan',
+        );
+        expect(weatherAlert.priority, equals('Critical'));
+        expect(weatherAlert.category, equals('Safety'));
+        expect(weatherAlert.recommendation, contains('covered concourses'));
+
+        final volRecs = await engine.call(
+          role: UserRole.volunteer,
+          location: 'Gate plaza',
+          crowdState: crowdState,
+          incidents: [],
+          tasks: [],
+          weatherAlert: 'Heavy Lightning Warning',
+        );
+        final volAlert = volRecs.firstWhere(
+          (r) => r.id == 'rec_weather_lightning_vol',
+        );
+        expect(
+          volAlert.recommendation,
+          contains('direct fans to covered entry hubs'),
+        );
+      },
+    );
+
+    test(
+      'Should translate non-English Spanish/French incident reports in decision engine',
+      () async {
+        final spanishIncident = Incident(
+          id: 'inc_sp_1',
+          title: 'Obstrucción de rampa',
+          category: 'Accessibility',
+          location: 'Gate B access',
+          priority: 'High',
+          status: 'Open',
+          description: 'Una rampa de silla de ruedas tiene una obstrucción',
+          reportedTime: DateTime.now(),
+        );
+
+        final engine = GetAIRecommendations();
+        final recs = await engine.call(
+          role: UserRole.organizer,
+          location: 'Control room',
+          crowdState: crowdState,
+          incidents: [spanishIncident],
+          tasks: [],
+        );
+
+        final translation = recs.firstWhere(
+          (r) => r.id == 'rec_translate_inc_sp_1',
+        );
+        expect(
+          translation.recommendation,
+          contains('Wheelchair accessibility ramp obstruction'),
+        );
+        expect(
+          translation.reason,
+          contains('Reported description is in non-English format'),
+        );
+      },
+    );
+
+    test(
+      'Should generate staff reallocation recommendations when plaza staff is low during gate congestion',
+      () async {
+        final congestedState = CrowdState(
+          gateWaitTimes: {'Gate A': 5, 'Gate B': 25, 'Gate C': 5, 'Gate D': 5},
+          foodCourtWaitTimes: {},
+          restroomWaitTimes: {},
+          zoneDensities: {},
+        );
+
+        final lowPlazaDeployment = VolunteerDeployment(
+          plazaActive: 6,
+          plazaBreak: 2,
+          concourseActive: 10,
+          concourseBreak: 0,
+          medicalActive: 8,
+          medicalBreak: 1,
+          securityActive: 6,
+          securityBreak: 0,
+        );
+
+        final engine = GetAIRecommendations();
+        final recs = await engine.call(
+          role: UserRole.organizer,
+          location: 'Control Room',
+          crowdState: congestedState,
+          incidents: [],
+          tasks: [],
+          deployment: lowPlazaDeployment,
+        );
+
+        final reallocateRec = recs.firstWhere(
+          (r) => r.id == 'rec_org_reallocate_plaza',
+        );
+        expect(reallocateRec.priority, equals('High'));
+        expect(
+          reallocateRec.recommendation,
+          contains('Reallocate 4 volunteers from Concourse Concessions'),
+        );
+      },
+    );
   });
 }

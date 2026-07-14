@@ -3,7 +3,9 @@ import '../entities/user_role.dart';
 import '../entities/crowd_state.dart';
 import '../entities/incident.dart';
 import '../entities/volunteer_task.dart';
+import '../entities/volunteer_deployment.dart';
 
+/// Usecase containing rule-based logic to simulate advanced, host-city AI decision support recommendations.
 class GetAIRecommendations {
   Future<List<AIRecommendation>> call({
     required UserRole role,
@@ -11,10 +13,157 @@ class GetAIRecommendations {
     required CrowdState crowdState,
     required List<Incident> incidents,
     required List<VolunteerTask> tasks,
+    String weatherAlert = 'None',
+    double temperature = 26.0,
+    VolunteerDeployment? deployment,
   }) async {
     final List<AIRecommendation> recommendations = [];
 
-    // 1. Accessibility Tip (For all roles)
+    // 1. Weather Hazard Warning Trigger Rules
+    if (weatherAlert == 'Heavy Lightning Warning') {
+      if (role == UserRole.fan) {
+        recommendations.add(
+          const AIRecommendation(
+            id: 'rec_weather_lightning_fan',
+            title: 'Severe Weather: Seek Concourse Shelter',
+            recommendation:
+                'Exposed seating decks present high hazard. Move inside covered concourses immediately.',
+            reason:
+                'Active lightning storm warning is in effect within 5 miles of MetLife Stadium.',
+            estimatedBenefit:
+                'Guarantees fan safety and avoids exposure to strikes.',
+            priority: 'Critical',
+            confidenceLevel: 0.99,
+            category: 'Safety',
+          ),
+        );
+      } else if (role == UserRole.volunteer) {
+        recommendations.add(
+          const AIRecommendation(
+            id: 'rec_weather_lightning_vol',
+            title: 'Severe Weather: Direct Public Inside',
+            recommendation:
+                'Retreat from open parking structures and direct fans to covered entry hubs.',
+            reason:
+                'Match operations are suspended due to active local lightning warning.',
+            estimatedBenefit:
+                'Achieves swift and organized public safety sheltering.',
+            priority: 'Critical',
+            confidenceLevel: 0.99,
+            category: 'Safety',
+          ),
+        );
+      } else if (role == UserRole.organizer || role == UserRole.staff) {
+        recommendations.add(
+          const AIRecommendation(
+            id: 'rec_weather_lightning_org',
+            title: 'Severe Weather: Suspend Shuttle Carts',
+            recommendation:
+                'De-energize open-air golf carts, broadcast warning alerts, and dispatch safety marshals.',
+            reason:
+                'Severe lightning threat level is Critical. Outdoor personnel must seek immediate shelter.',
+            estimatedBenefit:
+                'Eliminates open-air strike risk across VIP/Media walkways.',
+            priority: 'Critical',
+            confidenceLevel: 0.99,
+            category: 'Safety',
+          ),
+        );
+      }
+    } else if (weatherAlert == 'Extreme Heat Alert') {
+      if (role == UserRole.fan) {
+        recommendations.add(
+          AIRecommendation(
+            id: 'rec_weather_heat_fan',
+            title: 'Severe Weather: Hydration Warning',
+            recommendation:
+                'Visit cooling hydration zones at Sec 112 Concourse. Claim a free water voucher.',
+            reason:
+                'Ambient temperatures have peaked at ${temperature.toInt()}°C. High risk of thermal fatigue.',
+            estimatedBenefit: 'Prevents thermal exhaustion and dehydration.',
+            priority: 'High',
+            confidenceLevel: 0.96,
+            category: 'Safety',
+          ),
+        );
+      } else if (role == UserRole.volunteer) {
+        recommendations.add(
+          const AIRecommendation(
+            id: 'rec_weather_heat_vol',
+            title: 'Severe Weather: Distribute Fluids',
+            recommendation:
+                'Distribute chilled water at Gate check loops. Monitor fans for heat sickness.',
+            reason:
+                'Extreme Heat Warning is in effect across all outer security entry plazas.',
+            estimatedBenefit:
+                'Reduces medical intervention incident rates by ~22%.',
+            priority: 'High',
+            confidenceLevel: 0.94,
+            category: 'Safety',
+          ),
+        );
+      } else if (role == UserRole.organizer || role == UserRole.staff) {
+        recommendations.add(
+          const AIRecommendation(
+            id: 'rec_weather_heat_org',
+            title: 'Severe Weather: Activate Cooling Mists',
+            recommendation:
+                'Activate outdoor misting stations, dispatch emergency water boxes, and flash heat guidance.',
+            reason:
+                'Telemetry shows heat stress indices exceed safety thresholds at West entry plaza.',
+            estimatedBenefit: 'Supports crowd health safety guidelines.',
+            priority: 'High',
+            confidenceLevel: 0.97,
+            category: 'Safety',
+          ),
+        );
+      }
+    }
+
+    // 2. Multilingual Incident Translation Pipeline Simulator
+    for (final inc in incidents) {
+      if (inc.status == 'Open') {
+        String? translation;
+        final titleLower = inc.title.toLowerCase();
+        final descLower = inc.description.toLowerCase();
+
+        if (titleLower.contains('rampa') ||
+            descLower.contains('rampa') ||
+            descLower.contains('obstrucción')) {
+          translation =
+              'Wheelchair accessibility ramp obstruction near Gate B lobby.';
+        } else if (titleLower.contains('panne') ||
+            descLower.contains('électricité') ||
+            descLower.contains('grill')) {
+          translation =
+              'Power breaker outage at Food Court 1 (North) concession grills.';
+        } else if (titleLower.contains('caída') ||
+            descLower.contains('herido') ||
+            descLower.contains('resbaló')) {
+          translation =
+              'Fan slip-and-fall injury near Section 104 concourse corridor.';
+        }
+
+        if (translation != null) {
+          recommendations.add(
+            AIRecommendation(
+              id: 'rec_translate_${inc.id}',
+              title: 'AI Translator Service',
+              recommendation: 'English translation: "$translation"',
+              reason:
+                  'Reported description is in non-English format: "${inc.description}"',
+              estimatedBenefit:
+                  'Bypasses language barrier to speed up responder allocation.',
+              priority: 'High',
+              confidenceLevel: 0.96,
+              category: 'Safety',
+            ),
+          );
+        }
+      }
+    }
+
+    // 3. Accessibility Tip (For all roles)
     recommendations.add(
       const AIRecommendation(
         id: 'rec_access_elevator',
@@ -30,7 +179,7 @@ class GetAIRecommendations {
       ),
     );
 
-    // 2. Crowd / Gate Congestion (Role specific)
+    // 4. Crowd / Gate Congestion (Role specific)
     final isGateBHot = (crowdState.gateWaitTimes['Gate B'] ?? 0) >= 20;
 
     if (role == UserRole.fan) {
@@ -121,7 +270,7 @@ class GetAIRecommendations {
         );
       }
     } else if (role == UserRole.organizer || role == UserRole.staff) {
-      // Technical decisions for organizers/staff
+      // 5. Technical Decision Support rules for organizers/staff
       if (isGateBHot) {
         recommendations.add(
           const AIRecommendation(
@@ -138,6 +287,25 @@ class GetAIRecommendations {
             category: 'Safety',
           ),
         );
+
+        // Active volunteer redeployment recommendation advice
+        if (deployment != null && deployment.plazaActive < 10) {
+          recommendations.add(
+            AIRecommendation(
+              id: 'rec_org_reallocate_plaza',
+              title: 'Staff Deployment Inefficiency Warning',
+              recommendation:
+                  'Reallocate 4 volunteers from Concourse Concessions to Plaza Entry Gates.',
+              reason:
+                  'Plaza active staff is low (${deployment.plazaActive}) during severe Gate B congestion.',
+              estimatedBenefit:
+                  'Accelerates the adoption rate of Gate D reroutes by 35%.',
+              priority: 'High',
+              confidenceLevel: 0.93,
+              category: 'Crowd',
+            ),
+          );
+        }
       }
 
       final openCriticalIncidents = incidents
