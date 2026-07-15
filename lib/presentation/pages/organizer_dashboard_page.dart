@@ -8,6 +8,7 @@ import '../../domain/entities/simulation_scenario.dart';
 import '../providers/app_state_providers.dart';
 import '../providers/stadium_simulation_providers.dart';
 import '../widgets/stadium_shell.dart';
+import '../widgets/accessible_focus_builder.dart';
 
 // Local UI state providers for the Staff Reallocation Console
 class ReallocateFromNotifier extends Notifier<String> {
@@ -263,7 +264,7 @@ class OrganizerDashboardPage extends ConsumerWidget {
     );
   }
 
-  // Visual representation of sections using colored containers
+  // Visual representation of sections using colored containers (fully accessible and tab-navigable)
   Widget _buildHeatmapGrid(Map<String, double> densities, ThemeData theme) {
     return GridView.builder(
       shrinkWrap: true,
@@ -285,51 +286,59 @@ class OrganizerDashboardPage extends ConsumerWidget {
           gridColor = Colors.amber;
         }
 
-        return Container(
-          decoration: BoxDecoration(
-            color: gridColor.withValues(alpha: 0.12),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: gridColor, width: 2),
-          ),
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                entry.key,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15,
+        final status = density >= 0.8
+            ? 'Critical Congestion Warning'
+            : (density >= 0.6 ? 'Moderate load' : 'Normal');
+
+        return AccessibleFocusBuilder(
+          semanticLabel: 'Crowd density card for ${entry.key}',
+          semanticValue: '${(density * 100).toInt()}% density. Status is $status',
+          child: Container(
+            decoration: BoxDecoration(
+              color: gridColor.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: gridColor, width: 2),
+            ),
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  entry.key,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                  ),
                 ),
-              ),
-              const Spacer(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      'Density Coefficient: ${(density * 100).toInt()}%',
-                      style: TextStyle(
-                        color: gridColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
+                const Spacer(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Density Coefficient: ${(density * 100).toInt()}%',
+                        style: TextStyle(
+                          color: gridColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                  Icon(
-                    density >= 0.8
-                        ? Icons.warning
-                        : (density >= 0.6
-                              ? Icons.info_outline
-                              : Icons.check_circle_outline),
-                    color: gridColor,
-                    size: 18,
-                  ),
-                ],
-              ),
-            ],
+                    Icon(
+                      density >= 0.8
+                          ? Icons.warning
+                          : (density >= 0.6
+                                ? Icons.info_outline
+                                : Icons.check_circle_outline),
+                      color: gridColor,
+                      size: 18,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         );
       },

@@ -61,6 +61,12 @@ class StadiumShell extends ConsumerWidget {
         icon: Icons.admin_panel_settings,
         roles: [UserRole.organizer, UserRole.staff],
       ),
+      _NavData(
+        path: '/command_center',
+        labelKey: 'digital_twin',
+        icon: Icons.radar,
+        roles: [UserRole.organizer, UserRole.staff],
+      ),
     ];
 
     final filteredItems = menuItems

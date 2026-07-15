@@ -1,11 +1,11 @@
 {
-    "name": "stadium_pilot_ai",
-    "short_name": "stadium_pilot_ai",
+    "name": "StadiumPilot AI",
+    "short_name": "StadiumPilot AI",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#0A1C14",
+    "theme_color": "#0F261B",
+    "description": "StadiumPilot AI - Intelligent Operations & Fan Experience Assistant for the FIFA World Cup 2026.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

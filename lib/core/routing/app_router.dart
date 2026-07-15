@@ -6,6 +6,7 @@ import '../../presentation/pages/transport_page.dart';
 import '../../presentation/pages/accessibility_page.dart';
 import '../../presentation/pages/volunteer_dashboard_page.dart';
 import '../../presentation/pages/organizer_dashboard_page.dart';
+import '../../presentation/pages/command_center_page.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
@@ -34,6 +35,10 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/organizer',
       builder: (context, state) => const OrganizerDashboardPage(),
+    ),
+    GoRoute(
+      path: '/command_center',
+      builder: (context, state) => const CommandCenterPage(),
     ),
   ],
 );

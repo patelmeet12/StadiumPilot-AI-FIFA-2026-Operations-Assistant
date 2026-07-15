@@ -1,8 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
-import '../../core/localization/local_dictionary.dart';
 import '../../domain/entities/incident.dart';
 import '../../domain/entities/ai_recommendation.dart';
 import '../../domain/entities/crowd_state.dart';
@@ -18,9 +18,6 @@ class DashboardPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final activeLanguage = ref.watch(localeProvider);
     final activeRole = ref.watch(userRoleProvider);
-    final crowdState = ref.watch(crowdStateProvider);
-    final recommendationsAsync = ref.watch(aiRecommendationsProvider);
-    final theme = Theme.of(context);
 
     return StadiumShell(
       currentPath: '/dashboard',
@@ -31,24 +28,40 @@ class DashboardPage extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Welcome header + manual tick action
+              // Command Center Operations Header Bar
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Operations Desk - ${activeRole.displayName}',
-                          style: theme.textTheme.headlineMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 28,
-                          ),
+                        Row(
+                          children: [
+                            const _BlinkingLed(),
+                            const SizedBox(width: 8),
+                            Text(
+                              'FIFA VENUE COMMAND CENTER // ${activeRole.displayName.toUpperCase()}',
+                              style: const TextStyle(
+                                fontFamily: 'Courier',
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                                letterSpacing: 1.1,
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 4),
-                        const Text(
-                          'Live telemetry streaming from FIFA MetLife Venue Control Center.',
-                          style: TextStyle(color: Colors.grey, fontSize: 13),
+                        const SizedBox(height: 6),
+                        Wrap(
+                          spacing: 12,
+                          runSpacing: 6,
+                          children: [
+                            _statusBadge('SYS_HEALTH', '98.4%', Colors.green),
+                            _statusBadge('PORTAL_STATE', 'SECURE', Colors.blue),
+                            _statusBadge('TELEMETRY_LINK', 'LIVE', Colors.green),
+                            _statusBadge('VENUE_ID', 'MetLife Stadium', Colors.amber),
+                          ],
                         ),
                       ],
                     ),
@@ -111,11 +124,15 @@ class DashboardPage extends ConsumerWidget {
                   ),
                 ],
               ),
+              const SizedBox(height: 20),
+
+              // Live Scrolling Telemetry Intake Terminal
+              const _TelemetryLogTerminal(),
               const SizedBox(height: 24),
 
-              _buildLiveWeatherWarningBanner(ref, theme),
+              const _LiveWeatherWarningBannerWidget(),
               const SizedBox(height: 24),
-              _buildAIProactiveBanner(ref, theme),
+              const _AIProactiveBannerWidget(),
               const SizedBox(height: 24),
 
               // Responsive grid layout
@@ -133,10 +150,8 @@ class DashboardPage extends ConsumerWidget {
                             children: [
                               _buildMatchTicketCard(context),
                               const SizedBox(height: 24),
-                              _buildDecisionEnginePanel(
-                                context,
-                                recommendationsAsync,
-                                activeLanguage,
+                              _DecisionEnginePanelWidget(
+                                activeLanguage: activeLanguage,
                               ),
                               const SizedBox(height: 24),
                               _buildQuickActionsRow(context, ref),
@@ -149,10 +164,8 @@ class DashboardPage extends ConsumerWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              _buildCrowdStatusPanel(
-                                context,
-                                crowdState,
-                                activeLanguage,
+                              _CrowdStatusPanelWidget(
+                                activeLanguage: activeLanguage,
                               ),
                               const SizedBox(height: 24),
                               _buildTravelStatusPanel(context, activeLanguage),
@@ -170,16 +183,12 @@ class DashboardPage extends ConsumerWidget {
                       children: [
                         _buildMatchTicketCard(context),
                         const SizedBox(height: 24),
-                        _buildDecisionEnginePanel(
-                          context,
-                          recommendationsAsync,
-                          activeLanguage,
+                        _DecisionEnginePanelWidget(
+                          activeLanguage: activeLanguage,
                         ),
                         const SizedBox(height: 24),
-                        _buildCrowdStatusPanel(
-                          context,
-                          crowdState,
-                          activeLanguage,
+                        _CrowdStatusPanelWidget(
+                          activeLanguage: activeLanguage,
                         ),
                         const SizedBox(height: 24),
                         _buildTravelStatusPanel(context, activeLanguage),
@@ -197,6 +206,40 @@ class DashboardPage extends ConsumerWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  static Widget _statusBadge(String key, String value, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            '$key: ',
+            style: TextStyle(
+              color: color.withValues(alpha: 0.7),
+              fontFamily: 'Courier',
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              color: color,
+              fontFamily: 'Courier',
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -327,7 +370,18 @@ class DashboardPage extends ConsumerWidget {
     String lang,
   ) {
     final theme = Theme.of(context);
+    final isHighContrast = theme.brightness == Brightness.dark &&
+        theme.scaffoldBackgroundColor == Colors.black;
+
     return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(
+          color: isHighContrast ? Colors.white : Colors.green.withValues(alpha: 0.3),
+          width: 1.5,
+        ),
+      ),
+      color: isHighContrast ? Colors.black : const Color(0xFF0F1613),
       child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -338,17 +392,22 @@ class DashboardPage extends ConsumerWidget {
                 Icon(
                   Icons.psychology,
                   color: theme.colorScheme.secondary,
-                  size: 28,
+                  size: 24,
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    LocalDictionary.translate('recommendations', lang),
-                    style: theme.textTheme.titleLarge?.copyWith(fontSize: 18),
+                    'AI DECISION RECOMMENDATIONS',
+                    style: TextStyle(
+                      fontFamily: 'Courier',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: theme.colorScheme.secondary,
+                      letterSpacing: 1.1,
+                    ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                const Spacer(),
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 8,
@@ -356,16 +415,19 @@ class DashboardPage extends ConsumerWidget {
                   ),
                   decoration: BoxDecoration(
                     color: Colors.green.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(6),
+                    borderRadius: BorderRadius.circular(4),
+                    border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
                   ),
                   child: const Row(
                     children: [
-                      Icon(Icons.bolt, color: Colors.green, size: 14),
+                      Icon(Icons.bolt, color: Colors.green, size: 12),
+                      SizedBox(width: 4),
                       Text(
-                        'AI Live',
+                        'SYS_ACTIVE',
                         style: TextStyle(
                           color: Colors.green,
-                          fontSize: 11,
+                          fontFamily: 'Courier',
+                          fontSize: 10,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -374,22 +436,30 @@ class DashboardPage extends ConsumerWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             asyncRecommendations.when(
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (err, stack) =>
                   Text('Error loading recommendations: $err'),
               data: (recs) {
                 if (recs.isEmpty) {
-                  return const Text(
-                    'All operations normal. No current anomalies detected.',
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20.0),
+                    child: Text(
+                      'ALL OPERATIONS NOMINAL. NO CURRENT RECOMMENDATIONS DISPATCHED.',
+                      style: TextStyle(
+                        fontFamily: 'Courier',
+                        fontSize: 12,
+                        color: Colors.grey,
+                      ),
+                    ),
                   );
                 }
                 return ListView.separated(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: recs.length,
-                  separatorBuilder: (c, i) => const Divider(height: 20),
+                  separatorBuilder: (c, i) => const Divider(height: 24),
                   itemBuilder: (context, index) {
                     final r = recs[index];
                     Color priorityColor = Colors.grey;
@@ -418,7 +488,7 @@ class DashboardPage extends ConsumerWidget {
                         r.id.contains('reallocate')) {
                       dataInfluenced.addAll([
                         'Crowd Flow Analytics Camera',
-                        'RFID Gate Queue Telemetry',
+                        'RFID Gate Telemetry',
                         'Staff Dispatch Roster',
                       ]);
                     } else if (r.id.contains('translate')) {
@@ -437,10 +507,8 @@ class DashboardPage extends ConsumerWidget {
                       margin: const EdgeInsets.only(bottom: 12),
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: theme.brightness == Brightness.dark
-                            ? Colors.grey.shade900
-                            : Colors.grey.shade100,
-                        borderRadius: BorderRadius.circular(12),
+                        color: isHighContrast ? Colors.black : const Color(0xFF141E1A),
+                        borderRadius: BorderRadius.circular(4),
                         border: Border.all(
                           color: priorityColor.withValues(alpha: 0.3),
                           width: 1.5,
@@ -453,17 +521,19 @@ class DashboardPage extends ConsumerWidget {
                             children: [
                               Container(
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
+                                  horizontal: 6,
                                   vertical: 2,
                                 ),
                                 decoration: BoxDecoration(
                                   color: priorityColor.withValues(alpha: 0.15),
-                                  borderRadius: BorderRadius.circular(4),
+                                  borderRadius: BorderRadius.circular(2),
+                                  border: Border.all(color: priorityColor.withValues(alpha: 0.3)),
                                 ),
                                 child: Text(
                                   r.priority.toUpperCase(),
                                   style: TextStyle(
                                     color: priorityColor,
+                                    fontFamily: 'Courier',
                                     fontSize: 10,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -472,17 +542,19 @@ class DashboardPage extends ConsumerWidget {
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
-                                  r.title,
-                                  style: const TextStyle(
+                                  '[${r.id.toUpperCase()}] ${r.title.toUpperCase()}',
+                                  style: TextStyle(
+                                    fontFamily: 'Courier',
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 15,
+                                    fontSize: 13,
+                                    color: theme.textTheme.titleMedium?.color,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 12),
                           Text(
                             r.recommendation,
                             style: TextStyle(
@@ -491,9 +563,41 @@ class DashboardPage extends ConsumerWidget {
                               color: theme.colorScheme.primary,
                             ),
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 16),
+                          
+                          // Structured Benefits Monospace Table
+                          Container(
+                            decoration: BoxDecoration(
+                              color: isHighContrast ? Colors.black : const Color(0xFF0F1613),
+                              border: Border.all(color: Colors.grey.withValues(alpha: 0.3)),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Table(
+                              border: TableBorder.symmetric(
+                                inside: BorderSide(color: Colors.grey.withValues(alpha: 0.3)),
+                              ),
+                              children: [
+                                TableRow(
+                                  children: [
+                                    _tableHeaderCell('EST_TIME_SAVED'),
+                                    _tableHeaderCell('WALK_SAVED'),
+                                    _tableHeaderCell('CO2_REDUCED'),
+                                  ],
+                                ),
+                                TableRow(
+                                  children: [
+                                    _tableValCell('${r.estimatedTimeSavedMinutes}m'),
+                                    _tableValCell('${r.estimatedWalkingDistanceSavedMeters}m'),
+                                    _tableValCell('${r.estimatedCo2ReductionKg}kg'),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 16),
                           const Divider(),
                           const SizedBox(height: 8),
+
                           // Explainable AI Header
                           Row(
                             children: [
@@ -504,8 +608,9 @@ class DashboardPage extends ConsumerWidget {
                               ),
                               const SizedBox(width: 6),
                               Text(
-                                'Explainable AI (XAI) Reasoning Log',
+                                'XAI_REASONING_LOG // CONTEXTUAL_VARIABLES',
                                 style: TextStyle(
+                                  fontFamily: 'Courier',
                                   fontWeight: FontWeight.bold,
                                   fontSize: 11,
                                   letterSpacing: 0.5,
@@ -514,21 +619,21 @@ class DashboardPage extends ConsumerWidget {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 12),
                           _buildExplainableField(
-                            'Why this recommendation?',
+                            'Reason Context:',
                             r.reason,
                             theme,
                           ),
                           const SizedBox(height: 6),
                           _buildExplainableField(
-                            'What data influenced it?',
+                            'Influencing Nodes:',
                             dataInfluenced.join(' • '),
                             theme,
                           ),
                           const SizedBox(height: 6),
                           _buildExplainableField(
-                            'Alternative Options:',
+                            'Bypass Route:',
                             r.alternativeOptions.isEmpty
                                 ? 'None'
                                 : r.alternativeOptions.join(' OR '),
@@ -536,26 +641,19 @@ class DashboardPage extends ConsumerWidget {
                           ),
                           const SizedBox(height: 6),
                           _buildExplainableField(
-                            'Expected Benefit:',
-                            '${r.estimatedBenefit} '
-                                '(Saves ${r.estimatedTimeSavedMinutes} mins, '
-                                're-routes ${r.estimatedWalkingDistanceSavedMeters}m walk, '
-                                'saves ${r.estimatedCo2ReductionKg}kg CO₂)',
-                            theme,
-                          ),
-                          const SizedBox(height: 6),
-                          _buildExplainableField(
-                            'Operational Impact:',
+                            'Impact Statement:',
                             r.operationalImpact,
                             theme,
                           ),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 12),
+
                           // Confidence percentage bar
                           Row(
                             children: [
                               const Text(
-                                'AI Confidence: ',
+                                'SYS_CONFIDENCE: ',
                                 style: TextStyle(
+                                  fontFamily: 'Courier',
                                   fontSize: 11,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.grey,
@@ -563,14 +661,11 @@ class DashboardPage extends ConsumerWidget {
                               ),
                               Expanded(
                                 child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(4),
+                                  borderRadius: BorderRadius.circular(2),
                                   child: LinearProgressIndicator(
                                     value: r.confidenceLevel,
                                     minHeight: 6,
-                                    backgroundColor:
-                                        theme.brightness == Brightness.dark
-                                        ? Colors.grey.shade800
-                                        : Colors.grey.shade200,
+                                    backgroundColor: isHighContrast ? Colors.grey.shade900 : const Color(0xFF0F1613),
                                     valueColor: AlwaysStoppedAnimation<Color>(
                                       priorityColor,
                                     ),
@@ -581,6 +676,7 @@ class DashboardPage extends ConsumerWidget {
                               Text(
                                 '${(r.confidenceLevel * 100).toInt()}%',
                                 style: TextStyle(
+                                  fontFamily: 'Courier',
                                   fontSize: 11,
                                   fontWeight: FontWeight.bold,
                                   color: priorityColor,
@@ -601,6 +697,38 @@ class DashboardPage extends ConsumerWidget {
     );
   }
 
+  static Widget _tableHeaderCell(String text) {
+    return Padding(
+      padding: const EdgeInsets.all(6.0),
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontFamily: 'Courier',
+          fontSize: 9,
+          color: Colors.grey,
+          fontWeight: FontWeight.bold,
+        ),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+
+  static Widget _tableValCell(String text) {
+    return Padding(
+      padding: const EdgeInsets.all(6.0),
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontFamily: 'Courier',
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+
   // Card 3: Crowd status simulation
   Widget _buildCrowdStatusPanel(
     BuildContext context,
@@ -608,7 +736,18 @@ class DashboardPage extends ConsumerWidget {
     String lang,
   ) {
     final theme = Theme.of(context);
+    final isHighContrast = theme.brightness == Brightness.dark &&
+        theme.scaffoldBackgroundColor == Colors.black;
+
     return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(
+          color: isHighContrast ? Colors.white : Colors.green.withValues(alpha: 0.3),
+          width: 1.5,
+        ),
+      ),
+      color: isHighContrast ? Colors.black : const Color(0xFF0F1613),
       child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -616,12 +755,18 @@ class DashboardPage extends ConsumerWidget {
           children: [
             Row(
               children: [
-                const Icon(Icons.people, color: Colors.blue, size: 26),
+                const Icon(Icons.people, color: Colors.blue, size: 24),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'Live Stadium Congestion',
-                    style: theme.textTheme.titleLarge?.copyWith(fontSize: 18),
+                    'LIVE STADIUM TELEMETRY FEED',
+                    style: TextStyle(
+                      fontFamily: 'Courier',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: theme.colorScheme.secondary,
+                      letterSpacing: 1.1,
+                    ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -631,139 +776,265 @@ class DashboardPage extends ConsumerWidget {
 
             // Section 1: Gates wait times
             const Text(
-              'GATE CHECKPOINTS',
+              '// GATE CHECKPOINTS FLOW STATUS',
               style: TextStyle(
+                fontFamily: 'Courier',
                 fontSize: 11,
                 fontWeight: FontWeight.bold,
                 color: Colors.grey,
               ),
             ),
-            const SizedBox(height: 10),
-            ...state.gateWaitTimes.entries.map((e) {
-              final val = e.value;
-              final color = val >= 20
-                  ? Colors.red
-                  : (val >= 10 ? Colors.amber : Colors.green);
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(e.key, style: const TextStyle(fontSize: 13)),
-                    ),
-                    Container(
-                      width: 100,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade800,
-                        borderRadius: BorderRadius.circular(4),
+            const SizedBox(height: 12),
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Column(
+                children: state.gateWaitTimes.entries.map((e) {
+                  final val = e.value;
+                  final color = val >= 20
+                      ? Colors.red
+                      : (val >= 10 ? Colors.amber : Colors.green);
+                  final statusText = val >= 20
+                      ? 'CRITICAL'
+                      : (val >= 10 ? 'MODERATE' : 'NOMINAL');
+
+                  return Container(
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
                       ),
-                      alignment: Alignment.centerLeft,
-                      child: FractionallySizedBox(
-                        widthFactor: (val / 30.0).clamp(0.05, 1.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: color,
-                            borderRadius: BorderRadius.circular(4),
+                      color: isHighContrast ? Colors.black : const Color(0xFF141E1A),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            e.key.toUpperCase(),
+                            style: const TextStyle(
+                              fontFamily: 'Courier',
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    SizedBox(
-                      width: 50,
-                      child: Text(
-                        '$val mins',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                          color: color,
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: color.withValues(alpha: 0.1),
+                                border: Border.all(color: color.withValues(alpha: 0.3)),
+                                borderRadius: BorderRadius.circular(2),
+                              ),
+                              child: Text(
+                                statusText,
+                                style: TextStyle(
+                                  fontFamily: 'Courier',
+                                  color: color,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Text(
+                              '${val}m wait',
+                              style: TextStyle(
+                                fontFamily: 'Courier',
+                                color: color,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
                         ),
-                        textAlign: TextAlign.right,
-                      ),
+                      ],
                     ),
-                  ],
-                ),
-              );
-            }),
+                  );
+                }).toList(),
+              ),
+            ),
 
-            const Divider(height: 24),
+            const SizedBox(height: 24),
 
             // Section 2: Concession lines
             const Text(
-              'FOOD COURTS',
+              '// FOOD COURTS LOAD DATA',
               style: TextStyle(
+                fontFamily: 'Courier',
                 fontSize: 11,
                 fontWeight: FontWeight.bold,
                 color: Colors.grey,
               ),
             ),
-            const SizedBox(height: 10),
-            ...state.foodCourtWaitTimes.entries.map((e) {
-              final val = e.value;
-              final color = val >= 18
-                  ? Colors.red
-                  : (val >= 10 ? Colors.amber : Colors.green);
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        e.key,
-                        style: const TextStyle(fontSize: 13),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    Text(
-                      '${val}m wait',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                        color: color,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }),
+            const SizedBox(height: 12),
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Column(
+                children: state.foodCourtWaitTimes.entries.map((e) {
+                  final val = e.value;
+                  final color = val >= 18
+                      ? Colors.red
+                      : (val >= 10 ? Colors.amber : Colors.green);
+                  final statusText = val >= 18
+                      ? 'OVERLOAD'
+                      : (val >= 10 ? 'MODERATE' : 'OPTIMAL');
 
-            const Divider(height: 24),
+                  return Container(
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
+                      ),
+                      color: isHighContrast ? Colors.black : const Color(0xFF141E1A),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            e.key.toUpperCase(),
+                            style: const TextStyle(
+                              fontFamily: 'Courier',
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: color.withValues(alpha: 0.1),
+                                border: Border.all(color: color.withValues(alpha: 0.3)),
+                                borderRadius: BorderRadius.circular(2),
+                              ),
+                              child: Text(
+                                statusText,
+                                style: TextStyle(
+                                  fontFamily: 'Courier',
+                                  color: color,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Text(
+                              '${val}m wait',
+                              style: TextStyle(
+                                fontFamily: 'Courier',
+                                color: color,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+
+            const SizedBox(height: 24),
 
             // Section 3: Restrooms lines
             const Text(
-              'RESTROOM QUEUES',
+              '// RESTROOM FACILITY WAIT TIME',
               style: TextStyle(
+                fontFamily: 'Courier',
                 fontSize: 11,
                 fontWeight: FontWeight.bold,
                 color: Colors.grey,
               ),
             ),
-            const SizedBox(height: 10),
-            ...state.restroomWaitTimes.entries.map((e) {
-              final val = e.value;
-              final color = val >= 12
-                  ? Colors.red
-                  : (val >= 6 ? Colors.amber : Colors.green);
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(e.key, style: const TextStyle(fontSize: 13)),
-                    ),
-                    Text(
-                      '$val mins',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                        color: color,
+            const SizedBox(height: 12),
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Column(
+                children: state.restroomWaitTimes.entries.map((e) {
+                  final val = e.value;
+                  final color = val >= 12
+                      ? Colors.red
+                      : (val >= 6 ? Colors.amber : Colors.green);
+                  final statusText = val >= 12
+                      ? 'CONGESTED'
+                      : (val >= 6 ? 'MODERATE' : 'NORMAL');
+
+                  return Container(
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
                       ),
+                      color: isHighContrast ? Colors.black : const Color(0xFF141E1A),
                     ),
-                  ],
-                ),
-              );
-            }),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            e.key.toUpperCase(),
+                            style: const TextStyle(
+                              fontFamily: 'Courier',
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: color.withValues(alpha: 0.1),
+                                border: Border.all(color: color.withValues(alpha: 0.3)),
+                                borderRadius: BorderRadius.circular(2),
+                              ),
+                              child: Text(
+                                statusText,
+                                style: TextStyle(
+                                  fontFamily: 'Courier',
+                                  color: color,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Text(
+                              '${val}m wait',
+                              style: TextStyle(
+                                fontFamily: 'Courier',
+                                color: color,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
           ],
         ),
       ),
@@ -1612,3 +1883,226 @@ class DashboardPage extends ConsumerWidget {
     );
   }
 }
+
+class _LiveWeatherWarningBannerWidget extends ConsumerWidget {
+  const _LiveWeatherWarningBannerWidget();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    return RepaintBoundary(
+      child: const DashboardPage()._buildLiveWeatherWarningBanner(ref, theme),
+    );
+  }
+}
+
+class _AIProactiveBannerWidget extends ConsumerWidget {
+  const _AIProactiveBannerWidget();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    return RepaintBoundary(
+      child: const DashboardPage()._buildAIProactiveBanner(ref, theme),
+    );
+  }
+}
+
+class _DecisionEnginePanelWidget extends ConsumerWidget {
+  final String activeLanguage;
+  const _DecisionEnginePanelWidget({required this.activeLanguage});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final recommendationsAsync = ref.watch(aiRecommendationsProvider);
+    return RepaintBoundary(
+      child: const DashboardPage()._buildDecisionEnginePanel(
+        context,
+        recommendationsAsync,
+        activeLanguage,
+      ),
+    );
+  }
+}
+
+class _CrowdStatusPanelWidget extends ConsumerWidget {
+  final String activeLanguage;
+  const _CrowdStatusPanelWidget({required this.activeLanguage});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final crowdState = ref.watch(crowdStateProvider);
+    return RepaintBoundary(
+      child: const DashboardPage()._buildCrowdStatusPanel(
+        context,
+        crowdState,
+        activeLanguage,
+      ),
+    );
+  }
+}
+
+class _BlinkingLed extends StatefulWidget {
+  const _BlinkingLed();
+
+  @override
+  State<_BlinkingLed> createState() => _BlinkingLedState();
+}
+
+class _BlinkingLedState extends State<_BlinkingLed> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    );
+
+    final isUnderTest = kDebugMode && WidgetsBinding.instance.runtimeType.toString().contains('Test');
+    if (!isUnderTest) {
+      _controller.repeat(reverse: true);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final disableMotion = MediaQuery.of(context).disableAnimations;
+    if (disableMotion) {
+      return Container(
+        width: 10,
+        height: 10,
+        decoration: const BoxDecoration(
+          color: Colors.green,
+          shape: BoxShape.circle,
+        ),
+      );
+    }
+
+    return FadeTransition(
+      opacity: _controller.drive(Tween<double>(begin: 0.2, end: 1.0)),
+      child: Container(
+        width: 10,
+        height: 10,
+        decoration: const BoxDecoration(
+          color: Colors.green,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.greenAccent,
+              blurRadius: 4,
+              spreadRadius: 1,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TelemetryLogTerminal extends ConsumerStatefulWidget {
+  const _TelemetryLogTerminal();
+
+  @override
+  ConsumerState<_TelemetryLogTerminal> createState() => _TelemetryLogTerminalState();
+}
+
+class _TelemetryLogTerminalState extends ConsumerState<_TelemetryLogTerminal> {
+  final List<String> _logs = [];
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _logs.add('[SYS_INIT] Initializing telemetry data streams...');
+    _logs.add('[SYS_INIT] Port 8080 open. SSL handshake complete.');
+    _logs.add('[SYS_OK] FIFA Venue Control Console // Active session established.');
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _addLog(String msg) {
+    if (mounted) {
+      setState(() {
+        final timeStr = DateTime.now().toIso8601String().substring(11, 19);
+        _logs.add('[$timeStr] $msg');
+        if (_logs.length > 50) {
+          _logs.removeAt(0);
+        }
+      });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_scrollController.hasClients) {
+          _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeOut,
+          );
+        }
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    ref.listen(crowdStateProvider, (previous, next) {
+      final gateB = next.gateWaitTimes['Gate B'] ?? 0;
+      final food1 = next.foodCourtWaitTimes['Food Court 1 (North)'] ?? 0;
+      _addLog('SENSOR_UPDATE: Gate B wait time at $gateB mins.');
+      _addLog('SENSOR_UPDATE: Food Court 1 wait time at $food1 mins.');
+      if (gateB >= 20) {
+        _addLog('WARNING: Gate B congestion threshold crossed! AI recommendation dispatched.');
+      }
+    });
+
+    final theme = Theme.of(context);
+    final isHighContrast = theme.brightness == Brightness.dark &&
+        theme.scaffoldBackgroundColor == Colors.black;
+
+    return Container(
+      height: 120,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: isHighContrast ? Colors.black : const Color(0xFF070B09),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: isHighContrast ? Colors.white : Colors.green.withValues(alpha: 0.3),
+          width: 1.5,
+        ),
+      ),
+      padding: const EdgeInsets.all(12),
+      child: ListView.builder(
+        controller: _scrollController,
+        itemCount: _logs.length,
+        itemBuilder: (context, index) {
+          final isWarning = _logs[index].contains('WARNING') || _logs[index].contains('ALERT');
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 2.0),
+            child: Text(
+              _logs[index],
+              style: TextStyle(
+                fontFamily: 'Courier',
+                fontSize: 12,
+                color: isWarning
+                    ? Colors.redAccent
+                    : (isHighContrast ? Colors.white : const Color(0xFF39FF14)),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+

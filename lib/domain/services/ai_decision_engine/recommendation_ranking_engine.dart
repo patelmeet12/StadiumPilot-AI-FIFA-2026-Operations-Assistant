@@ -6,9 +6,9 @@ class RecommendationRankingEngine {
     // 1. Deduplicate by recommendation ID
     final Set<String> ids = {};
     final List<AIRecommendation> unique = [];
-    for (final rec in input) {
-      if (!ids.contains(rec.id)) {
-        ids.add(rec.id);
+    for (int i = 0; i < input.length; i++) {
+      final rec = input[i];
+      if (ids.add(rec.id)) {
         unique.add(rec);
       }
     }
@@ -23,18 +23,17 @@ class RecommendationRankingEngine {
     return unique;
   }
 
-  int _priorityWeight(String priority) {
-    switch (priority.toLowerCase()) {
-      case 'critical':
-        return 4;
-      case 'high':
-        return 3;
-      case 'medium':
-        return 2;
-      case 'low':
-        return 1;
-      default:
-        return 0;
-    }
+  static int _priorityWeight(String priority) {
+    if (priority.isEmpty) return 0;
+    final firstChar = priority.codeUnitAt(0);
+    // 'C' or 'c'
+    if (firstChar == 67 || firstChar == 99) return 4; // Critical
+    // 'H' or 'h'
+    if (firstChar == 72 || firstChar == 104) return 3; // High
+    // 'M' or 'm'
+    if (firstChar == 77 || firstChar == 109) return 2; // Medium
+    // 'L' or 'l'
+    if (firstChar == 76 || firstChar == 108) return 1; // Low
+    return 0;
   }
 }

@@ -254,6 +254,17 @@ final activeScenarioProvider =
       return ActiveScenarioNotifier();
     });
 
+// 6.5. Selected Preset Provider (Derived & optimized)
+final selectedPresetProvider = Provider<MatchPreset>((ref) {
+  final matchId = ref.watch(selectedMatchProvider);
+  for (int i = 0; i < MatchPreset.presets.length; i++) {
+    if (MatchPreset.presets[i].matchId == matchId) {
+      return MatchPreset.presets[i];
+    }
+  }
+  return MatchPreset.presets.first;
+});
+
 // 7. Reactive AI Decision Feed Provider
 final aiRecommendationsProvider = FutureProvider<List<AIRecommendation>>((
   ref,
@@ -262,14 +273,9 @@ final aiRecommendationsProvider = FutureProvider<List<AIRecommendation>>((
   final crowd = ref.watch(crowdStateProvider);
   final incidents = ref.watch(incidentListProvider);
   final tasks = ref.watch(volunteerTasksProvider);
-  final matchId = ref.watch(selectedMatchProvider);
+  final preset = ref.watch(selectedPresetProvider);
   final deployment = ref.watch(volunteerDeploymentProvider);
   final activeScenario = ref.watch(activeScenarioProvider);
-
-  final preset = MatchPreset.presets.firstWhere(
-    (p) => p.matchId == matchId,
-    orElse: () => MatchPreset.presets.first,
-  );
 
   final engine = GetAIRecommendations();
   return await engine.call(
@@ -290,11 +296,7 @@ final riskPredictionsProvider = FutureProvider<List<OperationalRisk>>((
   ref,
 ) async {
   final crowdState = ref.watch(crowdStateProvider);
-  final matchId = ref.watch(selectedMatchProvider);
-  final preset = MatchPreset.presets.firstWhere(
-    (p) => p.matchId == matchId,
-    orElse: () => MatchPreset.presets.first,
-  );
+  final preset = ref.watch(selectedPresetProvider);
 
   final List<OperationalRisk> risks = [];
 
@@ -443,11 +445,7 @@ final proactiveAlertsProvider = FutureProvider<List<ProactiveAlert>>((
   final crowd = ref.watch(crowdStateProvider);
   final activeScenario = ref.watch(activeScenarioProvider);
   final incidents = ref.watch(incidentListProvider);
-  final matchId = ref.watch(selectedMatchProvider);
-  final preset = MatchPreset.presets.firstWhere(
-    (p) => p.matchId == matchId,
-    orElse: () => MatchPreset.presets.first,
-  );
+  final preset = ref.watch(selectedPresetProvider);
 
   final List<ProactiveAlert> alerts = [];
 

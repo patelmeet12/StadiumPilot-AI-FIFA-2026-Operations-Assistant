@@ -37,6 +37,7 @@ class LocalDictionary {
       'carbon_footprint': 'Carbon Footprint',
       'recommendations': 'AI Decision Engine Recommendations',
       'leave_warning': 'Leave now to beat the post-match crowd.',
+      'digital_twin': 'Digital Twin & CommandCenter',
     },
     'es': {
       'app_title': 'StadiumPilot AI',
@@ -76,6 +77,7 @@ class LocalDictionary {
       'recommendations': 'Recomendaciones del motor de decisiones de IA',
       'leave_warning':
           'Salga ahora para evitar la multitud posterior al partido.',
+      'digital_twin': 'Gemelo Digital y Centro de Comando',
     },
     'fr': {
       'app_title': 'StadiumPilot AI',
@@ -114,6 +116,7 @@ class LocalDictionary {
       'carbon_footprint': 'Empreinte carbone',
       'recommendations': 'Recommandations du moteur de décision IA',
       'leave_warning': 'Partez maintenant pour éviter la foule d\'après-match.',
+      'digital_twin': 'Jumeau Numérique et Centre de Commandement',
     },
     'hi': {
       'app_title': 'StadiumPilot AI',
@@ -152,6 +155,7 @@ class LocalDictionary {
       'carbon_footprint': 'कार्बन फुटप्रिंट',
       'recommendations': 'एआई निर्णय इंजन की सिफारिशें',
       'leave_warning': 'मैच के बाद की भीड़ से बचने के लिए अभी निकलें।',
+      'digital_twin': 'डिजिटल ट्विन और कमांड सेंटर',
     },
     'ar': {
       'app_title': 'StadiumPilot AI',
@@ -190,6 +194,7 @@ class LocalDictionary {
       'carbon_footprint': 'البصمة الكربونية',
       'recommendations': 'توصيات محرك قرارات الذكاء الاصطناعي',
       'leave_warning': 'غادر الآن لتجنب ازدحام ما بعد المباراة.',
+      'digital_twin': 'التوأم الرقمي ومركز القيادة',
     },
     'pt': {
       'app_title': 'StadiumPilot AI',
@@ -228,6 +233,7 @@ class LocalDictionary {
       'carbon_footprint': 'Pegada de Carbono',
       'recommendations': 'Recomendações do Motor de Decisão IA',
       'leave_warning': 'Saia agora para evitar a multidão pós-jogo.',
+      'digital_twin': 'Gêmeo Digital e Centro de Comando',
     },
   };
 

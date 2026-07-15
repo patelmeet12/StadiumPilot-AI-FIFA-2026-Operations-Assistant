@@ -40,6 +40,7 @@ class UserRoleNotifier extends Notifier<UserRole> {
   }
 
   Future<void> setRole(UserRole role) async {
+    if (state == role) return;
     state = role;
     final secureStorage = ref.read(secureStorageProvider);
     await secureStorage.write('sp_user_role', role.name);
@@ -59,6 +60,7 @@ class LocaleNotifier extends Notifier<String> {
   }
 
   Future<void> setLocale(String langCode) async {
+    if (state == langCode) return;
     state = langCode;
     final secureStorage = ref.read(secureStorageProvider);
     await secureStorage.write('sp_locale', langCode);
@@ -87,6 +89,7 @@ class ThemeModeNotifier extends Notifier<AppThemeMode> {
   }
 
   Future<void> setTheme(AppThemeMode mode) async {
+    if (state == mode) return;
     state = mode;
     final secureStorage = ref.read(secureStorageProvider);
     await secureStorage.write('sp_theme_mode', mode.name);

@@ -4,6 +4,7 @@ import '../../domain/entities/route_plan.dart';
 import '../../domain/usecases/calculate_route.dart';
 import '../providers/stadium_simulation_providers.dart';
 import '../widgets/stadium_shell.dart';
+import '../widgets/accessible_focus_builder.dart';
 
 class NavigationPage extends ConsumerStatefulWidget {
   const NavigationPage({super.key});
@@ -403,10 +404,10 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
           const SizedBox(height: 16),
         ],
 
-        // Visual Node Layout Chart
+        // Visual Node Layout Chart (Fully Accessible Interactive Semantic Map)
         Semantics(
-          label:
-              'Visual map of route nodes: starting at $_startLocation, routing through Gate entrypoints, utilizing level transition features, and arriving at $_destination.',
+          container: true,
+          label: 'Interactive Tactical Route Node Map. Use tab key to navigate individual route milestones.',
           child: Card(
             child: Padding(
               padding: const EdgeInsets.all(20.0),
@@ -420,35 +421,40 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
                   const SizedBox(height: 24),
 
                   // Horizontal path representation
-                  ExcludeSemantics(
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          _buildNodeCircle(
-                            route.steps[0].contains('Start')
-                                ? _startLocation
-                                : 'Origin',
-                            Colors.blue,
-                          ),
-                          _buildNodeLine(Colors.blue),
-                          _buildNodeCircle(
-                            route.steps.any((s) => s.contains('Gate D'))
-                                ? 'Gate D (Bypass)'
-                                : 'Gate C',
-                            Colors.amber,
-                          ),
-                          _buildNodeLine(Colors.amber),
-                          _buildNodeCircle(
-                            route.isWheelchairFriendly
-                                ? 'Elevator West'
-                                : 'Escalator Level 2',
-                            Colors.purple,
-                          ),
-                          _buildNodeLine(Colors.purple),
-                          _buildNodeCircle(_destination, Colors.green),
-                        ],
-                      ),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        _buildNodeCircle(
+                          route.steps[0].contains('Start')
+                              ? _startLocation
+                              : 'Origin',
+                          Colors.blue,
+                          semanticLabel: 'Start milestone: ${route.steps[0].contains('Start') ? _startLocation : 'Origin'}',
+                        ),
+                        ExcludeSemantics(child: _buildNodeLine(Colors.blue)),
+                        _buildNodeCircle(
+                          route.steps.any((s) => s.contains('Gate D'))
+                              ? 'Gate D (Bypass)'
+                              : 'Gate C',
+                          Colors.amber,
+                          semanticLabel: 'Transit checkpoint: ${route.steps.any((s) => s.contains('Gate D')) ? 'Gate D Bypass route' : 'Gate C entrance'}',
+                        ),
+                        ExcludeSemantics(child: _buildNodeLine(Colors.amber)),
+                        _buildNodeCircle(
+                          route.isWheelchairFriendly
+                              ? 'Elevator West'
+                              : 'Escalator Level 2',
+                          Colors.purple,
+                          semanticLabel: 'Level transition feature: ${route.isWheelchairFriendly ? 'Elevator West shaft' : 'Escalator to Level 2'}',
+                        ),
+                        ExcludeSemantics(child: _buildNodeLine(Colors.purple)),
+                        _buildNodeCircle(
+                          _destination,
+                          Colors.green,
+                          semanticLabel: 'Final destination: $_destination',
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -554,25 +560,31 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
     );
   }
 
-  Widget _buildNodeCircle(String label, Color color) {
-    return Column(
-      children: [
-        Container(
-          width: 48,
-          height: 48,
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.15),
-            shape: BoxShape.circle,
-            border: Border.all(color: color, width: 2),
-          ),
-          child: Icon(Icons.circle, color: color, size: 14),
+  Widget _buildNodeCircle(String label, Color color, {required String semanticLabel}) {
+    return AccessibleFocusBuilder(
+      semanticLabel: semanticLabel,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+        child: Column(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.15),
+                shape: BoxShape.circle,
+                border: Border.all(color: color, width: 2),
+              ),
+              child: Icon(Icons.circle, color: color, size: 14),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              label,
+              style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
+            ),
+          ],
         ),
-        const SizedBox(height: 6),
-        Text(
-          label,
-          style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
-        ),
-      ],
+      ),
     );
   }
 
